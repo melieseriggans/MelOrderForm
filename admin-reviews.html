@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#fedde4" />
+<title>Reviews – Admin</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-light:#fedde4;
+    --pink-hot:#e20376;
+    --white:#ffffff;
+    --ink:#3a2430;
+    --ink-soft:#8a6b78;
+    --border:#f7c3d6;
+    --shadow: 0 6px 20px rgba(226,3,118,0.10);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--pink-light);
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    padding-bottom:60px;
+  }
+  .banner{
+    background:linear-gradient(135deg, var(--pink-hot), #ff5fa8);
+    padding:36px 20px 44px;
+    text-align:center;
+    color:var(--white);
+    border-radius:0 0 32px 32px;
+    box-shadow:var(--shadow);
+  }
+  .banner h1{
+    font-family:'Pacifico', cursive;
+    font-size:1.9rem;
+    margin:0;
+  }
+  .container{
+    max-width:560px;
+    margin:-24px auto 0;
+    padding:0 16px;
+  }
+  .card{
+    background:var(--white);
+    border-radius:22px;
+    padding:22px 20px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+  }
+  h2{
+    font-family:'Pacifico', cursive;
+    color:var(--pink-hot);
+    font-size:1.3rem;
+    margin:0 0 12px;
+  }
+  label{display:block; font-weight:700; font-size:0.85rem; margin:0 0 6px;}
+  input[type=password]{
+    width:100%;
+    padding:11px 13px;
+    border-radius:12px;
+    border:1.5px solid var(--border);
+    font-family:inherit;
+    font-size:0.92rem;
+  }
+  input:focus{outline:2px solid var(--pink-hot); outline-offset:1px;}
+  .btn{
+    background:var(--pink-hot);
+    color:var(--white);
+    border:none;
+    border-radius:14px;
+    padding:12px 20px;
+    font-size:0.95rem;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    margin-top:14px;
+  }
+  .btn:hover{background:#b8025f;}
+  .btn:disabled{opacity:0.6; cursor:not-allowed;}
+  .btn-small{padding:7px 14px; font-size:0.8rem; border-radius:10px; margin-top:0;}
+  .btn-outline{background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);}
+  .btn-outline:hover{background:var(--pink-light);}
+  .error{color:#c0025e; font-size:0.85rem; margin-top:8px; display:none;}
+  .hidden{display:none;}
+
+  .filter-row{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .filter-btn{
+    background:var(--white);
+    border:1.5px solid var(--border);
+    color:var(--ink-soft);
+    border-radius:14px;
+    padding:8px 16px;
+    font-weight:700;
+    font-size:0.82rem;
+    cursor:pointer;
+  }
+  .filter-btn.active{background:var(--pink-hot); color:var(--white); border-color:var(--pink-hot);}
+
+  .review-row{
+    border:1.5px solid var(--border);
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:12px;
+  }
+  .review-row.pending{border-color:var(--pink-hot); background:#fff5f8;}
+  .review-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;}
+  .review-name{font-weight:700; font-size:1rem;}
+  .review-stars{color:var(--pink-hot); font-size:1rem; letter-spacing:1px; white-space:nowrap;}
+  .review-status{
+    font-size:0.7rem;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:10px;
+    display:inline-block;
+    margin-top:4px;
+  }
+  .review-status.approved{background:var(--pink-light); color:var(--pink-hot);}
+  .review-status.pending-badge{background:#ffe1a8; color:#8a5a00;}
+  .review-order{font-size:0.78rem; color:var(--ink-soft); margin:4px 0;}
+  .review-text{font-size:0.9rem; color:var(--ink); margin:8px 0; line-height:1.5;}
+  .review-date{font-size:0.72rem; color:var(--ink-soft);}
+  .sub-ratings{font-size:0.76rem; color:var(--ink-soft); margin-top:6px;}
+  .review-actions{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  .empty-note{color:var(--ink-soft); font-size:0.9rem; text-align:center; padding:20px 0;}
+</style>
+</head>
+<body>
+
+<div class="banner"><h1>Reviews 🔒</h1></div>
+
+<div class="container">
+  <div class="card" id="login-card">
+    <h2>Admin Login</h2>
+    <label for="password-input">Password</label>
+    <input type="password" id="password-input" placeholder="Enter admin password" />
+    <div id="login-error" class="error"></div>
+    <button class="btn" id="login-btn">Log In</button>
+  </div>
+
+  <div id="admin-panel" class="hidden">
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="pending">Pending</button>
+      <button class="filter-btn" data-filter="approved">Approved</button>
+      <button class="filter-btn" data-filter="all">All</button>
+    </div>
+    <div id="reviews-list"></div>
+  </div>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer>
+const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
+
+let _supabaseClient = null;
+async function waitForSupabase(timeoutMs) {
+  const start = Date.now();
+  while (!window.supabase) {
+    if (Date.now() - start > timeoutMs) return false;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return true;
+}
+async function getSupabase() {
+  if (!_supabaseClient) {
+    const loaded = await waitForSupabase(6000);
+    if (!loaded) throw new Error('Could not connect. Please check your connection and try again.');
+    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return _supabaseClient;
+}
+
+let adminPassword = sessionStorage.getItem('mels_admin_pw') || null;
+let allReviews = [];
+let currentFilter = 'pending';
+
+async function callAdmin(action, extra) {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.functions.invoke('manage-reviews', {
+    body: { password: adminPassword, action, ...extra }
+  });
+  if (error) throw error;
+  return data;
+}
+
+async function tryLogin(pw) {
+  adminPassword = pw;
+  const data = await callAdmin('list');
+  if (!data.success) {
+    adminPassword = null;
+    sessionStorage.removeItem('mels_admin_pw');
+    throw new Error(data.message || 'Login failed.');
+  }
+  sessionStorage.setItem('mels_admin_pw', pw);
+  document.getElementById('login-card').classList.add('hidden');
+  document.getElementById('admin-panel').classList.remove('hidden');
+  allReviews = data.reviews;
+  renderReviews();
+}
+
+document.getElementById('login-btn').addEventListener('click', async () => {
+  const pw = document.getElementById('password-input').value;
+  const errBox = document.getElementById('login-error');
+  errBox.style.display = 'none';
+  if (!pw) return;
+  try {
+    await tryLogin(pw);
+  } catch (err) {
+    errBox.textContent = err.message || 'Incorrect password.';
+    errBox.style.display = 'block';
+  }
+});
+document.getElementById('password-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderReviews();
+  });
+});
+
+function starString(n){
+  return '★★★★★☆☆☆☆☆'.slice(5 - n, 10 - n);
+}
+
+function renderReviews() {
+  const list = document.getElementById('reviews-list');
+  let filtered = allReviews;
+  if (currentFilter === 'pending') filtered = allReviews.filter(r => !r.approved);
+  if (currentFilter === 'approved') filtered = allReviews.filter(r => r.approved);
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-note">No ${currentFilter === 'all' ? '' : currentFilter} reviews here.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(r => {
+    const subParts = [];
+    if (r.taste_rating) subParts.push(`Taste: ${r.taste_rating}★`);
+    if (r.packaging_rating) subParts.push(`Packaging: ${r.packaging_rating}★`);
+    if (r.communication_rating) subParts.push(`Communication: ${r.communication_rating}★`);
+    return `
+      <div class="review-row ${r.approved ? '' : 'pending'}" data-id="${r.id}">
+        <div class="review-top">
+          <div>
+            <span class="review-name">${r.customer_name}</span>
+            <div class="review-status ${r.approved ? 'approved' : 'pending-badge'}">${r.approved ? 'Approved · Public' : 'Pending Review'}</div>
+          </div>
+          <span class="review-stars">${starString(r.rating)}</span>
+        </div>
+        ${r.order_reference ? `<div class="review-order">Ordered: ${r.order_reference}</div>` : ''}
+        ${r.review_text ? `<div class="review-text">"${r.review_text}"</div>` : '<div class="review-text" style="color:var(--ink-soft); font-style:italic;">No written review left.</div>'}
+        ${subParts.length ? `<div class="sub-ratings">${subParts.join(' · ')}</div>` : ''}
+        <div class="review-date">${new Date(r.created_at).toLocaleDateString()}</div>
+        <div class="review-actions">
+          ${r.approved
+            ? `<button class="btn btn-small btn-outline unapprove-btn" data-id="${r.id}">Unapprove</button>`
+            : `<button class="btn btn-small approve-btn" data-id="${r.id}">Approve ✓</button>`
+          }
+          <button class="btn btn-small btn-outline delete-btn" data-id="${r.id}" style="border-color:#c0025e; color:#c0025e;">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.approve-btn').forEach(btn => {
+    btn.addEventListener('click', () => setApproval(btn.dataset.id, true, btn));
+  });
+  list.querySelectorAll('.unapprove-btn').forEach(btn => {
+    btn.addEventListener('click', () => setApproval(btn.dataset.id, false, btn));
+  });
+  list.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteReview(btn.dataset.id, btn));
+  });
+}
+
+async function setApproval(id, approved, btn) {
+  btn.disabled = true;
+  try {
+    await callAdmin('toggle', { id, approved });
+    const r = allReviews.find(x => x.id === id);
+    if (r) r.approved = approved;
+    renderReviews();
+  } catch (err) {
+    alert('Could not update review: ' + err.message);
+    btn.disabled = false;
+  }
+}
+
+async function deleteReview(id, btn) {
+  if (!confirm('Delete this review permanently?')) return;
+  btn.disabled = true;
+  try {
+    await callAdmin('delete', { id });
+    allReviews = allReviews.filter(x => x.id !== id);
+    renderReviews();
+  } catch (err) {
+    alert('Could not delete review: ' + err.message);
+    btn.disabled = false;
+  }
+}
+
+if (adminPassword) {
+  tryLogin(adminPassword).catch(() => {});
+}
+</script>
+
+</body>
+</html>
