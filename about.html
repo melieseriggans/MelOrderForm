@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#e20376" />
+<title>About Me — Mel's Treat</title>
+<meta name="description" content="Meet Mel — the self-made baker behind Mel's Treat, a tiny home bakery serving up gooey, sparkly cookies made by hand in small batches.">
+<meta property="og:title" content="About Mel — Mel's Treat">
+<meta property="og:description" content="Meet Mel, the baker behind Mel's Treat.">
+<meta property="og:image" content="https://ordertreats.melstreat.com/assets/logo.png">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#fedde4;
+    --pink-mid:#ffcfe0;
+    --pink-hot:#e20376;
+    --pink-deep:#a8025f;
+    --pink-glow:#ff6fb0;
+    --gold:#c8912f;
+    --gold-light:#f8e8c8;
+    --ink:#3a2430;
+    --ink-soft:#8a6b78;
+    --cream:#fffaf6;
+    --white:#ffffff;
+    --border:#f7c3d6;
+    --shadow: 0 6px 20px rgba(226,3,118,0.10);
+    --shadow-lift: 0 16px 36px rgba(226,3,118,0.20);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--blush); font-family:'Quicksand', sans-serif; color:var(--ink);}
+  a{color:inherit;}
+
+  .seal{position:relative; display:inline-block; border-radius:50%;}
+  .seal::after{content:''; position:absolute; inset:-7px; border-radius:50%; border:2px dashed var(--gold); pointer-events:none;}
+
+  .top-nav{position:sticky; top:0; z-index:50; background:rgba(255,255,255,0.94); backdrop-filter:blur(10px); border-bottom:1px solid var(--border);}
+  .nav-inner{max-width:1100px; margin:0 auto; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px;}
+  .nav-brand{display:flex; align-items:center; gap:14px; text-decoration:none;}
+  .nav-brand img{width:38px; height:38px; object-fit:cover;}
+  .nav-brand .wordmark{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--ink); font-size:1.05rem;}
+  .nav-back{text-decoration:none; font-weight:600; font-size:0.85rem; color:var(--ink-soft);}
+  .nav-back:hover{color:var(--pink-hot);}
+
+  .hero{max-width:640px; margin:0 auto; padding:44px 24px 10px; text-align:center;}
+  .hero-seal{width:96px; height:96px; margin-bottom:20px;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Fredoka', sans-serif; font-size:0.76rem; font-weight:600; color:var(--pink-hot);
+    letter-spacing:1.4px; text-transform:uppercase; margin-bottom:12px;
+  }
+  .eyebrow::before, .eyebrow::after{content:'✦'; color:var(--gold); font-size:0.7rem;}
+  h1{font-family:'Pacifico', cursive; font-size:clamp(2rem, 6vw, 2.8rem); color:var(--pink-hot); margin:0 0 10px; line-height:1.25;}
+  .hero-sub{font-size:1rem; color:var(--ink-soft); max-width:420px; margin:0 auto; line-height:1.6;}
+
+  .section{max-width:640px; margin:0 auto; padding:30px 24px;}
+  .story-card{
+    background:var(--white); border:1.5px solid var(--border); border-radius:22px;
+    padding:26px 24px; box-shadow:var(--shadow); text-align:left;
+  }
+  .story-card p{color:var(--ink-soft); font-size:0.97rem; line-height:1.75; margin:0 0 16px;}
+  .story-card p:last-child{margin-bottom:0;}
+  .story-card strong{color:var(--ink);}
+
+  .values-row{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:24px;}
+  @media (max-width: 560px){ .values-row{grid-template-columns:1fr;} }
+  .value-card{
+    background:var(--white); border:1.5px solid var(--border); border-radius:16px;
+    padding:18px 14px; text-align:center; position:relative; overflow:hidden;
+  }
+  .value-card::before{content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--pink-hot);}
+  .value-card:nth-child(2)::before{background:var(--gold);}
+  .value-card .v-icon{font-size:1.7rem; margin-bottom:8px;}
+  .value-card h3{font-family:'Fredoka', sans-serif; font-size:0.88rem; margin:0 0 5px;}
+  .value-card p{font-size:0.78rem; color:var(--ink-soft); margin:0; line-height:1.4;}
+
+  .allergen-note{
+    background:var(--cream); border:1px solid var(--border); border-radius:14px; padding:16px 18px;
+    font-size:0.85rem; color:var(--ink); line-height:1.6; text-align:left; margin-top:24px;
+  }
+  .allergen-note strong{color:var(--pink-hot);}
+
+  .cta-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:30px;}
+  .hero-btn{
+    font-family:'Fredoka', sans-serif; text-decoration:none; font-weight:600; font-size:0.94rem;
+    padding:14px 28px; border-radius:16px; transition:transform 0.15s, box-shadow 0.15s; display:inline-block;
+    background:linear-gradient(180deg, var(--pink-glow), var(--pink-hot)); color:var(--white);
+    box-shadow:inset 0 2px 3px rgba(255,255,255,0.45), var(--shadow);
+  }
+  .hero-btn:hover{transform:translateY(-2px); box-shadow:inset 0 2px 3px rgba(255,255,255,0.45), var(--shadow-lift);}
+  .hero-btn.outline{background:var(--white); box-shadow:none; color:var(--pink-hot); border:1.5px solid var(--pink-hot);}
+  .hero-btn.outline:hover{background:var(--blush);}
+
+  footer{background:#4d022c; color:rgba(255,255,255,0.7); padding:36px 24px 26px; text-align:center; margin-top:20px;}
+  footer .foot-brand{font-family:'Pacifico', cursive; color:var(--white); font-size:1.1rem; margin-bottom:6px;}
+  footer p{font-size:0.78rem; margin:0;}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="shop.html" class="nav-brand">
+      <span class="seal"><img src="assets/logo.png" alt="Mel's Treat"></span>
+      <span class="wordmark">Mel's Treat</span>
+    </a>
+    <a href="shop.html" class="nav-back">← Home</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <img src="assets/logo.png" alt="Mel's Treat" class="seal hero-seal">
+  <div class="eyebrow">Hi, I'm Mel</div>
+  <h1>Baking Is My Love Language ♡</h1>
+  <p class="hero-sub">The self-made story behind every batch of Mel's Treat cookies.</p>
+</div>
+
+<div class="section">
+  <div class="story-card">
+    <p>✨ I'm a self-made 23-year-old entrepreneur who loves spreading love and joy through baking ✨</p>
+    <p>Mel's Treat started small — just me, a mixing bowl, and a whole lot of sparkle — and it's stayed that way on purpose. <strong>Every single cookie is mixed, rolled, and baked by hand in tiny batches.</strong> No shortcuts, no shipping halfway across the country, just real butter, real sugar, and real care in every box.</p>
+    <p>Order for yourself, your bestie, or someone who needs a little pick-me-up. Whatever the reason, I hope every bite feels like it was made just for you — because it was. ♡</p>
+  </div>
+
+  <div class="values-row">
+    <div class="value-card">
+      <div class="v-icon">🧁</div>
+      <h3>Small Batches</h3>
+      <p>Never sitting around — made fresh for your order.</p>
+    </div>
+    <div class="value-card">
+      <div class="v-icon">💗</div>
+      <h3>Made By Hand</h3>
+      <p>Every step, mixed and rolled by me personally.</p>
+    </div>
+    <div class="value-card">
+      <div class="v-icon">🎀</div>
+      <h3>Made With Love</h3>
+      <p>Baking is genuinely how I show people I care.</p>
+    </div>
+  </div>
+
+  <div class="allergen-note"><strong>Allergen Notice ♡</strong> Contains (or may contain): milk, eggs, dairy, soy, and gluten/wheat. Please let me know about any allergies in your order notes.</div>
+
+  <div class="cta-row">
+    <a href="menu.html" class="hero-btn">Shop My Cookies</a>
+    <a href="testimonials.html" class="hero-btn outline">Read Reviews</a>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-brand">Mel's Treat ♡</div>
+  <p>© 2026 Mel's Treat · Made With Sugar & Sparkle</p>
+</footer>
+
+</body>
+</html>
