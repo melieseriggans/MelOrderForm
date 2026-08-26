@@ -1,6 +1,7 @@
 const CACHE_NAME = 'mels-treat-admin-v1';
 const SHELL_FILES = [
   '/admin-dashboard.html',
+  '/recipe-book.html',
   '/assets/logo.png',
   '/assets/icon-192.png',
   '/assets/icon-512.png',
