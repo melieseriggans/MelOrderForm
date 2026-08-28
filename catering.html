@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#fedde4" />
+<title>Catering Request – Mel's Treat</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-light:#fedde4;
+    --pink-hot:#e20376;
+    --white:#ffffff;
+    --ink:#3a2430;
+    --ink-soft:#8a6b78;
+    --border:#f7c3d6;
+    --shadow: 0 6px 20px rgba(226,3,118,0.10);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    position:relative;
+    margin:0;
+    min-height:100vh;
+    background:var(--pink-light);
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    padding-bottom:60px;
+  }
+  .banner{
+    background:linear-gradient(135deg, var(--pink-hot), #ff5fa8);
+    padding:44px 20px 52px;
+    text-align:center;
+    color:var(--white);
+    border-radius:0 0 32px 32px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .banner-logo{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.15);
+  }
+  .banner h1{
+    font-family:'Baloo 2', cursive;
+    font-weight:800;
+    font-size:2rem;
+    margin:0 0 6px;
+  }
+  .banner .sub{
+    font-size:0.98rem;
+    max-width:420px;
+    margin:0 auto;
+    opacity:0.96;
+  }
+  .container{
+    max-width:520px;
+    margin:-26px auto 0;
+    padding:0 16px;
+  }
+  .card{
+    background:var(--white);
+    border-radius:22px;
+    padding:22px 20px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+  }
+  h2{
+    font-family:'Pacifico', cursive;
+    color:#e20376;
+    font-size:1.4rem;
+    margin:0 0 4px;
+  }
+  .section-note{
+    font-size:0.86rem;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+  }
+  .note-highlight{
+    background:var(--pink-light);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:0.85rem;
+    font-weight:700;
+    color:#e20376;
+    text-align:center;
+    margin-bottom:16px;
+  }
+  label{
+    display:block;
+    font-weight:700;
+    font-size:0.88rem;
+    margin:14px 0 6px;
+  }
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=email], input[type=tel], input[type=date], input[type=number], select, textarea{
+    width:100%;
+    padding:11px 13px;
+    border-radius:12px;
+    border:1.5px solid var(--border);
+    font-family:inherit;
+    font-size:0.92rem;
+    background:var(--white);
+    color:var(--ink);
+  }
+  textarea{min-height:80px; resize:vertical;}
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--pink-hot); outline-offset:1px;}
+  .cookie-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid var(--pink-light);
+  }
+  .cookie-row:last-child{border-bottom:none;}
+  .cookie-row .name{font-weight:700; font-size:0.9rem; display:flex; align-items:center; gap:10px;}
+  .cookie-thumb{
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    object-fit:cover;
+    flex-shrink:0;
+  }
+  .qty-control{
+    display:flex;
+    align-items:center;
+    background:var(--pink-light);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .qty-control button{
+    background:none;
+    border:none;
+    width:30px;
+    height:30px;
+    font-size:1rem;
+    color:#e20376;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .qty-control span{
+    min-width:24px;
+    text-align:center;
+    font-weight:700;
+    font-size:0.9rem;
+  }
+  .choice-group{display:flex; gap:10px; margin-top:6px;}
+  .choice-card{
+    flex:1;
+    border:1.5px solid var(--border);
+    border-radius:16px;
+    padding:12px 14px;
+    cursor:pointer;
+    transition:0.15s;
+    text-align:center;
+    font-weight:700;
+    font-size:0.9rem;
+  }
+  .choice-card.selected{border-color:#e20376; background:var(--pink-light);}
+  .hidden{display:none;}
+  .submit-btn{
+    width:100%;
+    background:var(--pink-hot);
+    color:var(--white);
+    border:none;
+    border-radius:16px;
+    padding:15px;
+    font-size:1.05rem;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+  }
+  .submit-btn:disabled{opacity:0.6; cursor:not-allowed;}
+  .error{color:#c0025e; font-size:0.8rem; margin-top:8px; display:none;}
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--white);
+    color:#e20376;
+    border:1.5px solid var(--pink-hot);
+    border-radius:16px;
+    padding:10px 18px;
+    text-decoration:none;
+    font-weight:700;
+    font-size:0.9rem;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+  .back-link:hover{background:var(--pink-hot); color:var(--white);}
+  .footer-note{text-align:center; font-size:0.8rem; color:var(--ink-soft); margin-top:18px;}
+
+  .hero-star-accent{
+    position:absolute; width:26px; height:26px;
+    animation:starSpin 7s linear infinite;
+  }
+  @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  @media (prefers-reduced-motion: reduce){ .hero-star-accent{animation:none;} }
+
+  .sticker-star{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+  }
+  .sticker-gem{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+    animation:gem-pulse 3s ease-in-out infinite;
+  }
+  @keyframes gem-pulse{ 0%,100%{opacity:0.85; transform:scale(1);} 50%{opacity:1; transform:scale(1.06);} }
+  @media (prefers-reduced-motion: reduce){ .sticker-gem{animation:none;} }
+
+  .sparkle{
+    position:absolute; color:#c8912f; pointer-events:none; z-index:2;
+    text-shadow:0 0 6px #fff, 0 0 10px #ff6fb0;
+    animation:sparkle-twinkle 2.2s ease-in-out infinite;
+  }
+  @keyframes sparkle-twinkle{ 0%,100%{opacity:0.25; transform:scale(0.8);} 50%{opacity:1; transform:scale(1.15);} }
+  .sparkle.drift{ animation:sparkle-drift 6s ease-in infinite, sparkle-twinkle 1.8s ease-in-out infinite; }
+  @keyframes sparkle-drift{
+    0%{transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:1;} 90%{opacity:0.8;}
+    100%{transform:translateY(-90px) translateX(10px) rotate(25deg); opacity:0;}
+  }
+  .sparkle.sway{ animation:sparkle-sway 4.5s ease-in-out infinite; }
+  @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
+</style>
+</head>
+<body>
+
+<svg style="display:none;">
+  <symbol id="stickerStarShape" viewBox="0 0 100 100">
+    <path d="M50 4 L61 36 L96 36 L67 56 L78 90 L50 70 L22 90 L33 56 L4 36 L39 36 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+  </symbol>
+  <symbol id="gemHeartShape" viewBox="0 0 100 90">
+    <path d="M50 88 C20 62 4 42 4 24 C4 8 16 0 30 0 C40 0 47 6 50 14 C53 6 60 0 70 0 C84 0 96 8 96 24 C96 42 80 62 50 88 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+    <path d="M50 14 L50 82 M20 30 L80 30" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+  </symbol>
+</svg>
+
+
+<div class="banner">
+
+  <img src="assets/logo.png" alt="Mel's Treat" class="banner-logo">
+  <h1 style="position:relative; display:inline-block;">Catering Request 🎉
+    <svg class="hero-star-accent" viewBox="0 0 100 100" style="top:-16px; right:-24px;" aria-hidden="true">
+      <defs>
+        <linearGradient id="starGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff8fc4"/>
+          <stop offset="55%" stop-color="#e20376"/>
+          <stop offset="100%" stop-color="#a8025f"/>
+        </linearGradient>
+      </defs>
+      <path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="url(#starGrad1)" stroke="#fff" stroke-width="2"/>
+      <ellipse cx="40" cy="30" rx="9" ry="5" fill="#ffffff" opacity="0.55" transform="rotate(-30 40 30)"/>
+    </svg></h1>
+  <div class="sub">Big Order? Let's Make It Happen — Fill Out The Details Below!</div>
+</div>
+
+<div class="container">
+  <a href="https://ordertreats.melstreat.com/" class="back-link" onclick="return smartBack(event, 'https://ordertreats.melstreat.com/')">← Back</a>
+
+  <form id="catering-form" class="card">
+    <h2>Tell Me About Your Order</h2>
+    <div class="note-highlight">Catering pricing is $28 per dozen, plus a flat $5 catering fee added once per order. Catering starts at 3 dozen — for smaller orders, use the regular order form!</div>
+
+    <label for="full_name">Full Name *</label>
+    <input type="text" id="full_name" placeholder="Jane Doe" required />
+
+    <label for="email">Email *</label>
+    <input type="email" id="email" placeholder="jane@example.com" required />
+
+    <label for="phone">Phone</label>
+    <input type="tel" id="phone" placeholder="(555) 123-4567" />
+
+    <label for="dozens_count">How Many Dozen? *</label>
+    <select id="dozens_count" required>
+      <option value="">Select…</option>
+      <option value="3">3 Dozen (36 cookies)</option>
+      <option value="4">4 Dozen (48 cookies)</option>
+      <option value="5">5 Dozen (60 cookies)</option>
+      <option value="6">6 Dozen (72 cookies)</option>
+      <option value="7">7 Dozen (84 cookies)</option>
+      <option value="8">8 Dozen (96 cookies)</option>
+      <option value="9">9 Dozen (108 cookies)</option>
+      <option value="10">10 Dozen (120 cookies)</option>
+      <option value="more">More Than 10 Dozen</option>
+    </select>
+
+    <div id="price-preview" class="note-highlight hidden" style="margin-top:14px;"></div>
+
+    <label for="event_date">Event Date</label>
+    <input type="date" id="event_date" />
+
+    <label for="event_time">Event Time</label>
+    <input type="time" id="event_time" />
+  </form>
+
+  <div class="card">
+    <h2>Flavor Preferences</h2>
+    <div class="section-note">Optional — pick roughly how many of each flavor you'd like. We can finalize exact counts when I reach out!</div>
+    <div id="cookie-list"></div>
+  </div>
+
+  <form id="catering-form-2" class="card">
+    <h2>Pickup Or Delivery</h2>
+    <div class="choice-group">
+      <div class="choice-card selected" data-fulfillment="pickup">Pickup</div>
+      <div class="choice-card" data-fulfillment="delivery">Delivery</div>
+    </div>
+    <div id="delivery_fields" class="hidden">
+      <label for="delivery_address">Delivery Address</label>
+      <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" />
+    </div>
+
+    <label for="special_instructions">Anything Else I Should Know?</label>
+    <textarea id="special_instructions" placeholder="Event details, allergies, gift notes, etc."></textarea>
+
+    <div id="form-error" class="error"></div>
+    <button type="button" class="submit-btn" id="submit-btn" style="margin-top:16px;">Submit Catering Request</button>
+  </form>
+
+  <div class="footer-note">🍪 Baked With Love 🎀</div>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer>
+function smartBack(e, fallbackUrl) {
+  e.preventDefault();
+  var navigatedAway = false;
+  var markNavigated = function(){ navigatedAway = true; };
+  window.addEventListener('pagehide', markNavigated, { once: true });
+  history.back();
+  setTimeout(function() {
+    window.removeEventListener('pagehide', markNavigated);
+    if (!navigatedAway) {
+      window.location.href = fallbackUrl;
+    }
+  }, 800);
+  return false;
+}
+
+const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
+
+let _supabaseClient = null;
+async function waitForSupabase(timeoutMs) {
+  const start = Date.now();
+  while (!window.supabase) {
+    if (Date.now() - start > timeoutMs) return false;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return true;
+}
+async function getSupabase() {
+  if (!_supabaseClient) {
+    const loaded = await waitForSupabase(6000);
+    if (!loaded) throw new Error('Could not connect. Please check your connection and try again.');
+    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return _supabaseClient;
+}
+
+const COOKIES = [
+  { key: 'chocolate_chip', img: 'assets/cookie-chocolate-chip.png', name: 'Chocolate Chip Cookies' },
+  { key: 'mm', img: 'assets/cookie-mm.png', name: "M&M Cookie" },
+  { key: 'cookie_monster', img: 'assets/cookie-monster.png', name: 'Cookie Monster Mash Cookies' },
+  { key: 'red_velvet', img: 'assets/cookie-red-velvet.png', name: 'Red Velvet' },
+  { key: 'smores', img: 'assets/cookie-smores.png', name: "S'mores" },
+];
+const qty = {};
+COOKIES.forEach(c => qty[c.key] = 0);
+
+const list = document.getElementById('cookie-list');
+COOKIES.forEach(c => {
+  const row = document.createElement('div');
+  row.className = 'cookie-row';
+  row.innerHTML = `
+    <span class="name"><img src="${c.img}" alt="${c.name}" class="cookie-thumb" loading="lazy"> ${c.name}</span>
+    <div class="qty-control">
+      <button type="button" data-action="dec" data-key="${c.key}">−</button>
+      <span id="qty-${c.key}">0</span>
+      <button type="button" data-action="inc" data-key="${c.key}">+</button>
+    </div>
+  `;
+  list.appendChild(row);
+});
+list.addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const key = btn.dataset.key;
+  if (btn.dataset.action === 'inc') qty[key]++;
+  if (btn.dataset.action === 'dec') qty[key] = Math.max(0, qty[key] - 1);
+  document.getElementById(`qty-${key}`).textContent = qty[key];
+});
+
+let fulfillment = 'pickup';
+
+const dozensSelect = document.getElementById('dozens_count');
+const pricePreview = document.getElementById('price-preview');
+dozensSelect.addEventListener('change', () => {
+  const val = dozensSelect.value;
+  if (!val || val === 'more') {
+    pricePreview.classList.add('hidden');
+    return;
+  }
+  const dozens = parseInt(val);
+  const total = dozens * 28 + 5;
+  pricePreview.textContent = `Estimated Total: $${total.toFixed(2)} (${dozens} × $28/dozen + $5 catering fee)`;
+  pricePreview.classList.remove('hidden');
+});
+
+document.querySelectorAll('[data-fulfillment]').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('[data-fulfillment]').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    fulfillment = card.dataset.fulfillment;
+    document.getElementById('delivery_fields').classList.toggle('hidden', fulfillment !== 'delivery');
+  });
+});
+
+const errorBox = document.getElementById('form-error');
+const submitBtn = document.getElementById('submit-btn');
+
+submitBtn.addEventListener('click', async () => {
+  errorBox.style.display = 'none';
+
+  const full_name = document.getElementById('full_name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const dozens_count_raw = document.getElementById('dozens_count').value;
+
+  if (!full_name || !email || !dozens_count_raw) {
+    errorBox.textContent = 'Please fill out all required fields marked with *';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+
+  try {
+    const supabase = await getSupabase();
+
+    const cookiesRequested = {};
+    COOKIES.forEach(c => { if (qty[c.key] > 0) cookiesRequested[c.name] = qty[c.key]; });
+
+    const dozens_count = dozens_count_raw === 'more' ? null : parseInt(dozens_count_raw);
+    const quoted_total = dozens_count ? (dozens_count * 28 + 5) : null;
+
+    const requestRow = {
+      full_name,
+      email,
+      phone: document.getElementById('phone').value.trim() || null,
+      event_date: document.getElementById('event_date').value || null,
+      event_time: document.getElementById('event_time').value || null,
+      dozens_count,
+      quoted_total,
+      cookies_requested: cookiesRequested,
+      fulfillment_type: fulfillment,
+      delivery_address: fulfillment === 'delivery' ? (document.getElementById('delivery_address').value.trim() || null) : null,
+      special_instructions: (dozens_count_raw === 'more' ? 'Requested MORE than 10 dozen — needs manual quote. ' : '') + (document.getElementById('special_instructions').value.trim() || ''),
+    };
+
+    const { error } = await supabase.from('catering_requests').insert(requestRow);
+    if (error) throw error;
+
+    try {
+      await supabase.functions.invoke('send-catering-email', { body: requestRow });
+    } catch (emailErr) {
+      console.error('Email notification failed (request was still saved):', emailErr);
+    }
+
+    window.location.href = 'catering-thankyou.html';
+  } catch (err) {
+    console.error(err);
+    errorBox.textContent = 'Something went wrong submitting your request. Please try again: ' + (err.message || '');
+    errorBox.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Catering Request';
+  }
+});
+
+function scatterPageAccents() {
+  const sectionSelectors = ['.banner', '.card'];
+  const sections = sectionSelectors
+    .map(sel => Array.from(document.querySelectorAll(sel)).find(el => el.offsetParent !== null))
+    .filter(Boolean);
+  if (sections.length === 0) return;
+
+  const glyphs = ['✦', '✧', '✨', '♥', '⋆'];
+  const anims = ['', 'drift', 'sway'];
+  const starColors = ['#c8912f', '#e20376'];
+
+  function buildFor(section, sparkleN, starN, heartN) {
+    const rect = section.getBoundingClientRect();
+    const height = Math.max(rect.height, 80);
+    const width = Math.max(rect.width, 200);
+    const placed = [];
+    const entries = [];
+
+    function findSpot(radius, excludeEntry) {
+      for (let attempt = 0; attempt < 12; attempt++) {
+        const topPx = Math.random() * height;
+        const leftPercent = Math.random() * 100;
+        const leftPx = (leftPercent / 100) * width;
+        const collides = placed.some(p => {
+          if (p === excludeEntry) return false;
+          const dx = p.leftPx - leftPx;
+          const dy = p.topPx - topPx;
+          const minDist = p.radius + radius + 16;
+          return (dx * dx + dy * dy) < (minDist * minDist);
+        });
+        if (!collides) return { topPx, leftPercent, leftPx };
+      }
+      return null;
+    }
+
+    function scheduleWander(entry) {
+      const waitMs = 5000 + Math.random() * 6000;
+      setTimeout(() => {
+        entry.el.style.animationPlayState = 'paused';
+        entry.el.style.transition = 'opacity 0.6s ease';
+        entry.el.style.opacity = '0';
+        setTimeout(() => {
+          const spot = findSpot(entry.radius, entry);
+          if (spot) {
+            entry.el.style.top = spot.topPx + 'px';
+            entry.el.style.left = spot.leftPercent + '%';
+            Object.assign(entry, spot);
+            const i = placed.indexOf(entry);
+            if (i >= 0) placed[i] = entry;
+          }
+          entry.el.style.opacity = '1';
+          setTimeout(() => { entry.el.style.animationPlayState = 'running'; }, 650);
+          scheduleWander(entry);
+        }, 650);
+      }, waitMs);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;';
+
+    for (let i = 0; i < sparkleN; i++) {
+      const size = 9 + Math.random() * 12;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElement('span');
+      const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+      const anim = anims[Math.floor(Math.random() * anims.length)];
+      el.className = `sparkle ${anim}`;
+      el.style.cssText = `top:${spot.topPx}px; left:${spot.leftPercent}%; font-size:${size}px; animation-delay:${Math.random() * 4}s;`;
+      el.textContent = glyph;
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < starN; i++) {
+      const size = 15 + Math.random() * 8;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('viewBox', '0 0 100 100');
+      const rotate = Math.random() * 30 - 15;
+      const duration = 6 + Math.random() * 4;
+      const color = starColors[Math.floor(Math.random() * starColors.length)];
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size}px; color:${color}; filter:drop-shadow(0 2px 4px rgba(58,36,48,0.2)); animation:starSpin ${duration}s linear infinite; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="currentColor" stroke="#fff" stroke-width="3"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < heartN; i++) {
+      const size = 13 + Math.random() * 7;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('class', 'sticker-gem');
+      el.setAttribute('viewBox', '0 0 100 90');
+      const rotate = Math.random() * 20 - 10;
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size * 0.9}px; color:#ff8fc4; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<use href="#gemHeartShape"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    if (getComputedStyle(section).position === 'static') section.style.position = 'relative';
+    section.insertBefore(wrap, section.firstChild);
+    entries.forEach(scheduleWander);
+  }
+
+  const heights = sections.map(s => Math.max(s.getBoundingClientRect().height, 80));
+  const totalH = heights.reduce((a, b) => a + b, 0);
+  sections.forEach((section, i) => {
+    const share = heights[i] / totalH;
+    buildFor(
+      section,
+      Math.round(22 * share),
+      i === 0 ? 2 : 0,
+      i === sections.length - 1 ? 2 : 0
+    );
+  });
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => scatterPageAccents(), 300);
+});
+</script>
+
+</body>
+</html>

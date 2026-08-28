@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#fedde4" />
+<title>Out Of Stock – Mel's Treat</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-light:#fedde4;
+    --pink-hot:#e20376;
+    --pink-deep:#a8025f;
+    --white:#ffffff;
+    --ink:#3a2430;
+    --ink-soft:#8a6b78;
+    --border:#f7c3d6;
+    --shadow: 0 6px 20px rgba(226,3,118,0.10);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    position:relative;
+    margin:0;
+    min-height:100vh;
+    background:var(--pink-light);
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .card{
+    background:var(--white);
+    border-radius:24px;
+    padding:36px 26px;
+    max-width:440px;
+    text-align:center;
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+    position:relative;
+    overflow:hidden;
+  }
+  .logo{
+    width:90px; height:90px; border-radius:50%; object-fit:cover;
+    margin-bottom:16px; box-shadow:0 4px 14px rgba(0,0,0,0.15);
+  }
+  .emoji{font-size:2.4rem; margin-bottom:6px;}
+  h1{
+    font-family:'Baloo 2', cursive;
+    font-weight:800;
+    color:#e20376;
+    font-size:1.7rem;
+    margin:0 0 10px;
+  }
+  p{color:var(--ink-soft); font-size:0.95rem; line-height:1.55; margin:0 0 24px;}
+  .choice-group{display:flex; flex-direction:column; gap:10px; margin-bottom:8px;}
+  .choice-btn{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:0.95rem;
+    padding:14px;
+    border-radius:16px;
+    border:1.5px solid var(--pink-hot);
+    background:var(--white);
+    color:#e20376;
+    cursor:pointer;
+    text-decoration:none;
+    display:block;
+    transition:0.15s;
+  }
+  .choice-btn.primary{background:var(--pink-hot); color:var(--white);}
+  .choice-btn:hover{transform:translateY(-2px); box-shadow:var(--shadow);}
+  .notify-form{display:none; text-align:left; margin-top:16px;}
+  .notify-form.show{display:block;}
+  label{display:block; font-weight:700; font-size:0.85rem; margin:0 0 6px;}
+  input[type=email]{
+    width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--border);
+    font-family:inherit; font-size:0.92rem; margin-bottom:10px;
+  }
+  input:focus{outline:none; border-color:#e20376; box-shadow:0 0 0 3px rgba(226,3,118,0.1);}
+  .submit-btn{
+    width:100%; background:var(--pink-hot); color:var(--white); border:none; border-radius:14px;
+    padding:13px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.95rem; cursor:pointer;
+  }
+  .submit-btn:hover{background:var(--pink-deep);}
+  .submit-btn:disabled{opacity:0.6; cursor:not-allowed;}
+  .error{color:#c0025e; font-size:0.82rem; margin-top:6px; display:none;}
+  .success-msg{display:none; color:#e20376; font-weight:700; font-size:0.92rem; margin-top:10px;}
+  .back-link{display:inline-block; margin-top:18px; color:var(--ink-soft); font-size:0.85rem; text-decoration:none;}
+  .back-link:hover{color:#e20376;}
+
+  .hero-star-accent{
+    position:absolute; width:26px; height:26px;
+    animation:starSpin 7s linear infinite;
+  }
+  @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  @media (prefers-reduced-motion: reduce){ .hero-star-accent{animation:none;} }
+
+  .sticker-star{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+  }
+  .sticker-gem{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+    animation:gem-pulse 3s ease-in-out infinite;
+  }
+  @keyframes gem-pulse{ 0%,100%{opacity:0.85; transform:scale(1);} 50%{opacity:1; transform:scale(1.06);} }
+  @media (prefers-reduced-motion: reduce){ .sticker-gem{animation:none;} }
+
+  .sparkle{
+    position:absolute; color:#c8912f; pointer-events:none; z-index:2;
+    text-shadow:0 0 6px #fff, 0 0 10px #ff6fb0;
+    animation:sparkle-twinkle 2.2s ease-in-out infinite;
+  }
+  @keyframes sparkle-twinkle{ 0%,100%{opacity:0.25; transform:scale(0.8);} 50%{opacity:1; transform:scale(1.15);} }
+  .sparkle.drift{ animation:sparkle-drift 6s ease-in infinite, sparkle-twinkle 1.8s ease-in-out infinite; }
+  @keyframes sparkle-drift{
+    0%{transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:1;} 90%{opacity:0.8;}
+    100%{transform:translateY(-90px) translateX(10px) rotate(25deg); opacity:0;}
+  }
+  .sparkle.sway{ animation:sparkle-sway 4.5s ease-in-out infinite; }
+  @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
+</style>
+</head>
+<body>
+
+<svg style="display:none;">
+  <symbol id="stickerStarShape" viewBox="0 0 100 100">
+    <path d="M50 4 L61 36 L96 36 L67 56 L78 90 L50 70 L22 90 L33 56 L4 36 L39 36 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+  </symbol>
+  <symbol id="gemHeartShape" viewBox="0 0 100 90">
+    <path d="M50 88 C20 62 4 42 4 24 C4 8 16 0 30 0 C40 0 47 6 50 14 C53 6 60 0 70 0 C84 0 96 8 96 24 C96 42 80 62 50 88 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+    <path d="M50 14 L50 82 M20 30 L80 30" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+  </symbol>
+</svg>
+
+
+<div class="card">
+
+  <img src="assets/logo.png" alt="Mel's Treat" class="logo">
+  <div class="emoji">🍪💤</div>
+  <h1 style="position:relative; display:inline-block;">We're Out Of Stock!
+    <svg class="hero-star-accent" viewBox="0 0 100 100" style="top:-16px; right:-24px;" aria-hidden="true">
+      <defs>
+        <linearGradient id="starGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff8fc4"/>
+          <stop offset="55%" stop-color="#e20376"/>
+          <stop offset="100%" stop-color="#a8025f"/>
+        </linearGradient>
+      </defs>
+      <path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="url(#starGrad1)" stroke="#fff" stroke-width="2"/>
+      <ellipse cx="40" cy="30" rx="9" ry="5" fill="#ffffff" opacity="0.55" transform="rotate(-30 40 30)"/>
+    </svg></h1>
+  <p>All our cookies are sold out right now — but don't worry, we're already planning our next bake! Choose an option below:</p>
+
+  <div class="choice-group">
+    <a href="index.html?preorder=1" class="choice-btn primary">Place A Pre-Order</a>
+    <button type="button" class="choice-btn" id="notify-toggle-btn">Notify Me When Back In Stock</button>
+  </div>
+
+  <div class="notify-form" id="notify-form">
+    <label for="notify-email">Your Email</label>
+    <input type="email" id="notify-email" placeholder="you@example.com">
+    <div id="notify-error" class="error"></div>
+    <div id="notify-success" class="success-msg">You're on the list! We'll email you the moment we're back. 💕</div>
+    <button type="button" class="submit-btn" id="notify-submit-btn">Notify Me</button>
+  </div>
+
+  <a href="index.html" class="back-link">← Back to site</a>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer>
+const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
+
+let _supabaseClient = null;
+async function waitForSupabase(timeoutMs) {
+  const start = Date.now();
+  while (!window.supabase) {
+    if (Date.now() - start > timeoutMs) return false;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return true;
+}
+async function getSupabase() {
+  if (!_supabaseClient) {
+    const loaded = await waitForSupabase(6000);
+    if (!loaded) throw new Error('Could not connect. Please check your connection and try again.');
+    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return _supabaseClient;
+}
+
+document.getElementById('notify-toggle-btn').addEventListener('click', () => {
+  document.getElementById('notify-form').classList.toggle('show');
+});
+
+document.getElementById('notify-submit-btn').addEventListener('click', async () => {
+  const errBox = document.getElementById('notify-error');
+  const successBox = document.getElementById('notify-success');
+  errBox.style.display = 'none';
+  successBox.style.display = 'none';
+
+  const emailInput = document.getElementById('notify-email');
+  const email = emailInput.value.trim();
+  if (!email || !email.includes('@')) {
+    errBox.textContent = 'Please enter a valid email.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('notify-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  try {
+    const supabase = await getSupabase();
+    const { error } = await supabase.from('restock_notifications').insert({ email });
+    if (error && !String(error.message).includes('duplicate')) throw error;
+    successBox.style.display = 'block';
+    emailInput.value = '';
+    emailInput.disabled = true;
+    btn.textContent = "You're Signed Up!";
+  } catch (err) {
+    errBox.textContent = 'Something went wrong. Please try again.';
+    errBox.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Notify Me';
+  }
+});
+
+function scatterPageAccents() {
+  const sectionSelectors = ['.card'];
+  const sections = sectionSelectors
+    .map(sel => Array.from(document.querySelectorAll(sel)).find(el => el.offsetParent !== null))
+    .filter(Boolean);
+  if (sections.length === 0) return;
+
+  const glyphs = ['✦', '✧', '✨', '♥', '⋆'];
+  const anims = ['', 'drift', 'sway'];
+  const starColors = ['#c8912f', '#e20376'];
+
+  function buildFor(section, sparkleN, starN, heartN) {
+    const rect = section.getBoundingClientRect();
+    const height = Math.max(rect.height, 80);
+    const width = Math.max(rect.width, 200);
+    const placed = [];
+    const entries = [];
+
+    function findSpot(radius, excludeEntry) {
+      for (let attempt = 0; attempt < 12; attempt++) {
+        const topPx = Math.random() * height;
+        const leftPercent = Math.random() * 100;
+        const leftPx = (leftPercent / 100) * width;
+        const collides = placed.some(p => {
+          if (p === excludeEntry) return false;
+          const dx = p.leftPx - leftPx;
+          const dy = p.topPx - topPx;
+          const minDist = p.radius + radius + 16;
+          return (dx * dx + dy * dy) < (minDist * minDist);
+        });
+        if (!collides) return { topPx, leftPercent, leftPx };
+      }
+      return null;
+    }
+
+    function scheduleWander(entry) {
+      const waitMs = 5000 + Math.random() * 6000;
+      setTimeout(() => {
+        entry.el.style.animationPlayState = 'paused';
+        entry.el.style.transition = 'opacity 0.6s ease';
+        entry.el.style.opacity = '0';
+        setTimeout(() => {
+          const spot = findSpot(entry.radius, entry);
+          if (spot) {
+            entry.el.style.top = spot.topPx + 'px';
+            entry.el.style.left = spot.leftPercent + '%';
+            Object.assign(entry, spot);
+            const i = placed.indexOf(entry);
+            if (i >= 0) placed[i] = entry;
+          }
+          entry.el.style.opacity = '1';
+          setTimeout(() => { entry.el.style.animationPlayState = 'running'; }, 650);
+          scheduleWander(entry);
+        }, 650);
+      }, waitMs);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;';
+
+    for (let i = 0; i < sparkleN; i++) {
+      const size = 9 + Math.random() * 12;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElement('span');
+      const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+      const anim = anims[Math.floor(Math.random() * anims.length)];
+      el.className = `sparkle ${anim}`;
+      el.style.cssText = `top:${spot.topPx}px; left:${spot.leftPercent}%; font-size:${size}px; animation-delay:${Math.random() * 4}s;`;
+      el.textContent = glyph;
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < starN; i++) {
+      const size = 15 + Math.random() * 8;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('viewBox', '0 0 100 100');
+      const rotate = Math.random() * 30 - 15;
+      const duration = 6 + Math.random() * 4;
+      const color = starColors[Math.floor(Math.random() * starColors.length)];
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size}px; color:${color}; filter:drop-shadow(0 2px 4px rgba(58,36,48,0.2)); animation:starSpin ${duration}s linear infinite; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="currentColor" stroke="#fff" stroke-width="3"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < heartN; i++) {
+      const size = 13 + Math.random() * 7;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('class', 'sticker-gem');
+      el.setAttribute('viewBox', '0 0 100 90');
+      const rotate = Math.random() * 20 - 10;
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size * 0.9}px; color:#ff8fc4; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<use href="#gemHeartShape"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    if (getComputedStyle(section).position === 'static') section.style.position = 'relative';
+    section.insertBefore(wrap, section.firstChild);
+    entries.forEach(scheduleWander);
+  }
+
+  const heights = sections.map(s => Math.max(s.getBoundingClientRect().height, 80));
+  const totalH = heights.reduce((a, b) => a + b, 0);
+  sections.forEach((section, i) => {
+    const share = heights[i] / totalH;
+    buildFor(
+      section,
+      Math.round(16 * share),
+      i === 0 ? 2 : 0,
+      i === sections.length - 1 ? 2 : 0
+    );
+  });
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => scatterPageAccents(), 300);
+});
+</script>
+
+</body>
+</html>

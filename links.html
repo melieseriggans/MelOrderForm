@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#fedde4" />
+<title>Meliese Riggans – Mel's Treat</title>
+<meta name="description" content="Follow Mel's Treat and find everything in one place — order cookies, follow on social media, and get in touch.">
+<meta property="og:title" content="Mel's Treat">
+<meta property="og:description" content="Follow Mel's Treat and find everything in one place.">
+<meta property="og:image" content="https://ordertreats.melstreat.com/assets/logo.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-light:#fedde4;
+    --pink-mid:#ffcfe0;
+    --pink-hot:#e20376;
+    --white:#ffffff;
+    --ink:#3a2430;
+    --ink-soft:#8a6b78;
+    --border:#f7c3d6;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    position:relative;
+    margin:0;
+    min-height:100vh;
+    background-color:var(--pink-light);
+    background-image:url('assets/links-background.png');
+    background-repeat:no-repeat;
+    background-size:cover;
+    background-position:center top;
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    padding:
+      calc(env(safe-area-inset-top, 0px) + 28px)
+      calc(env(safe-area-inset-right, 0px) + 16px)
+      calc(env(safe-area-inset-bottom, 0px) + 40px)
+      calc(env(safe-area-inset-left, 0px) + 16px);
+  }
+  .page{
+    max-width:400px;
+    margin:0 auto;
+    text-align:center;
+    background:rgba(255,255,255,0.55);
+    border-radius:28px;
+    padding:28px 20px 32px;
+    backdrop-filter:blur(2px);
+    position:relative;
+    overflow:hidden;
+  }
+  .logo{
+    width:clamp(120px, 34vw, 170px);
+    height:clamp(120px, 34vw, 170px);
+    border-radius:50%;
+    object-fit:cover;
+    box-shadow:0 6px 20px rgba(226,3,118,0.2);
+    margin-bottom:16px;
+  }
+  h1{
+    font-family:'Baloo 2', cursive;
+    font-weight:800;
+    color:#e20376;
+    font-size:clamp(1.9rem, 8.5vw, 2.6rem);
+    margin:0 0 14px;
+    line-height:1.15;
+    word-break:break-word;
+  }
+  .bio{
+    font-size:clamp(0.9rem, 3.6vw, 1rem);
+    color:#e20376;
+    font-weight:700;
+    line-height:1.55;
+    margin:0 auto 26px;
+    max-width:340px;
+  }
+  h2{
+    font-family:'Baloo 2', cursive;
+    font-weight:800;
+    color:#e20376;
+    font-size:clamp(1.3rem, 5.5vw, 1.5rem);
+    margin:0 0 14px;
+  }
+  .order-btn{
+    display:block;
+    background:var(--pink-light);
+    color:#e20376;
+    font-family:'Baloo 2', cursive;
+    font-weight:800;
+    font-size:clamp(1.15rem, 5vw, 1.3rem);
+    text-decoration:none;
+    padding:16px;
+    min-height:52px;
+    border-radius:14px;
+    margin-bottom:28px;
+    transition:0.15s;
+  }
+  .order-btn:active, .order-btn:hover{background:var(--pink-hot); color:var(--white);}
+  .social-row{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    margin-bottom:28px;
+  }
+  .social-icon{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:var(--pink-hot);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    transition:0.15s;
+    flex-shrink:0;
+  }
+  .social-icon:active, .social-icon:hover{background:#b8025f;}
+  .social-icon svg{width:26px; height:26px; fill:var(--white);}
+  .contact-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-bottom:26px;
+  }
+  .contact-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    text-decoration:none;
+    color:#e20376;
+    font-weight:700;
+    font-size:clamp(0.85rem, 3.6vw, 0.98rem);
+    background:var(--pink-light);
+    border-radius:14px;
+    padding:12px 14px;
+    min-height:50px;
+    word-break:break-word;
+    transition:0.15s;
+  }
+  .contact-row:active, .contact-row:hover{background:var(--pink-hot); color:var(--white);}
+  .contact-row:hover .contact-icon, .contact-row:active .contact-icon{background:var(--white);}
+  .contact-row:hover .contact-icon svg, .contact-row:active .contact-icon svg{fill:var(--pink-hot);}
+  .contact-icon{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:var(--pink-hot);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .contact-icon svg{width:16px; height:16px; fill:var(--white);}
+  .bottom-btns{
+    display:flex;
+    gap:12px;
+  }
+  .bottom-btn{
+    flex:1;
+    background:var(--pink-light);
+    color:#e20376;
+    font-family:'Baloo 2', cursive;
+    font-weight:800;
+    font-size:clamp(0.95rem, 4.2vw, 1.1rem);
+    text-decoration:none;
+    padding:14px 8px;
+    min-height:50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:14px;
+    transition:0.15s;
+  }
+  .bottom-btn:active, .bottom-btn:hover{background:var(--pink-hot); color:var(--white);}
+
+  @media (max-width: 340px){
+    .social-row{ gap:12px; }
+    .social-icon{ width:50px; height:50px; }
+  }
+
+  .hero-star-accent{
+    position:absolute; width:26px; height:26px;
+    animation:starSpin 7s linear infinite;
+  }
+  @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  @media (prefers-reduced-motion: reduce){ .hero-star-accent{animation:none;} }
+
+  .sticker-star{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+  }
+  .sticker-gem{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+    animation:gem-pulse 3s ease-in-out infinite;
+  }
+  @keyframes gem-pulse{ 0%,100%{opacity:0.85; transform:scale(1);} 50%{opacity:1; transform:scale(1.06);} }
+  @media (prefers-reduced-motion: reduce){ .sticker-gem{animation:none;} }
+
+  .sparkle{
+    position:absolute; color:#c8912f; pointer-events:none; z-index:2;
+    text-shadow:0 0 6px #fff, 0 0 10px #ff6fb0;
+    animation:sparkle-twinkle 2.2s ease-in-out infinite;
+  }
+  @keyframes sparkle-twinkle{ 0%,100%{opacity:0.25; transform:scale(0.8);} 50%{opacity:1; transform:scale(1.15);} }
+  .sparkle.drift{ animation:sparkle-drift 6s ease-in infinite, sparkle-twinkle 1.8s ease-in-out infinite; }
+  @keyframes sparkle-drift{
+    0%{transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:1;} 90%{opacity:0.8;}
+    100%{transform:translateY(-90px) translateX(10px) rotate(25deg); opacity:0;}
+  }
+  .sparkle.sway{ animation:sparkle-sway 4.5s ease-in-out infinite; }
+  @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
+</style>
+</head>
+<body>
+
+<svg style="display:none;">
+  <symbol id="stickerStarShape" viewBox="0 0 100 100">
+    <path d="M50 4 L61 36 L96 36 L67 56 L78 90 L50 70 L22 90 L33 56 L4 36 L39 36 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+  </symbol>
+  <symbol id="gemHeartShape" viewBox="0 0 100 90">
+    <path d="M50 88 C20 62 4 42 4 24 C4 8 16 0 30 0 C40 0 47 6 50 14 C53 6 60 0 70 0 C84 0 96 8 96 24 C96 42 80 62 50 88 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+    <path d="M50 14 L50 82 M20 30 L80 30" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+  </symbol>
+</svg>
+
+
+<div class="page">
+
+  <img src="assets/logo.png" alt="Mel's Treat" class="logo">
+
+  <h1 style="position:relative; display:inline-block;">Meliese Riggans
+    <svg class="hero-star-accent" viewBox="0 0 100 100" style="top:-16px; right:-24px;" aria-hidden="true">
+      <defs>
+        <linearGradient id="starGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff8fc4"/>
+          <stop offset="55%" stop-color="#e20376"/>
+          <stop offset="100%" stop-color="#a8025f"/>
+        </linearGradient>
+      </defs>
+      <path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="url(#starGrad1)" stroke="#fff" stroke-width="2"/>
+      <ellipse cx="40" cy="30" rx="9" ry="5" fill="#ffffff" opacity="0.55" transform="rotate(-30 40 30)"/>
+    </svg></h1>
+  <p class="bio">I am a 23-year-old baker looking to build a space to share love through your favorite treats. I would love to share my sweetness with you — check me out below</p>
+
+  <h2>Visit My Site To Order</h2>
+  <a href="https://ordertreats.melstreat.com/" target="_blank" rel="noopener" class="order-btn">Order Here</a>
+
+  <h2>Follow Me On Social Media</h2>
+  <div class="social-row">
+    <a href="https://www.instagram.com/melstreat23" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.6-.6 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.6-1.5-1-.4-.4-.7-.9-1-1.5-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.6-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-2 .4-.5.2-.8.4-1.2.8-.4.4-.6.7-.8 1.2-.1.4-.3 1-.4 2-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1 .2 1.6.4 2 .2.5.4.8.8 1.2.4.4.7.6 1.2.8.4.1 1 .3 2 .4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.2 2-.4.5-.2.8-.4 1.2-.8.4-.4.6-.7.8-1.2.1-.4.3-1 .4-2 .1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1-.2-1.6-.4-2-.2-.5-.4-.8-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.1-1-.3-2-.4-1.2-.1-1.6-.1-4.7-.1zm0 4.3a4.7 4.7 0 110 9.4 4.7 4.7 0 010-9.4zm0 1.8a2.9 2.9 0 100 5.8 2.9 2.9 0 000-5.8zm5.9-2a1.1 1.1 0 11-2.2 0 1.1 1.1 0 012.2 0z"/></svg>
+    </a>
+    <a href="https://www.facebook.com/share/19NqoV7RQ6/?mibextid=wwXIfr" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook">
+      <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+    </a>
+    <a href="https://www.tiktok.com/@meltreat23" target="_blank" rel="noopener" class="social-icon" aria-label="TikTok">
+      <svg viewBox="0 0 24 24"><path d="M16.6 2h-3.2v13.7c0 1.5-1.2 2.7-2.7 2.7a2.7 2.7 0 01-2.7-2.7 2.7 2.7 0 012.7-2.7c.3 0 .6 0 .8.1V9.8a6 6 0 00-.8 0A6 6 0 004.8 15.7a6 6 0 006 6 6 6 0 006-6V8.5a8 8 0 004.6 1.4V6.7a4.6 4.6 0 01-4.6-4.6z"/></svg>
+    </a>
+  </div>
+
+  <h2>Contact Me</h2>
+  <div class="contact-list">
+    <a href="mailto:Meliese-riggans@melstreat.com" class="contact-row">
+      <span class="contact-icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3V6zm2 2.2V16h14V8.2l-7 4.9-7-4.9zM5 6l7 5 7-5H5z"/></svg></span>
+      Meliese-riggans@melstreat.com
+    </a>
+    <a href="tel:+12564059471" class="contact-row">
+      <span class="contact-icon"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.7 5.1 6.5 6.5l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.4.6 3.7.6.6 0 1 .4 1 1v3.6c0 .6-.4 1-1 1C10.6 21.1 2.9 13.4 2.9 4.1c0-.6.4-1 1-1H7.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.7.1.4 0 .8-.2 1.1L6.6 10.8z"/></svg></span>
+      256-405-9471
+    </a>
+  </div>
+
+  <div class="bottom-btns">
+    <a href="donations.html" class="bottom-btn">Donations</a>
+    <a href="faq.html" class="bottom-btn">FAQ</a>
+  </div>
+</div>
+
+<script>
+function scatterPageAccents() {
+  const sectionSelectors = ['.page'];
+  const sections = sectionSelectors
+    .map(sel => Array.from(document.querySelectorAll(sel)).find(el => el.offsetParent !== null))
+    .filter(Boolean);
+  if (sections.length === 0) return;
+
+  const glyphs = ['✦', '✧', '✨', '♥', '⋆'];
+  const anims = ['', 'drift', 'sway'];
+  const starColors = ['#c8912f', '#e20376'];
+
+  function buildFor(section, sparkleN, starN, heartN) {
+    const rect = section.getBoundingClientRect();
+    const height = Math.max(rect.height, 80);
+    const width = Math.max(rect.width, 200);
+    const placed = [];
+    const entries = [];
+
+    function findSpot(radius, excludeEntry) {
+      for (let attempt = 0; attempt < 12; attempt++) {
+        const topPx = Math.random() * height;
+        const leftPercent = Math.random() * 100;
+        const leftPx = (leftPercent / 100) * width;
+        const collides = placed.some(p => {
+          if (p === excludeEntry) return false;
+          const dx = p.leftPx - leftPx;
+          const dy = p.topPx - topPx;
+          const minDist = p.radius + radius + 16;
+          return (dx * dx + dy * dy) < (minDist * minDist);
+        });
+        if (!collides) return { topPx, leftPercent, leftPx };
+      }
+      return null;
+    }
+
+    function scheduleWander(entry) {
+      const waitMs = 5000 + Math.random() * 6000;
+      setTimeout(() => {
+        entry.el.style.animationPlayState = 'paused';
+        entry.el.style.transition = 'opacity 0.6s ease';
+        entry.el.style.opacity = '0';
+        setTimeout(() => {
+          const spot = findSpot(entry.radius, entry);
+          if (spot) {
+            entry.el.style.top = spot.topPx + 'px';
+            entry.el.style.left = spot.leftPercent + '%';
+            Object.assign(entry, spot);
+            const i = placed.indexOf(entry);
+            if (i >= 0) placed[i] = entry;
+          }
+          entry.el.style.opacity = '1';
+          setTimeout(() => { entry.el.style.animationPlayState = 'running'; }, 650);
+          scheduleWander(entry);
+        }, 650);
+      }, waitMs);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;';
+
+    for (let i = 0; i < sparkleN; i++) {
+      const size = 9 + Math.random() * 12;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElement('span');
+      const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+      const anim = anims[Math.floor(Math.random() * anims.length)];
+      el.className = `sparkle ${anim}`;
+      el.style.cssText = `top:${spot.topPx}px; left:${spot.leftPercent}%; font-size:${size}px; animation-delay:${Math.random() * 4}s;`;
+      el.textContent = glyph;
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < starN; i++) {
+      const size = 15 + Math.random() * 8;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('viewBox', '0 0 100 100');
+      const rotate = Math.random() * 30 - 15;
+      const duration = 6 + Math.random() * 4;
+      const color = starColors[Math.floor(Math.random() * starColors.length)];
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size}px; color:${color}; filter:drop-shadow(0 2px 4px rgba(58,36,48,0.2)); animation:starSpin ${duration}s linear infinite; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="currentColor" stroke="#fff" stroke-width="3"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < heartN; i++) {
+      const size = 13 + Math.random() * 7;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('class', 'sticker-gem');
+      el.setAttribute('viewBox', '0 0 100 90');
+      const rotate = Math.random() * 20 - 10;
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size * 0.9}px; color:#ff8fc4; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<use href="#gemHeartShape"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    if (getComputedStyle(section).position === 'static') section.style.position = 'relative';
+    section.insertBefore(wrap, section.firstChild);
+    entries.forEach(scheduleWander);
+  }
+
+  const heights = sections.map(s => Math.max(s.getBoundingClientRect().height, 80));
+  const totalH = heights.reduce((a, b) => a + b, 0);
+  sections.forEach((section, i) => {
+    const share = heights[i] / totalH;
+    buildFor(
+      section,
+      Math.round(20 * share),
+      i === 0 ? 2 : 0,
+      i === sections.length - 1 ? 2 : 0
+    );
+  });
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => scatterPageAccents(), 300);
+});
+</script>
+</body>
+</html>

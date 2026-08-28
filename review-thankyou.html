@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#fedde4" />
+<title>Thank You – Mel's Treat</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-light:#fedde4;
+    --pink-hot:#e20376;
+    --white:#ffffff;
+    --ink:#3a2430;
+    --ink-soft:#8a6b78;
+    --border:#f7c3d6;
+    --shadow: 0 6px 20px rgba(226,3,118,0.10);
+  }
+  *{box-sizing:border-box;}
+  body{
+    position:relative;
+    margin:0;
+    min-height:100vh;
+    background:var(--pink-light);
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+  }
+  .card{
+    background:var(--white);
+    border-radius:22px;
+    padding:40px 28px;
+    max-width:420px;
+    text-align:center;
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+    position:relative;
+    overflow:hidden;
+  }
+  .logo{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:16px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.15);
+  }
+  .emoji{font-size:2.6rem; margin-bottom:6px;}
+  h1{
+    font-family:'Baloo 2', cursive;
+    font-weight:800;
+    color:#e20376;
+    font-size:1.8rem;
+    margin:0 0 12px;
+  }
+  p{
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    line-height:1.5;
+    margin:0 0 24px;
+  }
+  .back-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--white);
+    color:#e20376;
+    border:1.5px solid var(--pink-hot);
+    border-radius:16px;
+    padding:12px 20px;
+    font-family:inherit;
+    font-weight:700;
+    font-size:0.95rem;
+    text-decoration:none;
+  }
+  .back-btn:hover{background:var(--pink-light);}
+
+  .sticker-star{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+  }
+  .sticker-gem{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+    animation:gem-pulse 3s ease-in-out infinite;
+  }
+  @keyframes gem-pulse{ 0%,100%{opacity:0.85; transform:scale(1);} 50%{opacity:1; transform:scale(1.06);} }
+  @media (prefers-reduced-motion: reduce){ .sticker-gem{animation:none;} }
+
+  .sparkle{
+    position:absolute; color:#c8912f; pointer-events:none; z-index:2;
+    text-shadow:0 0 6px #fff, 0 0 10px #ff6fb0;
+    animation:sparkle-twinkle 2.2s ease-in-out infinite;
+  }
+  @keyframes sparkle-twinkle{ 0%,100%{opacity:0.25; transform:scale(0.8);} 50%{opacity:1; transform:scale(1.15);} }
+  .sparkle.drift{ animation:sparkle-drift 6s ease-in infinite, sparkle-twinkle 1.8s ease-in-out infinite; }
+  @keyframes sparkle-drift{
+    0%{transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:1;} 90%{opacity:0.8;}
+    100%{transform:translateY(-90px) translateX(10px) rotate(25deg); opacity:0;}
+  }
+  .sparkle.sway{ animation:sparkle-sway 4.5s ease-in-out infinite; }
+  @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
+  @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+</style>
+</head>
+<body>
+
+<svg style="display:none;">
+  <symbol id="stickerStarShape" viewBox="0 0 100 100">
+    <path d="M50 4 L61 36 L96 36 L67 56 L78 90 L50 70 L22 90 L33 56 L4 36 L39 36 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+  </symbol>
+  <symbol id="gemHeartShape" viewBox="0 0 100 90">
+    <path d="M50 88 C20 62 4 42 4 24 C4 8 16 0 30 0 C40 0 47 6 50 14 C53 6 60 0 70 0 C84 0 96 8 96 24 C96 42 80 62 50 88 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+    <path d="M50 14 L50 82 M20 30 L80 30" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+  </symbol>
+</svg>
+
+
+<div class="card">
+
+  <img src="assets/logo.png" alt="Mel's Treat" class="logo">
+  <div class="emoji">🎀</div>
+  <h1>Thank You!</h1>
+  <p>Your review was submitted successfully — it means the world to me that you took the time to share it! 💕</p>
+  <a href="https://ordertreats.melstreat.com/" class="back-btn">← Back To Site</a>
+</div>
+
+<script>
+function scatterPageAccents() {
+  const sectionSelectors = ['.card'];
+  const sections = sectionSelectors
+    .map(sel => Array.from(document.querySelectorAll(sel)).find(el => el.offsetParent !== null))
+    .filter(Boolean);
+  if (sections.length === 0) return;
+
+  const glyphs = ['✦', '✧', '✨', '♥', '⋆'];
+  const anims = ['', 'drift', 'sway'];
+  const starColors = ['#c8912f', '#e20376'];
+
+  function buildFor(section, sparkleN, starN, heartN) {
+    const rect = section.getBoundingClientRect();
+    const height = Math.max(rect.height, 80);
+    const width = Math.max(rect.width, 200);
+    const placed = [];
+    const entries = [];
+
+    function findSpot(radius, excludeEntry) {
+      for (let attempt = 0; attempt < 12; attempt++) {
+        const topPx = Math.random() * height;
+        const leftPercent = Math.random() * 100;
+        const leftPx = (leftPercent / 100) * width;
+        const collides = placed.some(p => {
+          if (p === excludeEntry) return false;
+          const dx = p.leftPx - leftPx;
+          const dy = p.topPx - topPx;
+          const minDist = p.radius + radius + 16;
+          return (dx * dx + dy * dy) < (minDist * minDist);
+        });
+        if (!collides) return { topPx, leftPercent, leftPx };
+      }
+      return null;
+    }
+
+    function scheduleWander(entry) {
+      const waitMs = 5000 + Math.random() * 6000;
+      setTimeout(() => {
+        entry.el.style.animationPlayState = 'paused';
+        entry.el.style.transition = 'opacity 0.6s ease';
+        entry.el.style.opacity = '0';
+        setTimeout(() => {
+          const spot = findSpot(entry.radius, entry);
+          if (spot) {
+            entry.el.style.top = spot.topPx + 'px';
+            entry.el.style.left = spot.leftPercent + '%';
+            Object.assign(entry, spot);
+            const i = placed.indexOf(entry);
+            if (i >= 0) placed[i] = entry;
+          }
+          entry.el.style.opacity = '1';
+          setTimeout(() => { entry.el.style.animationPlayState = 'running'; }, 650);
+          scheduleWander(entry);
+        }, 650);
+      }, waitMs);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;';
+
+    for (let i = 0; i < sparkleN; i++) {
+      const size = 9 + Math.random() * 12;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElement('span');
+      const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+      const anim = anims[Math.floor(Math.random() * anims.length)];
+      el.className = `sparkle ${anim}`;
+      el.style.cssText = `top:${spot.topPx}px; left:${spot.leftPercent}%; font-size:${size}px; animation-delay:${Math.random() * 4}s;`;
+      el.textContent = glyph;
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < starN; i++) {
+      const size = 15 + Math.random() * 8;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('viewBox', '0 0 100 100');
+      const rotate = Math.random() * 30 - 15;
+      const duration = 6 + Math.random() * 4;
+      const color = starColors[Math.floor(Math.random() * starColors.length)];
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size}px; color:${color}; filter:drop-shadow(0 2px 4px rgba(58,36,48,0.2)); animation:starSpin ${duration}s linear infinite; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="currentColor" stroke="#fff" stroke-width="3"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < heartN; i++) {
+      const size = 13 + Math.random() * 7;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('class', 'sticker-gem');
+      el.setAttribute('viewBox', '0 0 100 90');
+      const rotate = Math.random() * 20 - 10;
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size * 0.9}px; color:#ff8fc4; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<use href="#gemHeartShape"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    if (getComputedStyle(section).position === 'static') section.style.position = 'relative';
+    section.insertBefore(wrap, section.firstChild);
+    entries.forEach(scheduleWander);
+  }
+
+  const heights = sections.map(s => Math.max(s.getBoundingClientRect().height, 80));
+  const totalH = heights.reduce((a, b) => a + b, 0);
+  sections.forEach((section, i) => {
+    const share = heights[i] / totalH;
+    buildFor(
+      section,
+      Math.round(16 * share),
+      i === 0 ? 2 : 0,
+      i === sections.length - 1 ? 2 : 0
+    );
+  });
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => scatterPageAccents(), 300);
+});
+</script>
+</body>
+</html>
