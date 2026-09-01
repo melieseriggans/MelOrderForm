@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mel's Treats – Cookie Order Form</title>
+<meta name="description" content="Fresh baked cookies, made with love in small batches. Order chocolate chip, red velvet, M&M, s'mores, and cookie monster mash cookies for pickup or delivery.">
+<meta property="og:title" content="Mel's Treats – Fresh Baked Cookies">
+<meta property="og:description" content="Fresh baked cookies, made with love in small batches. Order online for pickup or delivery.">
+<meta property="og:image" content="https://ordertreats.melstreat.com/assets/welcome-banner.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ordertreats.melstreat.com/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-light:#fedde4;
+    --pink-hot:#e20376;
+    --white:#ffffff;
+    --ink:#3a2430;
+    --ink-soft:#8a6b78;
+    --border:#f7c3d6;
+    --shadow: 0 6px 20px rgba(226,3,118,0.10);
+  }
+  *{box-sizing:border-box;}
+  body{
+    position:relative;
+    margin:0;
+    background:var(--pink-light);
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    padding-bottom:60px;
+  }
+  .top-nav{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{
+    max-width:640px;
+    margin:0 auto;
+    padding:12px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .nav-brand{
+    font-family:'Baloo 2', cursive;
+    font-weight:700;
+    color:#e20376;
+    font-size:1.1rem;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .nav-logo{
+    height:34px;
+    width:34px;
+    border-radius:50%;
+    object-fit:cover;
+  }
+  .nav-links{display:flex; gap:18px;}
+  .nav-links a{
+    color:var(--ink);
+    text-decoration:none;
+    font-weight:700;
+    font-size:0.88rem;
+  }
+  .nav-links a:hover{color:#e20376;}
+  .banner{
+    background:linear-gradient(135deg, var(--pink-hot), #ff5fa8);
+    padding:48px 20px 56px;
+    text-align:center;
+    color:var(--white);
+    border-radius:0 0 32px 32px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .banner-welcome-img{
+    max-width:420px;
+    width:100%;
+    height:auto;
+    border-radius:16px;
+    margin-bottom:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.15);
+  }
+  .banner h1{
+    font-family:'Pacifico', cursive;
+    font-size:2.4rem;
+    margin:0 0 6px;
+    letter-spacing:0.5px;
+  }
+  .banner .sub{
+    font-size:1.05rem;
+    max-width:480px;
+    margin:0 auto;
+    opacity:0.96;
+  }
+  .container{
+    max-width:640px;
+    margin:-28px auto 0;
+    padding:0 16px;
+  }
+  .card{
+    background:var(--white);
+    border-radius:22px;
+    padding:22px 20px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+  }
+  .allergy{
+    background:#fff5f8;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:12px 16px;
+    font-size:0.88rem;
+    color:#e20376;
+    font-weight:600;
+    text-align:center;
+    margin-top:16px;
+  }
+  h2{
+    font-family:'Pacifico', cursive;
+    color:#e20376;
+    font-size:1.5rem;
+    margin:0 0 4px;
+    position:relative; display:inline-block;
+  }
+  .hero-star-accent{
+    position:absolute; width:24px; height:24px;
+    animation:starSpin 7s linear infinite;
+  }
+  @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  @media (prefers-reduced-motion: reduce){ .hero-star-accent{animation:none;} }
+  .section-note{
+    font-size:0.88rem;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+  }
+  .pricing-chips{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .chip{
+    background:var(--pink-light);
+    border-radius:14px;
+    padding:8px 14px;
+    font-size:0.85rem;
+    font-weight:700;
+    color:#e20376;
+    flex:1;
+    text-align:center;
+    min-width:90px;
+  }
+  .chip small{
+    display:block;
+    font-weight:600;
+    color:var(--ink-soft);
+    font-size:0.72rem;
+  }
+  .box-note{
+    font-size:0.82rem;
+    color:var(--ink-soft);
+    margin-bottom:18px;
+  }
+  .catering-banner{
+    background:var(--pink-light);
+    border:1.5px solid var(--pink-hot);
+    border-radius:16px;
+    padding:16px 18px;
+    text-align:center;
+    margin-top:12px;
+  }
+  .catering-banner-title{
+    font-family:'Pacifico', cursive;
+    color:#e20376;
+    font-size:1.2rem;
+    margin-bottom:6px;
+  }
+  .catering-banner-text{
+    font-size:0.85rem;
+    color:var(--ink);
+    margin-bottom:14px;
+    line-height:1.5;
+  }
+  .catering-banner-btn{
+    display:inline-block;
+    background:var(--pink-hot);
+    color:var(--white);
+    text-decoration:none;
+    font-weight:700;
+    font-size:0.92rem;
+    padding:12px 22px;
+    border-radius:14px;
+  }
+  .catering-banner-btn:hover{background:#b8025f;}
+  .cookie{
+    display:flex;
+    gap:14px;
+    padding:14px 0;
+    border-bottom:1px solid var(--pink-light);
+  }
+  .cookie:last-child{border-bottom:none;}
+  .sold-out-row{opacity:0.5;}
+  .stock-badge{
+    display:inline-block;
+    font-size:0.72rem;
+    font-weight:700;
+    padding:2px 9px;
+    border-radius:8px;
+    margin:2px 0 6px;
+  }
+  .stock-badge.hidden{display:none;}
+  .stock-badge.low-stock{background:#ffe1a8; color:#8a5a00;}
+  .stock-badge.sold-out{background:#f0d0d8; color:#c0025e;}
+  .review-row{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid var(--pink-light);
+    font-size:0.9rem;
+  }
+  .review-row:last-child{border-bottom:none;}
+  .review-row .label{color:var(--ink-soft); font-weight:700;}
+  .review-row .value{text-align:right; max-width:60%;}
+  .field-invalid{border-color:#c0025e !important; box-shadow:0 0 0 2px rgba(192,2,94,0.12);}
+  .field-error-msg{color:#c0025e; font-size:0.76rem; margin-top:4px; font-weight:600;}
+  .cookie-img{
+    width:64px;
+    height:64px;
+    border-radius:16px;
+    background:linear-gradient(135deg,var(--pink-light),#ffd0e4);
+    flex-shrink:0;
+    object-fit:cover;
+  }
+  .cookie-info{flex:1; min-width:0;}
+  .cookie-info .name-row{
+    display:flex;
+    justify-content:space-between;
+    font-weight:700;
+    font-size:0.98rem;
+    gap:8px;
+  }
+  .cookie-info .price{color:#e20376; flex-shrink:0;}
+  .cookie-info p{
+    margin:4px 0 10px;
+    font-size:0.82rem;
+    color:var(--ink-soft);
+  }
+  .qty-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .qty-control{
+    display:flex;
+    align-items:center;
+    background:var(--pink-light);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .qty-control button{
+    background:none;
+    border:none;
+    width:32px;
+    height:32px;
+    font-size:1.1rem;
+    color:#e20376;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .qty-control span{
+    min-width:26px;
+    text-align:center;
+    font-weight:700;
+  }
+  .quick-add{
+    background:var(--white);
+    border:1px solid var(--border);
+    color:#e20376;
+    border-radius:10px;
+    padding:5px 9px;
+    font-size:0.76rem;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .quick-add:hover{background:var(--pink-light);}
+  .tip-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .tip-btn{
+    background:var(--white); border:1.5px solid var(--border); color:var(--ink);
+    border-radius:12px; padding:9px 15px; font-weight:700; font-size:0.88rem; cursor:pointer;
+    flex:1; min-width:64px;
+  }
+  .tip-btn.selected{background:var(--pink-hot); color:var(--white); border-color:#e20376;}
+  .tip-btn:hover:not(.selected){border-color:#e20376;}
+  .clear-btn{
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    font-size:0.85rem;
+    cursor:pointer;
+    padding:5px 6px;
+    border-radius:8px;
+  }
+  .clear-btn:hover{background:var(--pink-light); color:#e20376;}
+  label{
+    display:block;
+    font-weight:700;
+    font-size:0.88rem;
+    margin:14px 0 6px;
+  }
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=email], input[type=tel], input[type=date], select, textarea, input[type=file]{
+    width:100%;
+    padding:11px 13px;
+    border-radius:12px;
+    border:1.5px solid var(--border);
+    font-family:inherit;
+    font-size:0.92rem;
+    background:var(--white);
+    color:var(--ink);
+  }
+  textarea{min-height:80px; resize:vertical;}
+  input:focus, select:focus, textarea:focus{
+    outline:2px solid var(--pink-hot);
+    outline-offset:1px;
+  }
+  .checkbox-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:14px;
+    font-weight:600;
+    font-size:0.9rem;
+  }
+  .checkbox-row input{width:auto;}
+  .choice-group{
+    display:flex;
+    gap:10px;
+    margin-top:6px;
+  }
+  .choice-card{
+    flex:1;
+    border:1.5px solid var(--border);
+    border-radius:16px;
+    padding:12px 14px;
+    cursor:pointer;
+    transition:0.15s;
+  }
+  .choice-card.selected{
+    border-color:#e20376;
+    background:var(--pink-light);
+  }
+  .choice-card .title{font-weight:700; font-size:0.92rem;}
+  .choice-card .desc{font-size:0.76rem; color:var(--ink-soft); margin-top:2px;}
+  .hidden{display:none;}
+  .total-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:1.15rem;
+    font-weight:700;
+    padding:14px 4px;
+    color:#e20376;
+  }
+  .submit-btn{
+    width:100%;
+    background:var(--pink-hot);
+    color:var(--white);
+    border:none;
+    border-radius:16px;
+    padding:15px;
+    font-size:1.05rem;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+  }
+  .submit-btn:disabled{opacity:0.6; cursor:not-allowed;}
+  .footer-note{
+    text-align:center;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    margin-top:18px;
+  }
+  .error{color:#c0025e; font-size:0.8rem; margin-top:4px; display:none;}
+  .success-screen{
+    max-width:480px;
+    margin:80px auto;
+    text-align:center;
+    padding:0 20px;
+  }
+  .success-screen .emoji{font-size:3rem;}
+  .success-screen h2{font-size:1.7rem;}
+  .payment-links{
+    background:var(--pink-light);
+    border-radius:14px;
+    padding:12px 14px;
+    font-size:0.85rem;
+    margin-top:10px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .payment-link-box{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--white);
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    padding:10px 14px;
+    text-decoration:none;
+    color:var(--ink);
+    transition:0.15s;
+  }
+  .payment-link-box:hover{
+    border-color:#e20376;
+    background:#fff5f8;
+  }
+  .payment-link-box .pay-icon{font-size:1.3rem;}
+  .payment-link-box .pay-label{
+    display:block;
+    font-weight:700;
+    font-size:0.88rem;
+    color:#e20376;
+  }
+  .payment-link-box .pay-handle{
+    display:block;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+  }
+  .note-highlight{
+    background:var(--pink-light);
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:0.85rem;
+    font-weight:700;
+    color:#e20376;
+    text-align:center;
+  }
+  .mini-faq-item{
+    border:1.5px solid var(--border);
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:10px;
+  }
+  .mini-faq-q{
+    width:100%;
+    background:none;
+    border:none;
+    text-align:left;
+    font-family:inherit;
+    font-weight:700;
+    font-size:0.9rem;
+    color:#e20376;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0;
+  }
+  .mini-faq-q .chev{
+    transition:transform 0.15s;
+    font-size:1.1rem;
+  }
+  .mini-faq-item.open .chev{transform:rotate(90deg);}
+  .mini-faq-a{
+    display:none;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    margin-top:8px;
+  }
+  .mini-faq-item.open .mini-faq-a{display:block;}
+
+  @media (max-width: 400px){
+    .banner{ padding: 36px 16px 44px; }
+    .banner h1{ font-size: 2rem; }
+    .banner .sub{ font-size: 0.95rem; }
+    .card{ padding: 18px 16px; }
+    .pricing-chips{ gap: 6px; }
+    .chip{ min-width: 0; padding: 8px 6px; font-size: 0.78rem; }
+    .choice-group{ flex-direction: column; }
+    .cookie{ gap: 10px; }
+    .cookie-img{ width: 52px; height: 52px; }
+    .qty-row{ gap: 6px; }
+    .quick-add{ padding: 5px 7px; font-size: 0.72rem; }
+    .nav-links{ gap: 12px; }
+    .nav-links a{ font-size: 0.8rem; }
+  }
+
+  .sticker-star{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+  }
+  .sticker-gem{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+    animation:gem-pulse 3s ease-in-out infinite;
+  }
+  @keyframes gem-pulse{ 0%,100%{opacity:0.85; transform:scale(1);} 50%{opacity:1; transform:scale(1.06);} }
+  @media (prefers-reduced-motion: reduce){ .sticker-gem{animation:none;} }
+
+  .sparkle{
+    position:absolute; color:#c8912f; pointer-events:none; z-index:2;
+    text-shadow:0 0 6px #fff, 0 0 10px #ff6fb0;
+    animation:sparkle-twinkle 2.2s ease-in-out infinite;
+  }
+  @keyframes sparkle-twinkle{ 0%,100%{opacity:0.25; transform:scale(0.8);} 50%{opacity:1; transform:scale(1.15);} }
+  .sparkle.drift{ animation:sparkle-drift 6s ease-in infinite, sparkle-twinkle 1.8s ease-in-out infinite; }
+  @keyframes sparkle-drift{
+    0%{transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:1;} 90%{opacity:0.8;}
+    100%{transform:translateY(-90px) translateX(10px) rotate(25deg); opacity:0;}
+  }
+  .sparkle.sway{ animation:sparkle-sway 4.5s ease-in-out infinite; }
+  @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
+</style>
+</head>
+<body>
+
+<svg style="display:none;">
+  <symbol id="stickerStarShape" viewBox="0 0 100 100">
+    <path d="M50 4 L61 36 L96 36 L67 56 L78 90 L50 70 L22 90 L33 56 L4 36 L39 36 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+  </symbol>
+  <symbol id="gemHeartShape" viewBox="0 0 100 90">
+    <path d="M50 88 C20 62 4 42 4 24 C4 8 16 0 30 0 C40 0 47 6 50 14 C53 6 60 0 70 0 C84 0 96 8 96 24 C96 42 80 62 50 88 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+    <path d="M50 14 L50 82 M20 30 L80 30" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+  </symbol>
+</svg>
+
+
+<nav class="top-nav">
+  <div class="nav-inner">
+    <span class="nav-brand"><img src="assets/logo.png" alt="Mel's Treat" class="nav-logo">Mel's Treats</span>
+    <div class="nav-links">
+      <a href="shop.html" style="color:#e20376;">Shop 🔒</a>
+      <a href="#about" data-section="about">About Me</a>
+      <a href="links.html">Links</a>
+      <a href="faq.html">FAQ</a>
+      <a href="testimonials.html">Reviews</a>
+    </div>
+  </div>
+</nav>
+
+<div class="banner">
+
+  <img src="assets/welcome-banner.png" alt="Welcome to Mel's Treat" class="banner-welcome-img">
+  <div class="sub">Fresh baked cookies, made with love 💕 Fill out the form and I'll reach out to confirm.</div>
+</div>
+
+<div class="container">
+  <div class="card hidden toggle-section" id="about">
+    <h2>Hi, I'm Mel ♡</h2>
+    <p class="section-note" style="margin:0 0 10px; font-weight:700; color:var(--ink);">Baking Is My Love Language</p>
+    <p class="section-note" style="margin:0 0 10px;">✨ I'm A Self-Made 23-Year-Old Entrepreneur Who Loves Spreading Love And Joy Through Baking ✨</p>
+    <p class="section-note" style="margin:0 0 10px;">Every Cookie Is Mixed, Rolled, And Baked By Hand In Tiny Batches — No Shortcuts, Just Butter, Sugar, And A Whole Lot Of Sparkle. Order For Yourself, Your Bestie, Or Someone Who Needs A Little Pick-Me-Up. ♡</p>
+    <div class="note-highlight" style="text-align:left;">Allergen Notice ♡ Contains (or may contain): milk, eggs, dairy, soy, and gluten/wheat. Please Let Me Know About Any Allergies In Your Order Notes.</div>
+  </div>
+
+
+
+  <div class="allergy">⚠️ Allergy Warning: Cookies May Contain Gluten, Dairy, Soy, And Eggs.</div>
+
+  <form id="order-form">
+
+    <div class="card">
+      <h2>Pick Your Cookies
+        <svg class="hero-star-accent" viewBox="0 0 100 100" style="top:-14px; right:-22px;" aria-hidden="true">
+          <defs>
+            <linearGradient id="starGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ff8fc4"/>
+              <stop offset="55%" stop-color="#e20376"/>
+              <stop offset="100%" stop-color="#a8025f"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="url(#starGrad1)" stroke="#fff" stroke-width="2"/>
+          <ellipse cx="40" cy="30" rx="9" ry="5" fill="#ffffff" opacity="0.55" transform="rotate(-30 40 30)"/>
+        </svg>
+      </h2>
+      <div class="section-note">$3 Each — Or Save With A Box! 🎀</div>
+      <div class="pricing-chips">
+        <div class="chip">4-Count<small>$10 Box</small></div>
+        <div class="chip">6-Count<small>$15 Box</small></div>
+        <div class="chip">12-Count<small>$28 Box</small></div>
+      </div>
+      <div class="box-note">Box discount applies automatically based on your total count — mix &amp; match any flavors! ✨</div>
+
+      <div id="cookie-list"></div>
+
+      <div id="catering-prompt" class="catering-banner hidden">
+        <div class="catering-banner-title">Need More Than 2 Dozen? 🎉</div>
+        <div class="catering-banner-text">Orders are capped at 24 cookies per form. For bigger events (3+ dozen), place a catering request instead — I'll follow up with full details and pricing!</div>
+        <a href="catering.html" class="catering-banner-btn">Place A Catering Request</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Your Info</h2>
+      <label for="full_name">Full Name *</label>
+      <input type="text" id="full_name" placeholder="Jane Doe" />
+
+      <label for="email">Email *</label>
+      <input type="email" id="email" placeholder="jane@example.com" />
+
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" placeholder="(555) 123-4567" />
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="social_checkbox" />
+        <label for="social_checkbox" style="margin:0;">Contact Me On Social Media Instead ✨</label>
+      </div>
+      <div id="social_fields_wrap" class="hidden">
+        <label for="social_platform">Which Platform?</label>
+        <select id="social_platform">
+          <option value="">Select…</option>
+          <option>Instagram</option>
+          <option>Facebook</option>
+          <option>TikTok</option>
+        </select>
+        <label for="social_handle">Your Handle</label>
+        <input type="text" id="social_handle" placeholder="@yourhandle" />
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Pickup Or Delivery</h2>
+      <div class="choice-group">
+        <div class="choice-card selected" data-fulfillment="pickup">
+          <div class="title">Pickup</div>
+          <div class="desc">Collect Your Cookies From Us.</div>
+        </div>
+        <div class="choice-card" data-fulfillment="delivery">
+          <div class="title">Delivery</div>
+          <div class="desc">Local Delivery — $3 Delivery Fee.</div>
+        </div>
+      </div>
+      <div class="section-note" style="margin-top:12px;">Pickup locations must be public places (no private homes, please 💕).</div>
+
+      <div id="pickup_fields">
+        <label for="pickup_location">Pickup Location</label>
+        <select id="pickup_location">
+          <option value="">Select A Location…</option>
+          <option>Oxford, AL Walmart</option>
+          <option>Anniston, AL Walmart</option>
+          <option>Other (Enter Below)</option>
+        </select>
+      </div>
+      <div id="delivery_fields" class="hidden">
+        <label for="delivery_address">Delivery Address</label>
+        <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" />
+      </div>
+
+      <label for="preferred_date">Preferred Date</label>
+      <input type="date" id="preferred_date" />
+
+      <label for="pickup_time">Pickup Time (7:30am – 6pm)</label>
+      <select id="pickup_time">
+        <option value="">Select A Time…</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <label style="margin-top:0;">Add A Tip? 💕</label>
+      <div class="section-note" style="margin:0 0 10px;">Totally optional — goes straight to Mel!</div>
+      <div class="tip-row">
+        <button type="button" class="tip-btn" data-tip="2">$2</button>
+        <button type="button" class="tip-btn" data-tip="5">$5</button>
+        <button type="button" class="tip-btn" data-tip="10">$10</button>
+        <button type="button" class="tip-btn" data-tip="custom">Custom</button>
+        <button type="button" class="tip-btn selected" data-tip="0">No Thanks</button>
+      </div>
+      <input type="number" id="tip-custom-input" min="0" step="0.01" placeholder="Enter amount" class="hidden" style="margin-top:10px;" inputmode="decimal">
+    </div>
+
+    <div class="card">
+      <label for="discount_code_input" style="margin-top:0;">Discount Code</label>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="discount_code_input" placeholder="Enter code" style="flex:1;" />
+        <button type="button" id="apply-discount-btn" class="quick-add" style="padding:0 16px; font-size:0.85rem;">Apply</button>
+      </div>
+      <div id="discount-message" style="font-size:0.8rem; margin-top:6px; display:none;"></div>
+
+      <div class="total-bar" style="padding-top:14px;">
+        <span>Subtotal (Individual Pricing)</span>
+        <span id="subtotal-display" style="color:var(--ink-soft); font-size:0.95rem; font-weight:700;">$0.00</span>
+      </div>
+      <div class="total-bar" id="savings-row" style="padding-top:0;">
+        <span style="font-size:0.95rem;">Box Discount 🎀</span>
+        <span id="savings-display" style="font-size:0.95rem;">−$0.00</span>
+      </div>
+      <div class="total-bar hidden" id="discount-row" style="padding-top:0;">
+        <span style="font-size:0.95rem;">Discount Code</span>
+        <span id="discount-amount-display" style="font-size:0.95rem;">−$0.00</span>
+      </div>
+      <div class="total-bar hidden" id="tip-row" style="padding-top:0;">
+        <span style="font-size:0.95rem;">Tip 💕</span>
+        <span id="tip-amount-display" style="font-size:0.95rem;">$0.00</span>
+      </div>
+      <div style="border-top:1px solid var(--pink-light); margin:4px 0;"></div>
+      <div class="total-bar">
+        <span>Total You Owe</span>
+        <span id="total-display">$0.00</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Anything Else?</h2>
+      <label for="preferred_contact">Preferred Contact *</label>
+      <select id="preferred_contact">
+        <option value="">Select…</option>
+        <option>Phone</option>
+        <option>Social Media</option>
+        <option>Email</option>
+      </select>
+
+      <label for="special_instructions">Special Instructions</label>
+      <textarea id="special_instructions" placeholder="Allergies, gift notes, etc."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Payment 💕</h2>
+      <div class="section-note">Heads Up: Your Order Won't Be Baked Until Payment Is Received. Choose How You'd Like To Pay Below 👇</div>
+
+      <div class="choice-group" style="flex-direction:column;">
+        <div class="choice-card selected" data-payment="pay_now">
+          <div class="title">Pay Now To Lock In My Order 🔒</div>
+          <div class="desc">Send Payment Right Away Using One Of The Links Below, Then Upload Your Receipt — Your Order Is Confirmed Once I See It.</div>
+        </div>
+        <div class="choice-card" data-payment="contact_me">
+          <div class="title">Contact Me For Payment 💬</div>
+          <div class="desc">I'll Reach Out To You With Payment Details Before Your Order Is Made.</div>
+        </div>
+      </div>
+
+      <div id="pay_now_fields">
+        <div class="payment-links">
+          <a href="https://venmo.com/u/Meliese-Riggans" target="_blank" rel="noopener" class="payment-link-box">
+            <span class="pay-icon">💳</span>
+            <span>
+              <span class="pay-label">Venmo</span>
+              <span class="pay-handle">@Meliese-Riggans</span>
+            </span>
+          </a>
+          <a href="https://cash.app/$Melieseriggans" target="_blank" rel="noopener" class="payment-link-box">
+            <span class="pay-icon">💵</span>
+            <span>
+              <span class="pay-label">CashApp</span>
+              <span class="pay-handle">$Melieseriggans</span>
+            </span>
+          </a>
+          <a href="https://www.paypal.me/triggans18" target="_blank" rel="noopener" class="payment-link-box">
+            <span class="pay-icon">🅿️</span>
+            <span>
+              <span class="pay-label">PayPal</span>
+              <span class="pay-handle">paypal.me/triggans18</span>
+            </span>
+          </a>
+        </div>
+        <label for="receipt">Upload Payment Receipt</label>
+        <input type="file" id="receipt" accept="image/*,.pdf" />
+      </div>
+    </div>
+
+    <div id="form-error" class="error"></div>
+    <button type="submit" class="submit-btn" id="submit-btn">Review Order →</button>
+    <div class="footer-note">made with 💕 by Mel's Treats · <a href="privacy-policy.html" style="color:inherit; text-decoration:underline;">Privacy Policy</a></div>
+  </form>
+
+  <div id="review-screen" class="hidden">
+    <div class="card">
+      <h2>Review Your Order 📋</h2>
+      <div class="section-note" style="margin:0 0 14px;">Double check everything looks right before you submit!</div>
+      <div id="review-content"></div>
+      <div id="review-error" class="error"></div>
+      <div style="display:flex; gap:10px; margin-top:18px;">
+        <button type="button" class="submit-btn" id="edit-order-btn" style="background:var(--white); color:#e20376; border:1.5px solid var(--pink-hot); flex:1;">← Edit Order</button>
+        <button type="button" class="submit-btn" id="confirm-order-btn" style="flex:2;">Confirm & Place Order</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="success-screen" class="success-screen hidden">
+    <div class="emoji">🎉</div>
+    <h2>Order Received!</h2>
+    <p>Thanks for your order! I'll be in touch soon with order details and to confirm everything. Cookies aren't baked until payment is received.</p>
+
+    <div class="card" style="text-align:left;">
+      <h2 style="font-size:1.2rem;">A Little Note From Mel 💌</h2>
+      <p class="section-note" style="margin-bottom:12px;">Hi, I'm Mel! Every order is baked fresh with love just for you. I'll be in contact very soon to confirm the sweet details — so happy you picked me to bake your favorite treats! 🎀</p>
+      <div class="note-highlight">📩 Keep an eye on your inbox — I'll be in touch soon!</div>
+    </div>
+
+    <div class="card" style="text-align:left;">
+      <h2 style="font-size:1.2rem;">FAQ</h2>
+      <div class="mini-faq">
+        <div class="mini-faq-item">
+          <button type="button" class="mini-faq-q">When will I hear back about my order? <span class="chev">›</span></button>
+          <div class="mini-faq-a">I'll reach out within 24 hours to confirm your order details, timing, and (if needed) payment. Keep an eye on your email and phone!</div>
+        </div>
+        <div class="mini-faq-item">
+          <button type="button" class="mini-faq-q">How far in advance should I order? <span class="chev">›</span></button>
+          <div class="mini-faq-a">Please try to order at least 2-3 days ahead. For big batches or holidays, the sooner the better so I can save your spot!</div>
+        </div>
+        <div class="mini-faq-item">
+          <button type="button" class="mini-faq-q">How should I store my cookies once I get them? <span class="chev">›</span></button>
+          <div class="mini-faq-a">Keep them in an airtight container at room temp for up to 5 days, or freeze them for up to a month. Warm them up for 8-10 seconds for that fresh-baked magic!</div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="submit-btn" id="place-another-order" style="background:var(--white); color:#e20376; border:1.5px solid var(--pink-hot); margin-top:6px;">← Place Another Order</button>
+    <div class="footer-note">🍪 Baked With Love 🎀</div>
+  </div>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer>
+const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
+
+// Lazy singleton: only touches window.supabase when actually needed (on submit),
+// so a slow/blocked CDN never prevents the rest of the page from working.
+let _supabaseClient = null;
+async function waitForSupabase(timeoutMs) {
+  const start = Date.now();
+  while (!window.supabase) {
+    if (Date.now() - start > timeoutMs) return false;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return true;
+}
+
+async function getSupabase() {
+  if (!_supabaseClient) {
+    const loaded = await waitForSupabase(6000);
+    if (!loaded) {
+      throw new Error('Could not connect to the order system. Please check your connection and try again.');
+    }
+    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return _supabaseClient;
+}
+
+// Check stock on load. If every flavor is out, send visitors to the
+// out-of-stock page — unless they're here specifically to pre-order.
+let stockData = {}; // cookie_name -> { stock_count, in_stock }
+let isPreorderMode = false;
+
+(async function checkStockOnLoad() {
+  const params = new URLSearchParams(window.location.search);
+  isPreorderMode = params.get('preorder') === '1';
+
+  if (isPreorderMode) {
+    const banner = document.createElement('div');
+    banner.textContent = "This is a pre-order — your treats will be made once we're restocked! 💕";
+    banner.style.cssText = 'background:var(--pink-hot); color:#fff; text-align:center; font-weight:700; font-size:0.85rem; padding:10px 16px;';
+    document.body.prepend(banner);
+    return;
+  }
+
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.from('inventory').select('cookie_name, in_stock, stock_count');
+    if (error || !data || data.length === 0) return;
+
+    const allOut = data.every(item => item.in_stock === false || item.stock_count <= 0);
+    if (allOut) {
+      window.location.href = 'out-of-stock.html';
+      return;
+    }
+
+    data.forEach(item => { stockData[item.cookie_name] = item; });
+    applyStockToCookieList();
+  } catch (err) {
+    console.error('Stock check failed, showing site as normal:', err);
+  }
+})();
+
+document.querySelectorAll('.mini-faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.closest('.mini-faq-item').classList.toggle('open');
+  });
+});
+
+document.getElementById('place-another-order').addEventListener('click', () => {
+  document.getElementById('success-screen').classList.add('hidden');
+  form.reset();
+  form.classList.remove('hidden');
+  COOKIES.forEach(c => updateQty(c.key, 0));
+  tipAmount = 0;
+  document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector('.tip-btn[data-tip="0"]').classList.add('selected');
+  document.getElementById('tip-custom-input').classList.add('hidden');
+  appliedDiscount = null;
+  discountInput.value = '';
+  discountMsg.style.display = 'none';
+  updateTotal();
+  window.scrollTo({top: 0, behavior:'smooth'});
+});
+
+document.querySelectorAll('.nav-links a[data-section]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const id = link.dataset.section;
+    const section = document.getElementById(id);
+    const isOpen = !section.classList.contains('hidden');
+    document.querySelectorAll('.toggle-section').forEach(s => s.classList.add('hidden'));
+    if (!isOpen) {
+      section.classList.remove('hidden');
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+const COOKIES = [
+  { key: 'chocolate_chip', img: 'assets/cookie-chocolate-chip.png', name: 'Chocolate Chip', desc: 'Soft, Buttery Cookie Loaded With Delicious Chocolate Chips.' },
+  { key: 'mm', img: 'assets/cookie-mm.png', name: "M&M Cookie", desc: "Soft, Buttery Cookie Packed With Colorful Melty M&M's In Every Bite." },
+  { key: 'cookie_monster', img: 'assets/cookie-monster.png', name: 'Cookie Monster Mash', desc: 'A Thick, Chewy, Crazy Colorful Cookie With Milk And White Chocolate, Topped With Cookie Crumbs.' },
+  { key: 'red_velvet', img: 'assets/cookie-red-velvet.png', name: 'Red Velvet', desc: 'Red Velvet Cookies With White Chocolate And Oreo Chunks.' },
+  { key: 'smores', img: 'assets/cookie-smores.png', name: "S'mores", desc: 'Gooey Marshmallow, Chocolate, And Graham Crackers All In A Classic Chocolate Chip Cookie.' },
+];
+
+const qty = {};
+COOKIES.forEach(c => qty[c.key] = 0);
+
+const list = document.getElementById('cookie-list');
+COOKIES.forEach(c => {
+  const row = document.createElement('div');
+  row.className = 'cookie';
+  row.id = `cookie-row-${c.key}`;
+  row.innerHTML = `
+    <img class="cookie-img" src="${c.img}" alt="${c.name}" loading="lazy">
+    <div class="cookie-info">
+      <div class="name-row"><span>${c.name}</span><span class="price">$3.00</span></div>
+      <p>${c.desc}</p>
+      <div class="stock-badge hidden" id="stock-badge-${c.key}"></div>
+      <div class="qty-row">
+        <div class="qty-control">
+          <button type="button" data-action="dec" data-key="${c.key}">−</button>
+          <span id="qty-${c.key}">0</span>
+          <button type="button" data-action="inc" data-key="${c.key}">+</button>
+        </div>
+        <button type="button" class="quick-add" data-add="4" data-key="${c.key}">+4</button>
+        <button type="button" class="quick-add" data-add="6" data-key="${c.key}">+6</button>
+        <button type="button" class="quick-add" data-add="12" data-key="${c.key}">+12</button>
+        <button type="button" class="clear-btn" data-action="clear" data-key="${c.key}" title="Remove">✕</button>
+      </div>
+    </div>
+  `;
+  list.appendChild(row);
+});
+
+function applyStockToCookieList() {
+  COOKIES.forEach(c => {
+    const stock = stockData[c.name];
+    const row = document.getElementById(`cookie-row-${c.key}`);
+    const badge = document.getElementById(`stock-badge-${c.key}`);
+    if (!stock) return;
+
+    const outOfStock = stock.in_stock === false || stock.stock_count <= 0;
+
+    if (outOfStock) {
+      row.classList.add('sold-out-row');
+      badge.textContent = 'Sold Out';
+      badge.className = 'stock-badge sold-out';
+      row.querySelectorAll('button').forEach(b => b.disabled = true);
+      if (qty[c.key] > 0) updateQty(c.key, 0);
+    } else if (stock.stock_count <= 5) {
+      badge.textContent = `Only ${stock.stock_count} left!`;
+      badge.className = 'stock-badge low-stock';
+    } else {
+      badge.className = 'stock-badge hidden';
+    }
+  });
+}
+
+const MAX_COOKIES = 24;
+
+function totalCookieCount() {
+  return Object.values(qty).reduce((a, b) => a + b, 0);
+}
+
+function showCateringPrompt() {
+  const banner = document.getElementById('catering-prompt');
+  banner.classList.remove('hidden');
+  banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function updateQty(key, newVal) {
+  const clamped = Math.max(0, newVal);
+  const currentTotal = totalCookieCount();
+  const delta = clamped - qty[key];
+
+  if (delta > 0 && !isPreorderMode) {
+    const cookieMeta = COOKIES.find(c => c.key === key);
+    const stock = stockData[cookieMeta.name];
+    if (stock && clamped > stock.stock_count) {
+      const badge = document.getElementById(`stock-badge-${key}`);
+      badge.textContent = `Only ${stock.stock_count} left!`;
+      badge.className = 'stock-badge low-stock';
+      return;
+    }
+  }
+
+  if (delta > 0 && currentTotal + delta > MAX_COOKIES) {
+    showCateringPrompt();
+    return;
+  }
+
+  qty[key] = clamped;
+  document.getElementById(`qty-${key}`).textContent = qty[key];
+  updateTotal();
+}
+
+list.addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const key = btn.dataset.key;
+  if (btn.dataset.action === 'inc') updateQty(key, qty[key] + 1);
+  if (btn.dataset.action === 'dec') updateQty(key, qty[key] - 1);
+  if (btn.dataset.add) updateQty(key, qty[key] + parseInt(btn.dataset.add));
+  if (btn.dataset.action === 'clear') updateQty(key, 0);
+});
+
+// Time options 7:30 AM - 6:00 PM every 30 min
+const timeSelect = document.getElementById('pickup_time');
+function to12h(h, m) {
+  const period = h < 12 ? 'AM' : 'PM';
+  let hh = h % 12; if (hh === 0) hh = 12;
+  return `${hh}:${m.toString().padStart(2,'0')} ${period}`;
+}
+for (let mins = 7*60+30; mins <= 18*60; mins += 30) {
+  const h = Math.floor(mins/60), m = mins%60;
+  const label = to12h(h,m);
+  const opt = document.createElement('option');
+  opt.textContent = label;
+  timeSelect.appendChild(opt);
+}
+
+// Fulfillment choice
+let fulfillment = 'pickup';
+document.querySelectorAll('[data-fulfillment]').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('[data-fulfillment]').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    fulfillment = card.dataset.fulfillment;
+    document.getElementById('pickup_fields').classList.toggle('hidden', fulfillment !== 'pickup');
+    document.getElementById('delivery_fields').classList.toggle('hidden', fulfillment !== 'delivery');
+    updateTotal();
+  });
+});
+
+// Payment choice
+let paymentMethod = 'pay_now';
+document.querySelectorAll('[data-payment]').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('[data-payment]').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    paymentMethod = card.dataset.payment;
+    document.getElementById('pay_now_fields').classList.toggle('hidden', paymentMethod !== 'pay_now');
+  });
+});
+
+// Social checkbox toggle
+document.getElementById('social_checkbox').addEventListener('change', (e) => {
+  document.getElementById('social_fields_wrap').classList.toggle('hidden', !e.target.checked);
+});
+
+function calcCookieTotal() {
+  const totalCookies = Object.values(qty).reduce((a,b)=>a+b, 0);
+  if (totalCookies === 0) return 0;
+
+  // True cheapest combination of singles ($3) + 4/6/12-count boxes,
+  // rather than a greedy biggest-box-first guess.
+  const memo = new Array(totalCookies + 1).fill(Infinity);
+  memo[0] = 0;
+  for (let i = 1; i <= totalCookies; i++) {
+    memo[i] = memo[i-1] + 3;
+    if (i >= 4)  memo[i] = Math.min(memo[i], memo[i-4]  + 10);
+    if (i >= 6)  memo[i] = Math.min(memo[i], memo[i-6]  + 15);
+    if (i >= 12) memo[i] = Math.min(memo[i], memo[i-12] + 28);
+  }
+  return memo[totalCookies];
+}
+
+let appliedDiscount = null; // { code, percent_off, flat_off }
+let tipAmount = 0;
+
+function calcDiscountAmount(preDiscountTotal) {
+  if (!appliedDiscount) return 0;
+  let amount = 0;
+  if (appliedDiscount.percent_off) amount += preDiscountTotal * (appliedDiscount.percent_off / 100);
+  if (appliedDiscount.flat_off) amount += appliedDiscount.flat_off;
+  return Math.min(amount, preDiscountTotal);
+}
+
+function updateTotal() {
+  const totalCookies = Object.values(qty).reduce((a,b)=>a+b, 0);
+  const subtotal = totalCookies * 3;
+  const discountedCookieTotal = calcCookieTotal();
+  const savings = subtotal - discountedCookieTotal;
+
+  let preDiscountTotal = discountedCookieTotal;
+  if (fulfillment === 'delivery') preDiscountTotal += 3;
+
+  const discountAmount = calcDiscountAmount(preDiscountTotal);
+  const total = preDiscountTotal - discountAmount + tipAmount;
+
+  document.getElementById('subtotal-display').textContent = `$${subtotal.toFixed(2)}`;
+  document.getElementById('savings-display').textContent = `−$${savings.toFixed(2)}`;
+  document.getElementById('savings-row').style.display = savings > 0 ? 'flex' : 'none';
+  document.getElementById('discount-amount-display').textContent = `−$${discountAmount.toFixed(2)}`;
+  document.getElementById('discount-row').classList.toggle('hidden', discountAmount <= 0);
+  document.getElementById('tip-amount-display').textContent = `$${tipAmount.toFixed(2)}`;
+  document.getElementById('tip-row').classList.toggle('hidden', tipAmount <= 0);
+  document.getElementById('total-display').textContent = `$${total.toFixed(2)}`;
+  return total;
+}
+updateTotal();
+
+document.querySelectorAll('.tip-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    const customInput = document.getElementById('tip-custom-input');
+
+    if (btn.dataset.tip === 'custom') {
+      customInput.classList.remove('hidden');
+      customInput.focus();
+      tipAmount = parseFloat(customInput.value) || 0;
+    } else {
+      customInput.classList.add('hidden');
+      tipAmount = parseFloat(btn.dataset.tip);
+    }
+    updateTotal();
+  });
+});
+
+document.getElementById('tip-custom-input').addEventListener('input', (e) => {
+  tipAmount = parseFloat(e.target.value) || 0;
+  updateTotal();
+});
+
+const discountInput = document.getElementById('discount_code_input');
+const discountMsg = document.getElementById('discount-message');
+document.getElementById('apply-discount-btn').addEventListener('click', async () => {
+  const code = discountInput.value.trim();
+  discountMsg.style.display = 'none';
+  if (!code) return;
+
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('validate-discount-code', { body: { code } });
+    if (error) throw error;
+
+    if (data.valid) {
+      appliedDiscount = { code: data.code, percent_off: data.percent_off, flat_off: data.flat_off };
+      discountMsg.textContent = `"${data.code}" applied! 🎉`;
+      discountMsg.style.color = 'var(--pink-hot)';
+      discountMsg.style.display = 'block';
+    } else {
+      appliedDiscount = null;
+      discountMsg.textContent = data.message || 'That code is not valid.';
+      discountMsg.style.color = '#c0025e';
+      discountMsg.style.display = 'block';
+    }
+    updateTotal();
+  } catch (err) {
+    console.error(err);
+    discountMsg.textContent = 'Could not check that code right now. Please try again.';
+    discountMsg.style.color = '#c0025e';
+    discountMsg.style.display = 'block';
+  }
+});
+
+// Submit
+const form = document.getElementById('order-form');
+const errorBox = document.getElementById('form-error');
+const submitBtn = document.getElementById('submit-btn');
+
+function clearFieldErrors() {
+  document.querySelectorAll('.field-invalid').forEach(el => el.classList.remove('field-invalid'));
+  document.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+}
+
+function showFieldError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  field.classList.add('field-invalid');
+  const msg = document.createElement('div');
+  msg.className = 'field-error-msg';
+  msg.textContent = message;
+  field.insertAdjacentElement('afterend', msg);
+}
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  errorBox.style.display = 'none';
+  clearFieldErrors();
+
+  let firstInvalid = null;
+  let hasError = false;
+
+  const totalCookies = Object.values(qty).reduce((a,b)=>a+b, 0);
+  if (totalCookies === 0) {
+    errorBox.textContent = 'Please pick at least one cookie 🍪';
+    errorBox.style.display = 'block';
+    document.getElementById('cookie-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const full_name = document.getElementById('full_name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const preferred_contact = document.getElementById('preferred_contact').value;
+
+  if (!full_name) {
+    showFieldError('full_name', 'Please enter your name.');
+    hasError = true; firstInvalid = firstInvalid || 'full_name';
+  }
+  if (!email) {
+    showFieldError('email', 'Please enter your email.');
+    hasError = true; firstInvalid = firstInvalid || 'email';
+  } else if (!email.includes('@') || !email.includes('.')) {
+    showFieldError('email', 'That email doesn\'t look quite right.');
+    hasError = true; firstInvalid = firstInvalid || 'email';
+  }
+  if (!preferred_contact) {
+    showFieldError('preferred_contact', 'Please choose how to reach you.');
+    hasError = true; firstInvalid = firstInvalid || 'preferred_contact';
+  }
+
+  if (hasError) {
+    document.getElementById(firstInvalid).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById(firstInvalid).focus();
+    return;
+  }
+
+  showReviewScreen();
+});
+
+function showReviewScreen() {
+  const cookieLines = COOKIES
+    .filter(c => qty[c.key] > 0)
+    .map(c => `<div class="review-row"><span class="label">${c.name}</span><span class="value">× ${qty[c.key]}</span></div>`)
+    .join('');
+
+  const total = updateTotal();
+  const full_name = document.getElementById('full_name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+
+  const fulfillmentDetail = fulfillment === 'pickup'
+    ? (document.getElementById('pickup_location').value || 'Location not set')
+    : (document.getElementById('delivery_address').value.trim() || 'Address not set');
+
+  const reviewHtml = `
+    ${cookieLines}
+    ${tipAmount > 0 ? `<div class="review-row"><span class="label">Tip 💕</span><span class="value">$${tipAmount.toFixed(2)}</span></div>` : ''}
+    <div class="review-row" style="border-top:1.5px solid var(--pink-hot); padding-top:10px; margin-top:4px;"><span class="label">Total</span><span class="value" style="color:#e20376; font-weight:700; font-size:1.05rem;">$${total.toFixed(2)}</span></div>
+    <div class="review-row"><span class="label">Name</span><span class="value">${full_name}</span></div>
+    <div class="review-row"><span class="label">Email</span><span class="value">${email}</span></div>
+    ${phone ? `<div class="review-row"><span class="label">Phone</span><span class="value">${phone}</span></div>` : ''}
+    <div class="review-row"><span class="label">${fulfillment === 'pickup' ? 'Pickup' : 'Delivery'}</span><span class="value">${fulfillmentDetail}</span></div>
+    <div class="review-row"><span class="label">Date</span><span class="value">${document.getElementById('preferred_date').value || 'Not set'}</span></div>
+    <div class="review-row"><span class="label">Time</span><span class="value">${document.getElementById('pickup_time').value || 'Not set'}</span></div>
+    <div class="review-row"><span class="label">Payment</span><span class="value">${paymentMethod === 'pay_now' ? 'Pay Now' : 'Contact Me For Payment'}</span></div>
+  `;
+
+  document.getElementById('review-content').innerHTML = reviewHtml;
+  form.classList.add('hidden');
+  document.getElementById('review-screen').classList.remove('hidden');
+  window.scrollTo({top: 0, behavior:'smooth'});
+}
+
+document.getElementById('edit-order-btn').addEventListener('click', () => {
+  document.getElementById('review-screen').classList.add('hidden');
+  form.classList.remove('hidden');
+  window.scrollTo({top: 0, behavior:'smooth'});
+});
+
+document.getElementById('confirm-order-btn').addEventListener('click', placeOrder);
+
+async function placeOrder() {
+  const reviewError = document.getElementById('review-error');
+  reviewError.style.display = 'none';
+
+  const confirmBtn = document.getElementById('confirm-order-btn');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Placing Order...';
+
+  try {
+    const supabase = await getSupabase();
+
+    let receipt_url = null;
+    const fileInput = document.getElementById('receipt');
+    if (paymentMethod === 'pay_now' && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const path = `${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage.from('receipts').upload(path, file);
+      if (uploadError) throw uploadError;
+      const { data: publicUrlData } = supabase.storage.from('receipts').getPublicUrl(path);
+      receipt_url = publicUrlData.publicUrl;
+    }
+
+    const cookiesOrdered = {};
+    COOKIES.forEach(c => { if (qty[c.key] > 0) cookiesOrdered[c.name] = qty[c.key]; });
+
+    const total = updateTotal();
+    const full_name = document.getElementById('full_name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const preferred_contact = document.getElementById('preferred_contact').value;
+
+    const discountedCookieTotalForCalc = calcCookieTotal();
+    let preDiscountTotal = discountedCookieTotalForCalc;
+    if (fulfillment === 'delivery') preDiscountTotal += 3;
+    const discountAmount = calcDiscountAmount(preDiscountTotal);
+
+    const orderRow = {
+      full_name,
+      email,
+      phone: document.getElementById('phone').value.trim() || null,
+      contact_via_social: document.getElementById('social_checkbox').checked,
+      social_platform: document.getElementById('social_platform').value || null,
+      social_handle: document.getElementById('social_handle').value.trim() || null,
+      cookies: cookiesOrdered,
+      fulfillment_type: fulfillment,
+      pickup_location: fulfillment === 'pickup' ? (document.getElementById('pickup_location').value || null) : null,
+      delivery_address: fulfillment === 'delivery' ? (document.getElementById('delivery_address').value.trim() || null) : null,
+      preferred_date: document.getElementById('preferred_date').value || null,
+      pickup_time: document.getElementById('pickup_time').value || null,
+      preferred_contact,
+      special_instructions: document.getElementById('special_instructions').value.trim() || null,
+      payment_method: paymentMethod,
+      receipt_url,
+      total,
+      discount_code: appliedDiscount ? appliedDiscount.code : null,
+      discount_amount: discountAmount,
+      tip_amount: tipAmount,
+      is_preorder: isPreorderMode,
+    };
+
+    const { error: insertError } = await supabase.from('orders').insert(orderRow);
+    if (insertError) throw insertError;
+
+    if (!isPreorderMode) {
+      try {
+        await supabase.functions.invoke('decrement-inventory', { body: { cookies: cookiesOrdered } });
+      } catch (invError) {
+        console.error('Inventory update failed (order was still saved):', invError);
+      }
+    }
+
+    if (appliedDiscount) {
+      try {
+        await supabase.functions.invoke('redeem-discount-code', { body: { code: appliedDiscount.code } });
+      } catch (redeemErr) {
+        console.error('Discount redemption tracking failed (order was still saved):', redeemErr);
+      }
+    }
+
+    try {
+      await supabase.functions.invoke('send-order-emails', { body: orderRow });
+    } catch (emailErr) {
+      console.error('Email notification failed (order was still saved):', emailErr);
+    }
+
+    document.getElementById('review-screen').classList.add('hidden');
+    document.getElementById('success-screen').classList.remove('hidden');
+    window.scrollTo({top: 0, behavior:'smooth'});
+  } catch (err) {
+    console.error(err);
+    reviewError.textContent = 'Something went wrong submitting your order. Please check your connection and try again: ' + (err.message || '');
+    reviewError.style.display = 'block';
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = 'Confirm & Place Order';
+  }
+}
+
+function scatterPageAccents() {
+  const sectionSelectors = ['.banner', '.card'];
+  const sections = sectionSelectors
+    .map(sel => Array.from(document.querySelectorAll(sel)).find(el => el.offsetParent !== null))
+    .filter(Boolean);
+  if (sections.length === 0) return;
+
+  const glyphs = ['✦', '✧', '✨', '♥', '⋆'];
+  const anims = ['', 'drift', 'sway'];
+  const starColors = ['#c8912f', '#e20376'];
+
+  function buildFor(section, sparkleN, starN, heartN) {
+    const rect = section.getBoundingClientRect();
+    const height = Math.max(rect.height, 80);
+    const width = Math.max(rect.width, 200);
+    const placed = [];
+    const entries = [];
+
+    function findSpot(radius, excludeEntry) {
+      for (let attempt = 0; attempt < 12; attempt++) {
+        const topPx = Math.random() * height;
+        const leftPercent = Math.random() * 100;
+        const leftPx = (leftPercent / 100) * width;
+        const collides = placed.some(p => {
+          if (p === excludeEntry) return false;
+          const dx = p.leftPx - leftPx;
+          const dy = p.topPx - topPx;
+          const minDist = p.radius + radius + 16;
+          return (dx * dx + dy * dy) < (minDist * minDist);
+        });
+        if (!collides) return { topPx, leftPercent, leftPx };
+      }
+      return null;
+    }
+
+    function scheduleWander(entry) {
+      const waitMs = 5000 + Math.random() * 6000;
+      setTimeout(() => {
+        entry.el.style.animationPlayState = 'paused';
+        entry.el.style.transition = 'opacity 0.6s ease';
+        entry.el.style.opacity = '0';
+        setTimeout(() => {
+          const spot = findSpot(entry.radius, entry);
+          if (spot) {
+            entry.el.style.top = spot.topPx + 'px';
+            entry.el.style.left = spot.leftPercent + '%';
+            Object.assign(entry, spot);
+            const i = placed.indexOf(entry);
+            if (i >= 0) placed[i] = entry;
+          }
+          entry.el.style.opacity = '1';
+          setTimeout(() => { entry.el.style.animationPlayState = 'running'; }, 650);
+          scheduleWander(entry);
+        }, 650);
+      }, waitMs);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;';
+
+    for (let i = 0; i < sparkleN; i++) {
+      const size = 9 + Math.random() * 12;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElement('span');
+      const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+      const anim = anims[Math.floor(Math.random() * anims.length)];
+      el.className = `sparkle ${anim}`;
+      el.style.cssText = `top:${spot.topPx}px; left:${spot.leftPercent}%; font-size:${size}px; animation-delay:${Math.random() * 4}s;`;
+      el.textContent = glyph;
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < starN; i++) {
+      const size = 15 + Math.random() * 8;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('viewBox', '0 0 100 100');
+      const rotate = Math.random() * 30 - 15;
+      const duration = 6 + Math.random() * 4;
+      const color = starColors[Math.floor(Math.random() * starColors.length)];
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size}px; color:${color}; filter:drop-shadow(0 2px 4px rgba(58,36,48,0.2)); animation:starSpin ${duration}s linear infinite; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="currentColor" stroke="#fff" stroke-width="3"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < heartN; i++) {
+      const size = 13 + Math.random() * 7;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('class', 'sticker-gem');
+      el.setAttribute('viewBox', '0 0 100 90');
+      const rotate = Math.random() * 20 - 10;
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size * 0.9}px; color:#ff8fc4; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<use href="#gemHeartShape"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    if (getComputedStyle(section).position === 'static') section.style.position = 'relative';
+    section.insertBefore(wrap, section.firstChild);
+    entries.forEach(scheduleWander);
+  }
+
+  const heights = sections.map(s => Math.max(s.getBoundingClientRect().height, 80));
+  const totalH = heights.reduce((a, b) => a + b, 0);
+  sections.forEach((section, i) => {
+    const share = heights[i] / totalH;
+    buildFor(
+      section,
+      Math.round(24 * share),
+      i === 0 ? 2 : 0,
+      i === sections.length - 1 ? 2 : 0
+    );
+  });
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => scatterPageAccents(), 300);
+});
+</script>
+
+</body>
+</html>
