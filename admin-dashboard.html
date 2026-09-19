@@ -426,6 +426,25 @@
     font-size:0.85rem;
   }
   .choice-card.selected{border-color:var(--pink-hot); background:var(--pink-light);}
+
+  /* Menu item / theme box photo thumbnails */
+  .mm-thumb-row{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .mm-thumb{
+    width:44px; height:44px; border-radius:12px; object-fit:cover; flex-shrink:0;
+    border:1px solid var(--border); background:var(--cream);
+  }
+  .mm-thumb-placeholder{
+    width:44px; height:44px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:1.3rem;
+    border:1px dashed var(--border); background:var(--cream);
+  }
+  .mm-item-main{flex:1; min-width:0;}
+  .mm-content-picker-row{
+    display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--pink-light);
+  }
+  .mm-content-picker-row:last-child{border-bottom:none;}
+  .mm-content-picker-row label{margin:0; flex:1; font-weight:600; font-size:0.85rem;}
+  .mm-content-picker-row input[type="number"]{width:64px; text-align:center;}
 </style>
 </head>
 <body>
@@ -546,18 +565,6 @@
         <div id="menu-mgmt-cinnamon-list"></div>
       </div>
 
-      <div class="card">
-        <h2>🍰 Cake Slices</h2>
-        <div class="order-detail" style="margin:0 0 12px;">New category — hidden from your shop until you turn it on above.</div>
-        <div id="menu-mgmt-cake-slice-list"></div>
-      </div>
-
-      <div class="card">
-        <h2>🍫 Brownies</h2>
-        <div class="order-detail" style="margin:0 0 12px;">New category — hidden from your shop until you turn it on above.</div>
-        <div id="menu-mgmt-brownie-list"></div>
-      </div>
-
       <div class="card" id="menu-mgmt-add-card">
         <h2>➕ Add A New Flavor</h2>
         <label for="mm-new-name">Flavor Name</label>
@@ -566,8 +573,6 @@
         <select id="mm-new-type">
           <option value="cookie">Cookie</option>
           <option value="cinnamon_roll">Cinnamon Roll</option>
-          <option value="cake_slice">Cake Slice</option>
-          <option value="brownie">Brownie</option>
         </select>
         <label for="mm-new-price" style="margin-top:10px;">Price Per Item ($)</label>
         <input type="number" id="mm-new-price" min="0" step="0.01" placeholder="e.g. 3.00">
@@ -575,6 +580,8 @@
         <textarea id="mm-new-desc" placeholder="What makes it special?"></textarea>
         <label for="mm-new-emoji" style="margin-top:10px;">Placeholder Emoji (shown until you add a real photo)</label>
         <input type="text" id="mm-new-emoji" placeholder="e.g. 🎂" maxlength="4">
+        <label for="mm-new-photo" style="margin-top:10px;">Photo (optional)</label>
+        <input type="file" id="mm-new-photo" accept="image/*">
         <label style="margin-top:10px;">Allergens</label>
         <div class="choice-group" id="mm-new-allergens" style="flex-wrap:wrap;">
           <div class="choice-card mm-allergen-chip" data-allergen="dairy">🥛 Dairy</div>
@@ -582,9 +589,6 @@
           <div class="choice-card mm-allergen-chip" data-allergen="gluten">🌾 Gluten</div>
           <div class="choice-card mm-allergen-chip" data-allergen="soy">🫘 Soy</div>
           <div class="choice-card mm-allergen-chip" data-allergen="nuts">🥜 Tree Nuts</div>
-          <div class="choice-card mm-allergen-chip" data-allergen="marshmallow">🍡 Marshmallow</div>
-          <div class="choice-card mm-allergen-chip" data-allergen="corn">🌽 Corn / Corn Syrup</div>
-          <div class="choice-card mm-allergen-chip" data-allergen="gelatin">🧴 Gelatin</div>
         </div>
         <div id="mm-new-stock-wrap" style="display:flex; gap:10px; margin-top:10px;">
           <div style="flex:1;">
@@ -622,23 +626,28 @@
           <span class="chevron">▸</span>
         </summary>
         <div class="collapsible-body">
-          <div class="order-detail" style="margin:0 0 12px;">Curated gift boxes made from your existing flavors. Turn one of the starter ideas below on whenever you're ready, or build your own.</div>
+          <div class="order-detail" style="margin:0 0 12px;">Curated gift boxes made from your existing flavors.</div>
           <div id="menu-mgmt-theme-list"></div>
 
-          <h3 style="margin-top:20px;">➕ Add A New Theme Box</h3>
-          <label for="tb-new-name">Box Name</label>
-          <input type="text" id="tb-new-name" placeholder="e.g. Movie Night Box">
-          <label for="tb-new-price" style="margin-top:10px;">Price ($)</label>
-          <input type="number" id="tb-new-price" min="0" step="0.01" placeholder="e.g. 15.00">
-          <label for="tb-new-emoji" style="margin-top:10px;">Placeholder Emoji</label>
-          <input type="text" id="tb-new-emoji" placeholder="e.g. 🍿" maxlength="4">
-          <label for="tb-new-desc" style="margin-top:10px;">Description</label>
-          <textarea id="tb-new-desc" placeholder="What's in it, in your own words"></textarea>
-          <label style="margin-top:10px;">What's Inside</label>
-          <div class="order-detail" style="margin:0 0 8px;">Set how many of each flavor goes in the box. Leave anything at 0 to leave it out.</div>
-          <div id="tb-new-contents"></div>
-          <div id="tb-add-error" class="error"></div>
-          <button class="btn" id="tb-add-btn" style="margin-top:14px; width:100%;">Add Theme Box</button>
+          <div style="margin-top:18px; padding-top:16px; border-top:1.5px solid var(--pink-light);">
+            <h3 style="margin:0 0 10px;">➕ Create A New Box</h3>
+            <div class="order-detail" style="margin:0 0 12px;">Mix and match flavors from any category — cookies, cinnamon rolls, whatever — into a new gift box or bundle.</div>
+            <label for="mm-newbox-name">Box Name</label>
+            <input type="text" id="mm-newbox-name" placeholder="e.g. Best Friends Box">
+            <label for="mm-newbox-price" style="margin-top:10px;">Price ($)</label>
+            <input type="number" id="mm-newbox-price" min="0" step="0.01" placeholder="e.g. 18.00">
+            <label for="mm-newbox-desc" style="margin-top:10px;">Description</label>
+            <textarea id="mm-newbox-desc" placeholder="What's in it, who it's for, etc."></textarea>
+            <label for="mm-newbox-emoji" style="margin-top:10px;">Placeholder Emoji (shown until you add a real photo)</label>
+            <input type="text" id="mm-newbox-emoji" placeholder="e.g. 🎁" maxlength="4">
+            <label for="mm-newbox-photo" style="margin-top:10px;">Photo (optional)</label>
+            <input type="file" id="mm-newbox-photo" accept="image/*">
+            <label style="margin-top:14px;">What's Inside</label>
+            <div class="order-detail" style="margin:0 0 6px;">Set a quantity for each flavor you want in this box (0 = not included).</div>
+            <div id="mm-newbox-contents"></div>
+            <div id="mm-newbox-error" class="error"></div>
+            <button class="btn" id="mm-newbox-add-btn" style="margin-top:14px;">Create Box</button>
+          </div>
         </div>
       </details>
     </div>
@@ -851,14 +860,8 @@
         <h2>📧 Send An Email</h2>
         <div class="order-detail" style="margin:0 0 14px;">Pick a template to start, tweak it, then send it to your opted-in email list.</div>
 
-        <label>Who's This Going To?</label>
+        <label>Quick Templates</label>
         <div class="tabs" style="margin-bottom:4px;">
-          <button type="button" class="email-audience-btn active" data-audience="signups">💌 Welcome List</button>
-          <button type="button" class="email-audience-btn" data-audience="restock">🍪 Restock Signups</button>
-        </div>
-
-        <label style="margin-top:14px;">Quick Templates</label>
-        <div class="tabs" style="margin-bottom:4px;" id="email-template-row">
           <button type="button" class="email-template-btn" data-template="restock">🍪 Back In Stock</button>
           <button type="button" class="email-template-btn" data-template="newflavor">✨ New Flavor</button>
           <button type="button" class="email-template-btn" data-template="thankyou">💕 Thank You</button>
@@ -867,9 +870,6 @@
           <button type="button" class="email-template-btn" data-template="holiday">🎄 Holiday Pre-Order</button>
           <button type="button" class="email-template-btn" data-template="missyou">🥺 We Miss You</button>
           <button type="button" class="email-template-btn" data-template="vip">👑 VIP Early Access</button>
-          <button type="button" class="email-template-btn" data-template="noWaitlist">🎉 No More Waitlist</button>
-          <button type="button" class="email-template-btn" data-template="welcomeSubscriber">💌 Welcome New Subscriber</button>
-          <button type="button" class="email-template-btn" data-template="meetMeliese">👋 Meet Meliese</button>
           <button type="button" class="email-template-btn" data-template="blank">📝 Blank</button>
         </div>
 
@@ -880,17 +880,8 @@
         <textarea id="email-body-input" style="min-height:160px;" placeholder="Write your message here..."></textarea>
         <div class="order-detail" style="margin:4px 0 0;">Basic HTML is okay (like &lt;strong&gt;bold&lt;/strong&gt;), but plain text works great too.</div>
 
-        <label for="email-image-input" style="margin-top:12px;">Add A Picture (optional)</label>
-        <input type="file" id="email-image-input" accept="image/*">
-        <div class="order-detail" style="margin:4px 0 0;">A flyer, sale graphic, or photo — it goes at the top of the email, above your message.</div>
-        <div id="email-image-preview-wrap" style="display:none; margin-top:10px; position:relative; max-width:260px;">
-          <img id="email-image-preview" style="width:100%; border-radius:10px; display:block;">
-          <button type="button" id="email-image-remove-btn" style="position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.55); color:#fff; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:1rem; line-height:1;">✕</button>
-        </div>
-        <div id="email-image-status" class="order-detail" style="display:none; margin-top:6px;"></div>
-
         <div class="order-detail" id="audience-count-note" style="margin:14px 0 0; background:var(--cream); padding:10px 12px; border-radius:10px;">Loading your opted-in list...</div>
-        <div class="order-detail" id="audience-consent-note" style="margin:6px 0 0; font-size:0.76rem;">This only ever goes to people who signed up for the $2-off welcome offer — never to emails collected from regular orders. That keeps things opt-in only, the way email marketing should work.</div>
+        <div class="order-detail" style="margin:6px 0 0; font-size:0.76rem;">This only ever goes to people who signed up for the $2-off welcome offer — never to emails collected from regular orders. That keeps things opt-in only, the way email marketing should work.</div>
 
         <div id="email-error" class="error"></div>
         <div id="email-success" class="drawer-msg" style="display:none; color:var(--pink-hot); font-weight:600; margin-top:10px;"></div>
@@ -1049,9 +1040,6 @@
           <label for="expense-receipt-input" style="margin-top:12px;">Receipt (optional)</label>
           <input type="file" id="expense-receipt-input" accept="image/*,.pdf,.heic">
           <div class="order-detail" style="margin:4px 0 0;">One receipt covers this whole trip.</div>
-          <button type="button" class="btn btn-small" id="scan-receipt-btn" style="width:100%; margin-top:10px; background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">📷 Scan This Receipt &amp; Add Items For Me</button>
-          <div class="order-detail" id="scan-receipt-status" style="display:none; margin-top:6px;"></div>
-          <div class="order-detail" style="margin:4px 0 0;">Snap a clear photo of the whole receipt above, then tap this — it reads the line items and prices straight off it and drops them in your cart below so you're not typing each one in by hand. Always double-check the cart before saving; photo reading isn't perfect, especially on faded or crumpled receipts.</div>
 
           <label for="expense-category-select" style="margin-top:14px;">Category</label>
           <div class="tabs" style="margin-bottom:4px;">
@@ -1093,13 +1081,6 @@
           <button class="btn" id="add-to-cart-btn" style="width:100%;">+ Add To Cart</button>
 
           <div id="expense-cart-list" style="margin-top:16px;"></div>
-
-          <div id="expense-tax-wrap" style="display:none; margin-top:10px;">
-            <label for="expense-tax-input">Sales Tax For This Trip (optional)</label>
-            <input type="number" id="expense-tax-input" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
-            <div class="order-detail" style="margin:4px 0 0;">Check your receipt's tax line and add it here — it gets tracked as its own line item so your spending totals (and profit/tax estimate) reflect what you actually paid, not just the item prices.</div>
-          </div>
-
           <button class="btn" id="save-trip-btn" style="width:100%; display:none;">Save Shopping Trip</button>
 
           <details class="history-details">
@@ -1230,7 +1211,6 @@
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
 <script defer>
 const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
@@ -1277,6 +1257,19 @@ async function callFunction(functionName, action, extra) {
   });
   if (error) throw error;
   return data;
+}
+
+// Shared photo upload for menu items & theme boxes — reuses the same
+// public "email-images" storage bucket already used for marketing emails,
+// so no new bucket/policy setup is needed. Returns a public URL.
+async function uploadMenuPhoto(file, prefix) {
+  const supabase = await getSupabase();
+  const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const path = `${prefix}_${Date.now()}_${safeName}`;
+  const { error: uploadError } = await supabase.storage.from('email-images').upload(path, file);
+  if (uploadError) throw uploadError;
+  const { data: publicUrlData } = supabase.storage.from('email-images').getPublicUrl(path);
+  return publicUrlData.publicUrl;
 }
 
 let discountCodes = [];
@@ -1416,20 +1409,74 @@ function escapeHtml(str) {
 // this same data straight from the database.
 function flavorRowHtml(item) {
   const allergenList = Array.isArray(item.allergens) ? item.allergens : [];
+  const thumb = item.img_url
+    ? `<img class="mm-thumb" src="${item.img_url}" alt="${escapeHtml(item.cookie_name)}">`
+    : `<div class="mm-thumb-placeholder">${item.placeholder_emoji || '🍪'}</div>`;
   return `
     <div class="mm-flavor-row" data-id="${item.id}" style="padding:12px 0; border-bottom:1px solid var(--pink-light);">
-      <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;">
-        <span style="font-weight:700; ${item.active === false ? 'color:var(--ink-soft); text-decoration:line-through;' : ''}">${escapeHtml(item.cookie_name)}</span>
-        <span style="font-weight:700; color:var(--pink-hot); flex-shrink:0;">${money(item.price || 0)}</span>
+      <div class="mm-thumb-row">
+        ${thumb}
+        <div class="mm-item-main">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;">
+            <span style="font-weight:700; ${item.active === false ? 'color:var(--ink-soft); text-decoration:line-through;' : ''}">${escapeHtml(item.cookie_name)}</span>
+            <span style="font-weight:700; color:var(--pink-hot); flex-shrink:0;">${money(item.price || 0)}</span>
+          </div>
+        </div>
       </div>
       <div class="order-detail" style="margin:2px 0 6px;">${escapeHtml(item.description || 'No description yet')}</div>
       ${allergenList.length ? `<div class="order-detail" style="margin:0 0 6px;">Allergens: ${allergenList.map(escapeHtml).join(', ')}</div>` : ''}
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn btn-small mm-edit-btn" data-id="${item.id}" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">Edit</button>
+        <button type="button" class="btn btn-small mm-photo-btn" data-id="${item.id}" data-kind="inventory" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">${item.img_url ? '📷 Change Photo' : '📷 Add Photo'}</button>
         <button type="button" class="btn btn-small mm-toggle-active-btn" data-id="${item.id}" data-active="${item.active !== false}" style="background:var(--white); color:${item.active === false ? '#2e8b57' : '#c9962c'}; border:1.5px solid ${item.active === false ? '#2e8b57' : '#c9962c'};">${item.active === false ? 'Reactivate' : 'Remove From Menu'}</button>
       </div>
     </div>
   `;
+}
+
+// Shared click handler for any "📷 Add/Change Photo" button — opens a
+// native file picker, uploads the chosen image, and saves its URL back
+// to either an inventory flavor or a theme box depending on data-kind.
+function wirePhotoButtons(container) {
+  container.querySelectorAll('.mm-photo-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const kind = btn.dataset.kind;
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.style.display = 'none';
+      document.body.appendChild(input);
+      input.addEventListener('change', async () => {
+        const file = input.files[0];
+        input.remove();
+        if (!file) return;
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Uploading...';
+        try {
+          const url = await uploadMenuPhoto(file, kind === 'theme_box' ? 'themebox' : 'flavor');
+          if (kind === 'theme_box') {
+            await callAdmin('update_theme_box', { id, img_url: url });
+            const box = dashboardData.themeBoxes.find(b => b.id === id);
+            if (box) box.img_url = url;
+            renderThemeBoxManagement();
+          } else {
+            await callAdmin('update_inventory', { id, img_url: url });
+            const item = dashboardData.inventory.find(i => i.id === id);
+            if (item) item.img_url = url;
+            renderMenuManagement();
+          }
+          showToast('Photo updated ✧');
+        } catch (err) {
+          alert('Could not upload photo: ' + err.message);
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      });
+      input.click();
+    });
+  });
 }
 
 // ===== Category visibility: a single on/off switch per shop category
@@ -1441,8 +1488,6 @@ const CATEGORY_DEFS = [
   { key: 'cookies', label: 'Cookies', icon: '🍪' },
   { key: 'cinnamon_rolls', label: 'Cinnamon Rolls', icon: '🥐' },
   { key: 'theme_boxes', label: 'Theme Boxes', icon: '🎁' },
-  { key: 'cake_slices', label: 'Cake Slices', icon: '🍰' },
-  { key: 'brownies', label: 'Brownies', icon: '🍫' },
 ];
 function getCategoryVisibility() {
   try { return JSON.parse(dashboardData.settings.category_visibility || '{}'); } catch (e) { return {}; }
@@ -1484,21 +1529,15 @@ function renderCategoryVisibility() {
 function renderMenuManagement() {
   const cookieListEl = document.getElementById('menu-mgmt-cookie-list');
   const cinnamonListEl = document.getElementById('menu-mgmt-cinnamon-list');
-  const cakeSliceListEl = document.getElementById('menu-mgmt-cake-slice-list');
-  const brownieListEl = document.getElementById('menu-mgmt-brownie-list');
   renderCategoryVisibility();
   if (!cookieListEl) return; // tab not on this page build
 
   const inventory = dashboardData.inventory || [];
   const cookies = inventory.filter(i => i.product_type === 'cookie').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
   const cinnamonRolls = inventory.filter(i => i.product_type === 'cinnamon_roll').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
-  const cakeSlices = inventory.filter(i => i.product_type === 'cake_slice').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
-  const brownies = inventory.filter(i => i.product_type === 'brownie').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
 
   cookieListEl.innerHTML = cookies.length ? cookies.map(flavorRowHtml).join('') : '<div class="empty-note">No cookie flavors yet.</div>';
   cinnamonListEl.innerHTML = cinnamonRolls.length ? cinnamonRolls.map(flavorRowHtml).join('') : '<div class="empty-note">No cinnamon roll flavors yet.</div>';
-  if (cakeSliceListEl) cakeSliceListEl.innerHTML = cakeSlices.length ? cakeSlices.map(flavorRowHtml).join('') : '<div class="empty-note">No cake slice flavors yet — add one below.</div>';
-  if (brownieListEl) brownieListEl.innerHTML = brownies.length ? brownies.map(flavorRowHtml).join('') : '<div class="empty-note">No brownie flavors yet — add one below.</div>';
 
   document.querySelectorAll('.mm-toggle-active-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -1521,6 +1560,9 @@ function renderMenuManagement() {
     btn.addEventListener('click', () => openFlavorEditPrompt(btn.dataset.id));
   });
 
+  wirePhotoButtons(cookieListEl);
+  wirePhotoButtons(cinnamonListEl);
+
   renderBoxTierEditors();
   renderThemeBoxManagement();
 }
@@ -1528,8 +1570,6 @@ function renderMenuManagement() {
 // A lightweight inline edit flow using prompt() for the handful of fields
 // that change rarely (name/price/description) — keeps this shippable
 // without building a full modal system.
-const KNOWN_ALLERGEN_KEYS = ['dairy', 'eggs', 'gluten', 'soy', 'nuts', 'marshmallow', 'corn', 'gelatin'];
-
 async function openFlavorEditPrompt(id) {
   const item = dashboardData.inventory.find(i => i.id === id);
   if (!item) return;
@@ -1539,28 +1579,14 @@ async function openFlavorEditPrompt(id) {
   if (newPriceStr === null) return;
   const newDesc = prompt('Description:', item.description || '');
   if (newDesc === null) return;
-  const currentAllergens = (Array.isArray(item.allergens) ? item.allergens : []).join(', ');
-  const newAllergensStr = prompt(
-    `Allergens, comma-separated (choose from: ${KNOWN_ALLERGEN_KEYS.join(', ')}):`,
-    currentAllergens
-  );
-  if (newAllergensStr === null) return;
   const newPrice = parseFloat(newPriceStr);
   if (isNaN(newPrice) || newPrice < 0) { alert('Please enter a valid price.'); return; }
 
-  const requested = newAllergensStr.split(',').map(a => a.trim().toLowerCase()).filter(Boolean);
-  const allergens = requested.filter(a => KNOWN_ALLERGEN_KEYS.includes(a));
-  const unrecognized = requested.filter(a => !KNOWN_ALLERGEN_KEYS.includes(a));
-  if (unrecognized.length > 0) {
-    alert(`Didn't recognize: ${unrecognized.join(', ')} — those were skipped. Everything else saved fine.`);
-  }
-
   try {
-    await callAdmin('update_inventory', { id, cookie_name: newName.trim(), price: newPrice, description: newDesc.trim(), allergens });
+    await callAdmin('update_inventory', { id, cookie_name: newName.trim(), price: newPrice, description: newDesc.trim() });
     item.cookie_name = newName.trim();
     item.price = newPrice;
     item.description = newDesc.trim();
-    item.allergens = allergens;
     renderMenuManagement();
     showToast('Flavor updated ✧');
   } catch (err) {
@@ -1600,14 +1626,22 @@ document.getElementById('mm-add-btn').addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = 'Adding...';
   try {
+    const photoFile = document.getElementById('mm-new-photo').files[0];
+    let img_url = null;
+    if (photoFile) {
+      btn.textContent = 'Uploading photo...';
+      img_url = await uploadMenuPhoto(photoFile, 'flavor');
+      btn.textContent = 'Adding...';
+    }
     await callAdmin('add_menu_item', {
       cookie_name: name, product_type: type, price, description: desc || null,
-      allergens, placeholder_emoji: emoji || null, stock_count: stock, on_hand_count: onHand,
+      allergens, placeholder_emoji: emoji || null, img_url, stock_count: stock, on_hand_count: onHand,
     });
     document.getElementById('mm-new-name').value = '';
     document.getElementById('mm-new-price').value = '';
     document.getElementById('mm-new-desc').value = '';
     document.getElementById('mm-new-emoji').value = '';
+    document.getElementById('mm-new-photo').value = '';
     document.getElementById('mm-new-on-hand').value = '';
     document.getElementById('mm-new-stock').value = '';
     document.querySelectorAll('.mm-allergen-chip.selected').forEach(c => c.classList.remove('selected'));
@@ -1624,12 +1658,22 @@ document.getElementById('mm-add-btn').addEventListener('click', async () => {
 });
 
 // Box tier editors — a simple list of "count → price" rows per product
-// type, matching how box deals actually work on the live menu.
+// type, matching how box deals actually work on the live menu (this is
+// what powers "Build A Box" — an assorted box of any N cookies for a set
+// price, mix flavors however the customer likes). Always kept sorted
+// lowest-count-first so a 4-count box never shows up after a 12-count one,
+// on this screen or on the live menu.
 let mmCookieTiers = [];
 let mmCinnamonTiers = [];
+function sortTiers(list) {
+  list.sort((a, b) => (a.count || 0) - (b.count || 0));
+  return list;
+}
 function renderBoxTierEditors() {
   try { mmCookieTiers = JSON.parse(dashboardData.settings.box_tiers_cookie || '[]'); } catch (e) { mmCookieTiers = []; }
   try { mmCinnamonTiers = JSON.parse(dashboardData.settings.box_tiers_cinnamon_roll || '[]'); } catch (e) { mmCinnamonTiers = []; }
+  sortTiers(mmCookieTiers);
+  sortTiers(mmCinnamonTiers);
   renderTierRows('menu-mgmt-cookie-tiers', mmCookieTiers);
   renderTierRows('menu-mgmt-cinnamon-tiers', mmCinnamonTiers);
 }
@@ -1638,7 +1682,7 @@ function renderTierRows(elId, tiers) {
   if (!el) return;
   el.innerHTML = tiers.map((tier, i) => `
     <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-      <input type="number" min="1" value="${tier.count}" data-tier-field="count" data-tier-list="${elId}" data-tier-index="${i}" style="width:80px;" placeholder="Count">
+      <input type="number" min="1" value="${tier.count}" data-tier-field="count" data-tier-list="${elId}" data-tier-index="${i}" style="width:80px;" placeholder="Count of cookies">
       <span>for $</span>
       <input type="number" min="0" step="0.01" value="${tier.price}" data-tier-field="price" data-tier-list="${elId}" data-tier-index="${i}" style="width:90px;" placeholder="Price">
       <button type="button" class="mm-remove-tier-btn" data-tier-list="${elId}" data-tier-index="${i}" style="background:none; border:none; color:#c0025e; cursor:pointer; font-size:1.1rem;">✕</button>
@@ -1651,6 +1695,16 @@ function renderTierRows(elId, tiers) {
       const field = input.dataset.tierField;
       list[idx][field] = parseFloat(input.value) || 0;
     });
+    // Re-sort once the count field is done being edited (on blur/Enter,
+    // not every keystroke) so typing "12" doesn't jump the row around
+    // mid-type, but the list always settles lowest-to-highest.
+    if (input.dataset.tierField === 'count') {
+      input.addEventListener('change', () => {
+        const list = input.dataset.tierList === 'menu-mgmt-cookie-tiers' ? mmCookieTiers : mmCinnamonTiers;
+        sortTiers(list);
+        renderTierRows(input.dataset.tierList, list);
+      });
+    }
   });
   el.querySelectorAll('.mm-remove-tier-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1660,12 +1714,23 @@ function renderTierRows(elId, tiers) {
     });
   });
 }
+// New tiers default to the lowest un-used multiple of 4 (or the next one
+// up, so 4 → 6 → 12 → 16... never collides), which keeps "4 should always
+// be first" true from the moment it's added, not just after she edits it.
+function nextTierDefault(list) {
+  const used = new Set(list.map(t => t.count));
+  let n = 4;
+  while (used.has(n)) n += 2;
+  return n;
+}
 document.getElementById('mm-add-cookie-tier-btn').addEventListener('click', () => {
-  mmCookieTiers.push({ count: 4, price: 10 });
+  mmCookieTiers.push({ count: nextTierDefault(mmCookieTiers), price: 0 });
+  sortTiers(mmCookieTiers);
   renderTierRows('menu-mgmt-cookie-tiers', mmCookieTiers);
 });
 document.getElementById('mm-add-cinnamon-tier-btn').addEventListener('click', () => {
-  mmCinnamonTiers.push({ count: 3, price: 13 });
+  mmCinnamonTiers.push({ count: nextTierDefault(mmCinnamonTiers), price: 0 });
+  sortTiers(mmCinnamonTiers);
   renderTierRows('menu-mgmt-cinnamon-tiers', mmCinnamonTiers);
 });
 document.getElementById('mm-save-tiers-btn').addEventListener('click', async () => {
@@ -1673,10 +1738,14 @@ document.getElementById('mm-save-tiers-btn').addEventListener('click', async () 
   btn.disabled = true;
   btn.textContent = 'Saving...';
   try {
+    sortTiers(mmCookieTiers);
+    sortTiers(mmCinnamonTiers);
     await callAdmin('update_box_tiers', { product_type: 'cookie', tiers: mmCookieTiers });
     await callAdmin('update_box_tiers', { product_type: 'cinnamon_roll', tiers: mmCinnamonTiers });
     dashboardData.settings.box_tiers_cookie = JSON.stringify(mmCookieTiers);
     dashboardData.settings.box_tiers_cinnamon_roll = JSON.stringify(mmCinnamonTiers);
+    renderTierRows('menu-mgmt-cookie-tiers', mmCookieTiers);
+    renderTierRows('menu-mgmt-cinnamon-tiers', mmCinnamonTiers);
     showToast('Box pricing saved ✧');
   } catch (err) {
     alert('Could not save pricing: ' + err.message);
@@ -1686,22 +1755,35 @@ document.getElementById('mm-save-tiers-btn').addEventListener('click', async () 
   }
 });
 
+function themeBoxContentsSummary(box) {
+  const contents = box.contents || {};
+  const parts = Object.entries(contents).map(([name, qty]) => `${qty} ${escapeHtml(name)}`);
+  return parts.length ? parts.join(', ') : 'No contents set';
+}
+
 function renderThemeBoxManagement() {
   const el = document.getElementById('menu-mgmt-theme-list');
   if (!el) return;
   const boxes = dashboardData.themeBoxes || [];
   el.innerHTML = boxes.length ? boxes.map(box => {
-    const contentsList = Object.entries(box.contents || {}).map(([name, qty]) => `${qty} × ${name}`).join(', ');
+    const thumb = box.img_url
+      ? `<img class="mm-thumb" src="${box.img_url}" alt="${escapeHtml(box.name)}">`
+      : `<div class="mm-thumb-placeholder">${box.placeholder_emoji || '🎁'}</div>`;
     return `
     <div style="padding:10px 0; border-bottom:1px solid var(--pink-light);">
-      <div style="display:flex; justify-content:space-between; align-items:baseline;">
-        <span style="font-weight:700; ${box.active === false ? 'color:var(--ink-soft); text-decoration:line-through;' : ''}">${box.placeholder_emoji || '🎁'} ${escapeHtml(box.name)}</span>
-        <span style="font-weight:700; color:var(--pink-hot);">${money(box.price)}</span>
+      <div class="mm-thumb-row">
+        ${thumb}
+        <div class="mm-item-main">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-weight:700; ${box.active === false ? 'color:var(--ink-soft); text-decoration:line-through;' : ''}">${escapeHtml(box.name)}</span>
+            <span style="font-weight:700; color:var(--pink-hot);">${money(box.price)}</span>
+          </div>
+        </div>
       </div>
-      <div class="order-detail" style="margin:2px 0 6px;">${escapeHtml(box.description || '')}</div>
-      ${contentsList ? `<div class="order-detail" style="margin:0 0 6px;">Contains: ${escapeHtml(contentsList)}</div>` : ''}
+      <div class="order-detail" style="margin:2px 0 4px;">${escapeHtml(box.description || '')}</div>
+      <div class="order-detail" style="margin:0 0 6px; font-style:italic;">Contains: ${themeBoxContentsSummary(box)}</div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button type="button" class="btn btn-small mm-edit-theme-btn" data-id="${box.id}" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">Edit</button>
+        <button type="button" class="btn btn-small mm-photo-btn" data-id="${box.id}" data-kind="theme_box" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">${box.img_url ? '📷 Change Photo' : '📷 Add Photo'}</button>
         <button type="button" class="btn btn-small mm-toggle-theme-btn" data-id="${box.id}" data-active="${box.active !== false}" style="background:var(--white); color:${box.active === false ? '#2e8b57' : '#c9962c'}; border:1.5px solid ${box.active === false ? '#2e8b57' : '#c9962c'};">${box.active === false ? 'Reactivate' : 'Remove From Menu'}</button>
       </div>
     </div>
@@ -1725,41 +1807,52 @@ function renderThemeBoxManagement() {
     });
   });
 
-  el.querySelectorAll('.mm-edit-theme-btn').forEach(btn => {
-    btn.addEventListener('click', () => openThemeBoxEditPrompt(btn.dataset.id));
+  wirePhotoButtons(el);
+  renderNewThemeBoxContentPicker();
+}
+
+// Lets Mel build a new box from ANY active flavor, cookies and cinnamon
+// rolls together — a box isn't limited to one category. Preserves
+// whatever quantities are already typed in when just re-rendering after
+// an unrelated data refresh, so mid-edit isn't lost.
+function renderNewThemeBoxContentPicker() {
+  const el = document.getElementById('mm-newbox-contents');
+  if (!el) return;
+
+  const existingQtys = {};
+  el.querySelectorAll('.mm-newbox-qty-input').forEach(input => {
+    const v = parseInt(input.value) || 0;
+    if (v > 0) existingQtys[input.dataset.name] = v;
   });
 
-  renderThemeBoxContentPicker();
-}
+  const items = (dashboardData.inventory || [])
+    .filter(i => i.active !== false)
+    .sort((a, b) => {
+      if (a.product_type !== b.product_type) return (a.product_type || '').localeCompare(b.product_type || '');
+      return (a.sort_order || 0) - (b.sort_order || 0);
+    });
 
-// Lists every currently-active cookie/cinnamon roll flavor with a quantity
-// input, so building a new box's contents is pick-a-number rather than
-// typing flavor names by hand (which is easy to typo against what the
-// live menu actually calls each flavor).
-function renderThemeBoxContentPicker() {
-  const el = document.getElementById('tb-new-contents');
-  if (!el) return;
-  const flavors = (dashboardData.inventory || []).filter(i => i.active !== false);
-  el.innerHTML = flavors.length ? flavors.map(item => `
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
-      <span style="font-size:0.9rem;">${item.placeholder_emoji || '🍽️'} ${escapeHtml(item.cookie_name)}</span>
-      <input type="number" min="0" value="0" data-flavor-name="${escapeHtml(item.cookie_name)}" class="tb-content-qty" style="width:70px;">
+  el.innerHTML = items.length ? items.map(item => `
+    <div class="mm-content-picker-row">
+      <label for="mm-newbox-qty-${item.id}">${item.placeholder_emoji || '🍪'} ${escapeHtml(item.cookie_name)} <span style="color:var(--ink-soft); font-weight:400;">(${item.product_type === 'cinnamon_roll' ? 'Cinnamon Roll' : 'Cookie'})</span></label>
+      <input type="number" min="0" class="mm-newbox-qty-input" id="mm-newbox-qty-${item.id}" data-name="${escapeHtml(item.cookie_name)}" value="${existingQtys[item.cookie_name] || ''}" placeholder="0">
     </div>
-  `).join('') : '<div class="empty-note">Add a flavor above first — theme boxes are built from your existing flavors.</div>';
+  `).join('') : '<div class="empty-note">Add some flavors first, then come back to build a box.</div>';
 }
 
-document.getElementById('tb-add-btn').addEventListener('click', async () => {
-  const errorBox = document.getElementById('tb-add-error');
+document.getElementById('mm-newbox-add-btn').addEventListener('click', async () => {
+  const errorBox = document.getElementById('mm-newbox-error');
   errorBox.style.display = 'none';
-  const name = document.getElementById('tb-new-name').value.trim();
-  const price = parseFloat(document.getElementById('tb-new-price').value);
-  const emoji = document.getElementById('tb-new-emoji').value.trim();
-  const desc = document.getElementById('tb-new-desc').value.trim();
+
+  const name = document.getElementById('mm-newbox-name').value.trim();
+  const price = parseFloat(document.getElementById('mm-newbox-price').value);
+  const desc = document.getElementById('mm-newbox-desc').value.trim();
+  const emoji = document.getElementById('mm-newbox-emoji').value.trim();
 
   const contents = {};
-  document.querySelectorAll('.tb-content-qty').forEach(input => {
+  document.querySelectorAll('.mm-newbox-qty-input').forEach(input => {
     const qty = parseInt(input.value) || 0;
-    if (qty > 0) contents[input.dataset.flavorName] = qty;
+    if (qty > 0) contents[input.dataset.name] = qty;
   });
 
   if (!name || isNaN(price) || price < 0) {
@@ -1768,71 +1861,41 @@ document.getElementById('tb-add-btn').addEventListener('click', async () => {
     return;
   }
   if (Object.keys(contents).length === 0) {
-    errorBox.textContent = 'Set a quantity for at least one flavor.';
+    errorBox.textContent = 'Set a quantity for at least one flavor to include in the box.';
     errorBox.style.display = 'block';
     return;
   }
 
-  const btn = document.getElementById('tb-add-btn');
+  const btn = document.getElementById('mm-newbox-add-btn');
   btn.disabled = true;
-  btn.textContent = 'Adding...';
+  btn.textContent = 'Creating...';
   try {
-    await callAdmin('add_theme_box', { name, price, placeholder_emoji: emoji || null, description: desc || null, contents });
+    const photoFile = document.getElementById('mm-newbox-photo').files[0];
+    let img_url = null;
+    if (photoFile) {
+      btn.textContent = 'Uploading photo...';
+      img_url = await uploadMenuPhoto(photoFile, 'themebox');
+      btn.textContent = 'Creating...';
+    }
+    await callAdmin('add_theme_box', {
+      name, price, placeholder_emoji: emoji || null, img_url, description: desc || null, contents,
+    });
+    document.getElementById('mm-newbox-name').value = '';
+    document.getElementById('mm-newbox-price').value = '';
+    document.getElementById('mm-newbox-desc').value = '';
+    document.getElementById('mm-newbox-emoji').value = '';
+    document.getElementById('mm-newbox-photo').value = '';
     const refreshed = await callAdmin('dashboard_data');
-    if (refreshed.success) { dashboardData = refreshed; renderMenuManagement(); }
-    document.getElementById('tb-new-name').value = '';
-    document.getElementById('tb-new-price').value = '';
-    document.getElementById('tb-new-emoji').value = '';
-    document.getElementById('tb-new-desc').value = '';
-    showToast('Theme box added ✧');
+    if (refreshed.success) { dashboardData = refreshed; renderAll(); }
+    showToast('New box created ✧');
   } catch (err) {
-    errorBox.textContent = err.message || 'Something went wrong adding this box.';
+    errorBox.textContent = 'Could not create box: ' + err.message;
     errorBox.style.display = 'block';
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Add Theme Box';
+    btn.textContent = 'Create Box';
   }
 });
-
-// Same lightweight prompt() pattern as flavor editing — contents are edited
-// as "Flavor:qty, Flavor:qty" so this doesn't need a second full form.
-async function openThemeBoxEditPrompt(id) {
-  const box = dashboardData.themeBoxes.find(b => b.id === id);
-  if (!box) return;
-  const newName = prompt('Box name:', box.name);
-  if (newName === null) return;
-  const newPriceStr = prompt('Price ($):', box.price || 0);
-  if (newPriceStr === null) return;
-  const newDesc = prompt('Description:', box.description || '');
-  if (newDesc === null) return;
-  const currentContents = Object.entries(box.contents || {}).map(([n, q]) => `${n}:${q}`).join(', ');
-  const newContentsStr = prompt('Contents, as "Flavor:qty, Flavor:qty":', currentContents);
-  if (newContentsStr === null) return;
-
-  const newPrice = parseFloat(newPriceStr);
-  if (isNaN(newPrice) || newPrice < 0) { alert('Please enter a valid price.'); return; }
-
-  const contents = {};
-  newContentsStr.split(',').forEach(pair => {
-    const [rawName, rawQty] = pair.split(':');
-    if (!rawName || !rawQty) return;
-    const qty = parseInt(rawQty.trim());
-    if (qty > 0) contents[rawName.trim()] = qty;
-  });
-  if (Object.keys(contents).length === 0) { alert('Please list at least one flavor with a quantity.'); return; }
-
-  try {
-    await callAdmin('update_theme_box', { id, name: newName.trim(), price: newPrice, description: newDesc.trim(), contents });
-    box.name = newName.trim();
-    box.price = newPrice;
-    box.description = newDesc.trim();
-    box.contents = contents;
-    renderThemeBoxManagement();
-    showToast('Theme box updated ✧');
-  } catch (err) {
-    alert('Could not save changes: ' + err.message);
-  }
-}
 
 function getWeekStart(dateStr) {
   const d = new Date(dateStr);
@@ -2255,39 +2318,6 @@ function contactLinksHtml(phone, email) {
   return links.length ? `<div style="display:flex; gap:8px; margin:4px 0 0; flex-wrap:wrap;">${links.join('')}</div>` : '';
 }
 
-// Checks this order's items against CURRENT combined stock (on-hand +
-// frozen dough), so Mel can see at a glance whether she can fulfill it
-// from what she has right now or needs to bake more first. This checks
-// each order on its own — it doesn't net out demand from her other
-// pending orders competing for the same stock (the Baking To-Do List
-// above already covers that combined view).
-function orderStockStatus(o) {
-  const byName = {};
-  (dashboardData.inventory || []).forEach(item => { byName[item.cookie_name] = item; });
-  const shortfalls = [];
-  Object.entries(o.cookies || {}).forEach(([name, qtyNeeded]) => {
-    const item = byName[name];
-    if (!item) return; // not a tracked flavor (e.g. a theme box name) — nothing to check
-    const available = (item.on_hand_count || 0) + (item.stock_count || 0);
-    if (Number(qtyNeeded) > available) {
-      shortfalls.push({ name, needed: Number(qtyNeeded), available });
-    }
-  });
-  return { ok: shortfalls.length === 0, shortfalls };
-}
-
-function orderStockBadgeHtml(o) {
-  // Only worth showing for orders that still need baking/fulfilling —
-  // a completed or cancelled order isn't waiting on stock anymore.
-  if (o.status === 'completed' || o.status === 'cancelled') return '';
-  const { ok, shortfalls } = orderStockStatus(o);
-  if (ok) {
-    return `<div class="order-detail" style="color:#2e8b57; font-weight:600;">✅ Enough in stock right now</div>`;
-  }
-  const detail = shortfalls.map(s => `${escapeHtml(s.name)} (need ${s.needed}, have ${s.available})`).join(', ');
-  return `<div class="order-detail" style="color:#c0025e; font-weight:600;">⚠️ Short: ${detail}</div>`;
-}
-
 function orderRowHtml(o, customerCounts) {
   const typeByName = {};
   (dashboardData.inventory || []).forEach(item => { typeByName[item.cookie_name] = item.product_type || 'cookie'; });
@@ -2307,7 +2337,6 @@ function orderRowHtml(o, customerCounts) {
       </div>
       ${contactLinksHtml(o.phone, o.email)}
       <div class="order-detail">${cookieText || 'No items listed'}</div>
-      ${orderStockBadgeHtml(o)}
       ${extras.length ? `<div class="order-detail" style="color:var(--pink-hot); font-weight:600;">${extras.join(' · ')}</div>` : ''}
       <div class="order-detail">${o.fulfillment_type === 'pickup' ? 'Pickup — ' + escapeHtml(o.pickup_location || 'TBD') : 'Delivery — ' + escapeHtml(o.delivery_address || 'TBD')}</div>
       ${(() => {
@@ -3977,14 +4006,7 @@ function renderRepeatTripButton() {
   btn.style.display = 'block';
   btn.textContent = `🔁 Repeat Last Trip (${tripItems.length} item${tripItems.length === 1 ? '' : 's'})`;
   btn.onclick = () => {
-    // The tax line from last time goes into the tax field, not the cart —
-    // otherwise it'd sit alongside the tax field and risk being counted twice.
-    let repeatedTax = 0;
     tripItems.forEach(e => {
-      if (e.ingredient === 'Sales Tax' && !e.custom_note) {
-        repeatedTax += Number(e.amount);
-        return;
-      }
       expenseCart.push({
         ingredient: e.ingredient,
         custom_note: e.custom_note,
@@ -3993,7 +4015,6 @@ function renderRepeatTripButton() {
         category: e.category || 'ingredient',
       });
     });
-    if (repeatedTax > 0) document.getElementById('expense-tax-input').value = repeatedTax.toFixed(2);
     renderCart();
     document.getElementById('expense-cart-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
@@ -4002,19 +4023,14 @@ function renderRepeatTripButton() {
 function renderCart() {
   const list = document.getElementById('expense-cart-list');
   const saveBtn = document.getElementById('save-trip-btn');
-  const taxWrap = document.getElementById('expense-tax-wrap');
 
   if (expenseCart.length === 0) {
     list.innerHTML = '';
     saveBtn.style.display = 'none';
-    taxWrap.style.display = 'none';
     return;
   }
 
-  const itemsTotal = expenseCart.reduce((sum, item) => sum + item.amount, 0);
-  const taxAmount = parseFloat(document.getElementById('expense-tax-input').value) || 0;
-  const grandTotal = itemsTotal + taxAmount;
-
+  const total = expenseCart.reduce((sum, item) => sum + item.amount, 0);
   list.innerHTML = expenseCart.map((item, i) => {
     const typeTag = item.product_type === 'cinnamon_roll' ? ' · 🥐' : item.product_type === 'cookie' ? ' · 🍪' : '';
     return `
@@ -4026,9 +4042,7 @@ function renderCart() {
       <button class="cart-remove-btn" data-index="${i}" title="Remove">✕</button>
     </div>
   `;
-  }).join('')
-  + (taxAmount > 0 ? `<div class="cart-item"><div><div class="cart-item-name">Sales Tax</div></div><span>${money(taxAmount)}</span></div>` : '')
-  + `<div class="cart-summary"><span>Trip Total</span><span>${money(grandTotal)}</span></div>`;
+  }).join('') + `<div class="cart-summary"><span>Cart Total</span><span>${money(total)}</span></div>`;
 
   list.querySelectorAll('.cart-remove-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -4038,9 +4052,7 @@ function renderCart() {
   });
 
   saveBtn.style.display = 'block';
-  taxWrap.style.display = 'block';
 }
-document.getElementById('expense-tax-input').addEventListener('input', renderCart);
 
 function addToCart() {
   const errBox = document.getElementById('expense-error');
@@ -4080,139 +4092,11 @@ document.getElementById('expense-amount-input').addEventListener('keydown', (e) 
   if (e.key === 'Enter') addToCart();
 });
 
-// Reads a photo of a receipt right in the browser (nothing uploaded
-// anywhere for this step) and drops each line item straight into the
-// cart, so a busy shopping trip doesn't need to be retyped by hand from
-// a paper receipt later. This is best-effort text recognition, not a
-// guarantee — lines it can't confidently read as "name + price" are just
-// skipped rather than guessed at, and everything lands in the cart for
-// her to review, edit, or remove before saving.
-const RECEIPT_SKIP_KEYWORDS = [
-  'subtotal', 'sub total', 'total', 'tax', 'cash', 'change due', 'change',
-  'debit', 'credit', 'visa', 'mastercard', 'discover', 'amex', 'balance',
-  'card', 'tend', 'ref #', 'ref#', 'auth', 'approved', 'savings', 'you saved',
-  'coupon', 'ebt', 'member', 'thank you', 'www.', '.com', 'store #', 'manager',
-  'cashier', 'terminal', 'transaction', 'items sold', '# items', 'survey',
-];
-
-function parseReceiptText(text) {
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  const items = [];
-  const priceLine = /^(.{2,40}?)\s+\$?(\d{1,4}\.\d{2})\s*[A-Za-z]?$/;
-
-  for (const line of lines) {
-    const lower = line.toLowerCase();
-    if (RECEIPT_SKIP_KEYWORDS.some(kw => lower.includes(kw))) continue;
-
-    const match = line.match(priceLine);
-    if (!match) continue;
-
-    let name = match[1].replace(/[\s._-]+$/, '').trim();
-    const amount = parseFloat(match[2]);
-    // Skip anything that's basically just a number/barcode with no real name
-    if (!name || /^[\d\s]+$/.test(name) || amount <= 0 || amount > 500) continue;
-
-    // Title-case for readability — receipts are usually shouty all-caps
-    name = name.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
-
-    items.push({ name, amount });
-  }
-  return items;
-}
-
-// Pulls a total sales-tax amount off the same receipt text, so scanning a
-// receipt can fill in the new Sales Tax field automatically instead of
-// making her look it up and retype it. Looks for a line that reads like
-// "TAX" or "SALES TAX" followed by a dollar amount — if a receipt shows
-// tax broken out by category (state tax, local tax, etc.) this adds them
-// together, since that's still what she actually paid in tax.
-function parseReceiptTax(text) {
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  const taxLine = /^[a-z .]*tax[a-z .]*\s+\$?(\d{1,3}\.\d{2})\s*$/i;
-  let total = 0;
-  for (const line of lines) {
-    if (/subtotal/i.test(line)) continue;
-    const match = line.match(taxLine);
-    if (match) total += parseFloat(match[1]);
-  }
-  return Math.round(total * 100) / 100;
-}
-
-document.getElementById('scan-receipt-btn').addEventListener('click', async () => {
-  const fileInput = document.getElementById('expense-receipt-input');
-  const statusEl = document.getElementById('scan-receipt-status');
-  const btn = document.getElementById('scan-receipt-btn');
-  const file = fileInput.files[0];
-
-  if (!file) {
-    showToast('Choose a receipt photo above first');
-    return;
-  }
-  if (typeof Tesseract === 'undefined') {
-    showToast('Photo scanning failed to load — check your connection and try again');
-    return;
-  }
-
-  btn.disabled = true;
-  statusEl.style.display = 'block';
-  statusEl.textContent = '📷 Reading your receipt… this can take a moment';
-
-  try {
-    const result = await Tesseract.recognize(file, 'eng', {
-      logger: (info) => {
-        if (info.status === 'recognizing text' && info.progress) {
-          statusEl.textContent = `📷 Reading your receipt… ${Math.round(info.progress * 100)}%`;
-        }
-      },
-    });
-    const text = (result?.data?.text || '').trim();
-    if (!text) {
-      showToast('Could not find any readable text in that photo — try a clearer, flatter shot');
-      return;
-    }
-
-    const parsedItems = parseReceiptText(text);
-    const parsedTax = parseReceiptTax(text);
-    if (parsedItems.length === 0 && parsedTax === 0) {
-      showToast("Couldn't confidently pick out line items — you may need to add these by hand this time");
-      return;
-    }
-
-    parsedItems.forEach(({ name, amount }) => {
-      expenseCart.push({
-        ingredient: 'Other',
-        custom_note: name,
-        amount,
-        quantity: 1,
-        category: expenseCategory,
-        product_type: null,
-      });
-    });
-    if (parsedTax > 0) {
-      const taxInput = document.getElementById('expense-tax-input');
-      const existing = parseFloat(taxInput.value) || 0;
-      taxInput.value = (existing + parsedTax).toFixed(2);
-    }
-    renderCart();
-    document.getElementById('expense-cart-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    const taxNote = parsedTax > 0 ? ` plus ${money(parsedTax)} tax` : '';
-    showToast(`Added ${parsedItems.length} item${parsedItems.length === 1 ? '' : 's'}${taxNote} from your receipt — check them over before saving ✧`);
-  } catch (err) {
-    console.error('Receipt scan failed:', err);
-    showToast('Something went wrong reading that receipt — please try again');
-  } finally {
-    statusEl.style.display = 'none';
-    btn.disabled = false;
-  }
-});
-
 async function saveShoppingTrip() {
   if (expenseCart.length === 0) return;
   const date_spent = document.getElementById('expense-date-input').value || null;
   const vendor = document.getElementById('expense-vendor-input').value.trim() || null;
   const storeAddress = document.getElementById('trip-store-address-input').value.trim();
-  const taxInput = document.getElementById('expense-tax-input');
-  const taxAmount = parseFloat(taxInput.value) || 0;
   const btn = document.getElementById('save-trip-btn');
   btn.disabled = true;
   btn.textContent = 'Saving...';
@@ -4229,16 +4113,8 @@ async function saveShoppingTrip() {
       receipt_url = publicUrlData.publicUrl;
     }
 
-    // The sales tax paid on a trip is tracked as its own line item (named
-    // "Sales Tax") rather than folded silently into an item's price — that
-    // way it shows up honestly in her spend totals and profit/tax estimate,
-    // while still being easy to spot and exclude if she ever wants to.
-    const itemsToSave = taxAmount > 0
-      ? [...expenseCart, { ingredient: 'Sales Tax', custom_note: null, amount: taxAmount, quantity: 1, category: expenseCategory, product_type: null }]
-      : expenseCart;
-
-    await callAdmin('add_manual_expenses_batch', { items: itemsToSave, date_spent, vendor, receipt_url });
-    itemsToSave.forEach(item => {
+    await callAdmin('add_manual_expenses_batch', { items: expenseCart, date_spent, vendor, receipt_url });
+    expenseCart.forEach(item => {
       dashboardData.manualExpenses.unshift({
         id: 'temp-' + Date.now() + Math.random(),
         ingredient: item.ingredient,
@@ -4254,7 +4130,6 @@ async function saveShoppingTrip() {
       });
     });
     expenseCart = [];
-    taxInput.value = '';
     fileInput.value = '';
     renderCart();
     renderEarnings();
@@ -4690,18 +4565,6 @@ const EMAIL_TEMPLATES = {
     subject: "You're Getting First Dibs 👑",
     body: "Because you're on my list, you get to hear about this before anyone else!\n\n[Share your announcement here — new flavor, early access, limited batch, etc.]\n\nThanks for being one of my favorite people to bake for.\n— Meliese",
   },
-  noWaitlist: {
-    subject: "Good News — No More Waiting List! 🍪",
-    body: "You asked to be notified when a flavor came back in stock — and I've got good news: I don't run out the way I used to, so there's no more waiting list needed!\n\nCome on over and order whenever you're craving something sweet.\n\nIf you'd like to keep hearing from me about new flavors and promos going forward, grab the $2-off welcome offer on my home page — that's my main list these days.\n\nCan't wait to bake for you!\n— Meliese",
-  },
-  welcomeSubscriber: {
-    subject: "Welcome To The Family! 💌",
-    body: "Hey there — thank you so much for joining my list! I'm so glad you're here.\n\nAs a reminder, your $2-off code is ready to use on your very first order whenever you're ready. From here on, I'll use this list to let you know about new flavors, sales, and anything fun happening at Mel's Treat — nothing spammy, promise!\n\nCan't wait to bake for you soon.\n\nXO,\nMeliese",
-  },
-  meetMeliese: {
-    subject: "A Little About Mel's Treat 👋",
-    body: "Hi! Since you just joined my list, I wanted to introduce myself.\n\nI'm Meliese, and Mel's Treat started as just me and a mixing bowl, baking treats for family and friends. Now I get to bake for you too, and it means more to me than you know.\n\nFeel free to reply to this email anytime — I love hearing from my customers!\n\nTalk soon,\nMeliese",
-  },
   blank: { subject: "", body: "" },
 };
 
@@ -4715,78 +4578,19 @@ document.querySelectorAll('.email-template-btn').forEach(btn => {
   });
 });
 
-let audienceCounts = { signups: 0, restock: 0 };
-let emailAudience = 'signups';
-
-document.querySelectorAll('.email-audience-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.email-audience-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    emailAudience = btn.dataset.audience;
-    updateAudienceNote();
-  });
-});
+let audienceCounts = { signups: 0 };
 
 function updateAudienceNote() {
   const note = document.getElementById('audience-count-note');
-  const consentNote = document.getElementById('audience-consent-note');
-  const count = audienceCounts[emailAudience] ?? 0;
-
-  if (emailAudience === 'restock') {
-    note.textContent = count > 0
-      ? `🍪 This will send to ${count} customer${count === 1 ? '' : 's'} who asked to be told when an item was back in stock.`
-      : `🍪 Nobody's on this list yet — it fills up whenever a customer asks to be notified an item is back in stock.`;
-    consentNote.textContent = 'These folks specifically asked to hear about availability, not general promos — best used for a one-time "here\'s what changed" note (like the "No More Waitlist" template) rather than ongoing marketing.';
-  } else {
-    note.textContent = count > 0
-      ? `💌 This will send to ${count} opted-in subscriber${count === 1 ? '' : 's'}.`
-      : `💌 Nobody's opted in yet — this list fills up as customers use the "$2 off" signup on your home page.`;
-    consentNote.textContent = 'This only ever goes to people who signed up for the $2-off welcome offer — never to emails collected from regular orders. That keeps things opt-in only, the way email marketing should work.';
-  }
+  const count = audienceCounts.signups ?? 0;
+  note.textContent = count > 0
+    ? `💌 This will send to ${count} opted-in subscriber${count === 1 ? '' : 's'}.`
+    : `💌 Nobody's opted in yet — this list fills up as customers use the "$2 off" signup on your home page.`;
 }
 
 function textToHtml(text) {
   return text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
 }
-
-let emailImageUrl = null;
-
-function buildEmailHtml(body) {
-  const imageHtml = emailImageUrl
-    ? `<img src="${emailImageUrl}" alt="" style="max-width:100%; border-radius:12px; margin-bottom:16px; display:block;">`
-    : '';
-  return imageHtml + textToHtml(body);
-}
-
-document.getElementById('email-image-input').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  const statusEl = document.getElementById('email-image-status');
-  if (!file) return;
-
-  statusEl.style.display = 'block';
-  statusEl.textContent = 'Uploading picture...';
-  try {
-    const supabase = await getSupabase();
-    const path = `email_${Date.now()}_${file.name}`;
-    const { error: uploadError } = await supabase.storage.from('email-images').upload(path, file);
-    if (uploadError) throw uploadError;
-    const { data: publicUrlData } = supabase.storage.from('email-images').getPublicUrl(path);
-    emailImageUrl = publicUrlData.publicUrl;
-
-    document.getElementById('email-image-preview').src = emailImageUrl;
-    document.getElementById('email-image-preview-wrap').style.display = 'block';
-    statusEl.style.display = 'none';
-  } catch (err) {
-    console.error('Image upload failed:', err);
-    statusEl.textContent = 'Could not upload that picture — please try again.';
-  }
-});
-
-document.getElementById('email-image-remove-btn').addEventListener('click', () => {
-  emailImageUrl = null;
-  document.getElementById('email-image-input').value = '';
-  document.getElementById('email-image-preview-wrap').style.display = 'none';
-});
 
 async function loadAudienceCounts() {
   try {
@@ -4819,7 +4623,7 @@ document.getElementById('send-test-email-btn').addEventListener('click', async (
   btn.textContent = 'Sending...';
   try {
     const data = await callFunction('send-marketing-email', 'send_campaign', {
-      subject, html: buildEmailHtml(body), testEmail: 'meliese-riggans@melstreat.com', audience: emailAudience,
+      subject, html: textToHtml(body), testEmail: 'meliese-riggans@melstreat.com',
     });
     if (!data.success) throw new Error(data.message || 'Could not send test email.');
     successBox.textContent = 'Test email sent to your inbox! 💌';
@@ -4847,28 +4651,24 @@ document.getElementById('send-campaign-btn').addEventListener('click', async () 
     return;
   }
 
-  const count = audienceCounts[emailAudience] ?? 0;
-  const audienceLabel = emailAudience === 'restock' ? 'restock-alert signup' : 'opted-in subscriber';
+  const count = audienceCounts.signups ?? 0;
   if (count === 0) {
-    errBox.textContent = `No ${audienceLabel}s to send to yet.`;
+    errBox.textContent = 'No opted-in subscribers to send to yet.';
     errBox.style.display = 'block';
     return;
   }
-  if (!confirm(`Send this email to ${count} ${audienceLabel}${count === 1 ? '' : 's'}? This can't be undone.`)) return;
+  if (!confirm(`Send this email to ${count} opted-in subscriber${count === 1 ? '' : 's'}? This can't be undone.`)) return;
 
   const btn = document.getElementById('send-campaign-btn');
   btn.disabled = true;
   btn.textContent = 'Sending...';
   try {
     const data = await callFunction('send-marketing-email', 'send_campaign', {
-      subject, html: buildEmailHtml(body), audience: emailAudience,
+      subject, html: textToHtml(body),
     });
     if (!data.success) throw new Error(data.message || 'Could not send campaign.');
     successBox.textContent = `Sent to ${data.sent} of ${data.total} recipients! 🎉`;
     successBox.style.display = 'block';
-    emailImageUrl = null;
-    document.getElementById('email-image-input').value = '';
-    document.getElementById('email-image-preview-wrap').style.display = 'none';
   } catch (err) {
     errBox.textContent = err.message || 'Something went wrong.';
     errBox.style.display = 'block';
@@ -4895,6 +4695,8 @@ const SITE_LINKS = [
   { name: 'Review — Thank You', url: 'https://melstreat.com/review-thankyou.html' },
   { name: 'Donations', url: 'https://melstreat.com/donations.html' },
   { name: 'Links Page', url: 'https://melstreat.com/links.html' },
+  { name: 'Bio Link (for social bios)', url: 'https://melstreat.com/bio.html' },
+  { name: 'Shop Links (for in-shop QR/menu)', url: 'https://melstreat.com/shop-links.html' },
   { name: 'Privacy Policy', url: 'https://melstreat.com/privacy-policy.html' },
   { name: 'Admin Dashboard', url: 'https://melstreat.com/admin-dashboard.html' },
   { name: 'Admin — Discount Codes', url: 'https://melstreat.com/admin-discounts.html' },

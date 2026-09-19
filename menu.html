@@ -870,7 +870,7 @@ let CATEGORIES = [
       { key: 'mm', img: 'assets/cookie-mm.png', name: "M&M Rainbow Crunch", desc: "Packed with colorful melty M&M's in every bite.", allergens: ['dairy','eggs','gluten','soy'] },
       { key: 'cookie_monster', img: 'assets/cookie-monster.png', name: 'Blue Cookie Monster Mash', desc: 'Thick, chewy, loaded with milk & white chocolate.', allergens: ['dairy','eggs','gluten','soy'] },
       { key: 'red_velvet', img: 'assets/cookie-red-velvet.png', name: 'Oreo Red Velvet Dream', desc: 'White chocolate drizzle with Oreo chunks.', allergens: ['dairy','eggs','gluten','soy'] },
-      { key: 'smores', img: 'assets/cookie-smores.png', name: "Toasty Campfire S'mores", desc: 'Gooey marshmallow, chocolate & graham crackers.', allergens: ['dairy','eggs','gluten','soy','marshmallow','corn','gelatin'] },
+      { key: 'smores', img: 'assets/cookie-smores.png', name: "Toasty Campfire S'mores", desc: 'Gooey marshmallow, chocolate & graham crackers.', allergens: ['dairy','eggs','gluten','soy'] },
     ],
   },
   {
@@ -882,7 +882,7 @@ let CATEGORIES = [
       { key: 'classic_cinnamon', placeholder: '🥐', name: 'Classic Cinnamon', desc: 'The OG — warm cinnamon swirl with rich cream cheese icing.', allergens: ['dairy','eggs','gluten'] },
       { key: 'brown_sugar_caramel', placeholder: '🍮', name: 'Brown Sugar Caramel', desc: 'Deep brown sugar swirl finished with a caramel drizzle.', allergens: ['dairy','eggs','gluten'] },
       { key: 'cookies_and_cream_roll', placeholder: '🍪', name: 'Cookies & Cream', desc: 'Cinnamon swirl loaded with crushed Oreo & vanilla icing.', allergens: ['dairy','eggs','gluten','soy'] },
-      { key: 'smores_roll', placeholder: '🔥', name: "S'mores Roll", desc: 'Chocolate, marshmallow & graham crumble on a cinnamon base.', allergens: ['dairy','eggs','gluten','soy','marshmallow','corn','gelatin'] },
+      { key: 'smores_roll', placeholder: '🔥', name: "S'mores Roll", desc: 'Chocolate, marshmallow & graham crumble on a cinnamon base.', allergens: ['dairy','eggs','gluten','soy'] },
     ],
   },
   {
@@ -892,7 +892,7 @@ let CATEGORIES = [
     products: [
       { key: 'sweetheart_box', placeholder: '💕', name: 'Sweetheart Box', desc: "A little love note in cookie form — 2 Oreo Red Velvet Dream, 2 M&M Rainbow Crunch, 2 The Classic Chocolate Chip, gift-wrapped.", allergens: ['dairy','eggs','gluten','soy'],
         contents: { 'Oreo Red Velvet Dream': 2, 'M&M Rainbow Crunch': 2, 'The Classic Chocolate Chip': 2 } },
-      { key: 'party_box', placeholder: '🎉', name: 'Party Box', desc: "The crowd-pleaser lineup — 2 Blue Cookie Monster Mash, 2 M&M Rainbow Crunch, 2 Toasty Campfire S'mores, gift-wrapped.", allergens: ['dairy','eggs','gluten','soy','marshmallow','corn','gelatin'],
+      { key: 'party_box', placeholder: '🎉', name: 'Party Box', desc: "The crowd-pleaser lineup — 2 Blue Cookie Monster Mash, 2 M&M Rainbow Crunch, 2 Toasty Campfire S'mores, gift-wrapped.", allergens: ['dairy','eggs','gluten','soy'],
         contents: { 'Blue Cookie Monster Mash': 2, 'M&M Rainbow Crunch': 2, "Toasty Campfire S'mores": 2 } },
       { key: 'cinnamon_lovers_box', placeholder: '🥐', name: 'Cinnamon Lovers Box', desc: 'A taste of three cinnamon roll flavors — Classic, Brown Sugar Caramel, and Cookies & Cream.', allergens: ['dairy','eggs','gluten','soy'],
         contents: { 'Classic Cinnamon': 1, 'Brown Sugar Caramel': 1, 'Cookies & Cream': 1 } },
@@ -943,8 +943,6 @@ async function loadLiveMenuData() {
 
     const cookieItems = invRes.data.filter(i => i.product_type === 'cookie');
     const cinnamonItems = invRes.data.filter(i => i.product_type === 'cinnamon_roll');
-    const cakeSliceItems = invRes.data.filter(i => i.product_type === 'cake_slice');
-    const brownieItems = invRes.data.filter(i => i.product_type === 'brownie');
     if (cookieItems.length === 0 && cinnamonItems.length === 0) return; // keep fallback
 
     const toProduct = (item) => ({
@@ -975,46 +973,14 @@ async function loadLiveMenuData() {
       });
     }
     if (themeRes.data && themeRes.data.length > 0 && isCategoryVisible('theme_boxes')) {
-      // A theme box's allergens aren't set directly — they're whatever its
-      // contained flavors carry, unioned together, so this always reflects
-      // reality even as flavors (and their allergens) change later.
-      const allergensByFlavorName = {};
-      invRes.data.forEach(i => { allergensByFlavorName[i.cookie_name] = Array.isArray(i.allergens) ? i.allergens : []; });
-      const allergensForBox = (contents) => {
-        const set = new Set();
-        Object.keys(contents || {}).forEach(flavorName => {
-          (allergensByFlavorName[flavorName] || []).forEach(a => set.add(a));
-        });
-        return Array.from(set);
-      };
-
       newCategories.push({
         key: 'theme_boxes', label: 'Theme Boxes', icon: '🎁',
         unitPrice: Number(themeRes.data[0].price) || 15,
         maxPerOrder: 6, isThemeBox: true,
         products: themeRes.data.map(box => ({
-          key: box.id, placeholder: box.placeholder_emoji || '🎁', name: box.name,
-          desc: box.description || '', allergens: allergensForBox(box.contents), contents: box.contents || {},
+          key: box.id, img: box.img_url || null, placeholder: box.placeholder_emoji || '🎁', name: box.name,
+          desc: box.description || '', allergens: [], contents: box.contents || {},
         })),
-      });
-    }
-    // Cake slices and brownies are sold individually (no box-tier bulk
-    // pricing, same as theme boxes) — omitting `boxTiers` is what puts a
-    // category into that flat "just add it to the cart" mode.
-    if (cakeSliceItems.length > 0 && isCategoryVisible('cake_slices')) {
-      newCategories.push({
-        key: 'cake_slices', label: 'Cake Slices', icon: '🍰',
-        unitPrice: Number(cakeSliceItems[0].price) || 4,
-        maxPerOrder: 24,
-        products: cakeSliceItems.map(toProduct),
-      });
-    }
-    if (brownieItems.length > 0 && isCategoryVisible('brownies')) {
-      newCategories.push({
-        key: 'brownies', label: 'Brownies', icon: '🍫',
-        unitPrice: Number(brownieItems[0].price) || 4,
-        maxPerOrder: 24,
-        products: brownieItems.map(toProduct),
       });
     }
     // If every category got hidden (or there's simply nothing left to
@@ -1113,8 +1079,8 @@ function productImageHtml(p, sizeClass) {
 // Small allergen icon row under each photo — the emoji itself is a quick
 // visual flag, and the native title attribute shows the full name on
 // hover/tap-and-hold without needing any extra JS or a tooltip library.
-const ALLERGEN_ICONS = { dairy: '🥛', eggs: '🥚', gluten: '🌾', soy: '🫘', nuts: '🥜', marshmallow: '🍡', corn: '🌽', gelatin: '🧴' };
-const ALLERGEN_NAMES = { dairy: 'Dairy', eggs: 'Eggs', gluten: 'Gluten', soy: 'Soy', nuts: 'Tree Nuts', marshmallow: 'Marshmallow', corn: 'Corn / Corn Syrup', gelatin: 'Gelatin' };
+const ALLERGEN_ICONS = { dairy: '🥛', eggs: '🥚', gluten: '🌾', soy: '🫘', nuts: '🥜' };
+const ALLERGEN_NAMES = { dairy: 'Dairy', eggs: 'Eggs', gluten: 'Gluten', soy: 'Soy', nuts: 'Tree Nuts' };
 function allergenIconsHtml(allergens) {
   if (!Array.isArray(allergens) || allergens.length === 0) return '';
   return `<div class="menu-tile-allergens">${allergens.map(a =>
@@ -1179,7 +1145,7 @@ renderProductGrid();
   setTimeout(() => { splash.style.display = 'none'; }, 2500);
 })();
 
-const ALLERGEN_LABELS = { dairy: '🥛 Dairy', eggs: '🥚 Eggs', gluten: '🌾 Gluten', soy: '🫘 Soy', nuts: '🥜 Tree Nuts', marshmallow: '🍡 Marshmallow', corn: '🌽 Corn / Corn Syrup', gelatin: '🧴 Gelatin' };
+const ALLERGEN_LABELS = { dairy: '🥛 Dairy', eggs: '🥚 Eggs', gluten: '🌾 Gluten', soy: '🫘 Soy', nuts: '🥜 Tree Nuts' };
 
 function openProductLightbox(key) {
   const p = getProduct(key);
@@ -1635,14 +1601,13 @@ function updateDateConstraints() {
   const dateInput = document.getElementById('preferred_date');
   const hasCinnamonRolls = categoryCount('cinnamon_rolls') > 0;
   const hasThemeBoxes = categoryCount('theme_boxes') > 0;
-  const hasOtherBaked = categoryCount('cake_slices') > 0 || categoryCount('brownies') > 0;
 
   // Same-day is only possible when EVERY cookie in the cart can be fully
   // covered by what's actually baked and on hand right now — cinnamon
-  // rolls, theme boxes, cake slices, and brownies always need normal lead
-  // time regardless, since they're never drawn from an "on hand today" pool.
+  // rolls and theme boxes always need normal lead time regardless, since
+  // they're never drawn from an "on hand today" pool.
   const cookieCategory = getCategory('cookies');
-  const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && !hasOtherBaked && cookieCategory &&
+  const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && cookieCategory &&
     cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
     categoryCount('cookies') > 0;
 
@@ -1763,9 +1728,8 @@ checkoutBtn.addEventListener('click', async () => {
   {
     const hasCinnamonRolls = categoryCount('cinnamon_rolls') > 0;
     const hasThemeBoxes = categoryCount('theme_boxes') > 0;
-    const hasOtherBaked = categoryCount('cake_slices') > 0 || categoryCount('brownies') > 0;
     const cookieCategory = getCategory('cookies');
-    const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && !hasOtherBaked && cookieCategory &&
+    const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && cookieCategory &&
       cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
       categoryCount('cookies') > 0;
     const requiredLeadDays = cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1);

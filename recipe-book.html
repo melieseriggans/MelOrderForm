@@ -1848,8 +1848,7 @@ function renderComparePaneContent(key, paneIdx) {
   if (!recipe) return `<div class="compare-empty">Pick a recipe above ✧</div>`;
 
   const cooking = compareCooking[paneIdx];
-  const hasDoubled = recipe.doubled && recipe.doubled.length > 0;
-  const activeSet = (hasDoubled && cookIngSet[key] === 'doubled') ? 'doubled' : 'regular';
+  const activeSet = 'regular';
   if (!checkState[key]) checkState[key] = { ing: { regular: {}, doubled: {} }, steps: {} };
   const state = checkState[key];
 
@@ -1858,18 +1857,23 @@ function renderComparePaneContent(key, paneIdx) {
        <button class="cook-reset" data-pane-cook-reset="${key}">Reset Checks</button>`
     : `<button class="cook-toggle" data-pane-cook-toggle="${paneIdx}">👩‍🍳 Cook Mode</button>`;
 
+  // Same 1x–4x scale picker as the regular recipe pages — compare panes
+  // used to only offer the old hand-typed "doubled" list (or nothing),
+  // so scaling was missing here in both cook mode and the normal view.
+  const scale = recipeScale[key] || 1;
+  const isExpanded = !!scaleExpanded[key];
+  const scaleMiniRow = `
+    <div class="scale-widget">
+      <button type="button" class="scale-toggle-chip ${scale !== 1 ? 'active' : ''}" data-pane-scale-toggle="${key}">⚖️ Scale${scale !== 1 ? ` (${scale}x)` : ''} ${isExpanded ? '▲' : '▼'}</button>
+      ${isExpanded ? `<div class="scale-mini-row">${[1,2,3,4].map(n => `<button type="button" class="scale-mini-btn ${scale === n ? 'active' : ''}" data-pane-scale="${key}" data-scale-value="${n}">${n}x</button>`).join('')}</div>` : ''}
+    </div>`;
+
   let ingHtml, stepHtml, doubledHtml, ingSetSwitcher = '';
 
   if (cooking) {
-    const ingList = activeSet === 'doubled' ? recipe.doubled : recipe.ingredients;
+    const ingList = scale === 1 ? recipe.ingredients : scaledIngredientList(recipe, scale);
     const ingState = state.ing[activeSet] || {};
-    if (hasDoubled) {
-      ingSetSwitcher = `
-        <div class="ingset-switch">
-          <button class="ingset-btn ${activeSet === 'regular' ? 'active' : ''}" data-pane-ingset="${key}" data-ingset-value="regular">Regular</button>
-          <button class="ingset-btn ${activeSet === 'doubled' ? 'active' : ''}" data-pane-ingset="${key}" data-ingset-value="doubled">Doubled</button>
-        </div>`;
-    }
+    ingSetSwitcher = scaleMiniRow;
     ingHtml = ingList.map((i, idx) => `
       <label class="check-row">
         <input type="checkbox" data-pane-check="${key}" data-check-type="ing" data-check-set="${activeSet}" data-check-idx="${idx}" ${ingState[idx] ? 'checked' : ''}>
@@ -1882,11 +1886,11 @@ function renderComparePaneContent(key, paneIdx) {
       </label>`).join('');
     doubledHtml = '';
   } else {
-    ingHtml = recipe.ingredients.map(i => `<div class="item-row ing">${escapeHtml(i)}</div>`).join('');
+    const displayIngredients = scale === 1 ? recipe.ingredients : scaledIngredientList(recipe, scale);
+    ingHtml = displayIngredients.map(i => `<div class="item-row ing">${escapeHtml(i)}</div>`).join('');
     stepHtml = recipe.instructions.map((s, i) => `<div class="item-row step"><span class="num">${i+1}.</span>${escapeHtml(s)}</div>`).join('');
-    doubledHtml = hasDoubled
-      ? `<div class="doubled-box"><div class="section-label">To Double</div>${recipe.doubled.map(i => `<div class="item-row ing">${escapeHtml(i)}</div>`).join('')}</div>`
-      : '';
+    ingSetSwitcher = scaleMiniRow;
+    doubledHtml = '';
   }
 
   const hasNotes = recipe.notes && recipe.notes.trim();
@@ -2017,6 +2021,21 @@ function buildCompareOverlay() {
       const key = btn.getAttribute('data-pane-ingset');
       const value = btn.getAttribute('data-ingset-value');
       cookIngSet[key] = value;
+      buildCompareOverlay();
+    });
+  });
+  panesEl.querySelectorAll('[data-pane-scale]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-pane-scale');
+      const value = parseInt(btn.getAttribute('data-scale-value'));
+      recipeScale[key] = value;
+      buildCompareOverlay();
+    });
+  });
+  panesEl.querySelectorAll('[data-pane-scale-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-pane-scale-toggle');
+      scaleExpanded[key] = !scaleExpanded[key];
       buildCompareOverlay();
     });
   });
