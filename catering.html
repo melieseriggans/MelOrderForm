@@ -7,7 +7,7 @@
 <title>Catering Request – Mel's Treat</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <style>
   :root{
     --pink-light:#fedde4;
@@ -43,6 +43,41 @@
     height:80px;
     border-radius:50%;
     object-fit:cover;
+  }
+
+  .nav-menu-btn{
+    position:absolute; top:16px; right:16px; z-index:5;
+    background:rgba(255,255,255,0.25); border:none; width:36px; height:36px; border-radius:50%;
+    font-size:1rem; color:#fff; cursor:pointer; flex-shrink:0;
+  }
+  @media (min-width: 720px){ .nav-menu-btn{display:none;} }
+
+  .nav-dropdown-overlay{position:fixed; inset:0; background:rgba(46,27,36,0.4); opacity:0; pointer-events:none; transition:opacity 0.2s; z-index:69;}
+  .nav-dropdown-overlay.open{opacity:1; pointer-events:auto;}
+  .nav-dropdown{
+    position:fixed; top:0; right:0; bottom:0; width:min(280px, 80vw);
+    background:var(--white); box-shadow:-6px 0 24px rgba(0,0,0,0.2); z-index:70;
+    transform:translateX(100%); transition:transform 0.25s cubic-bezier(.2,.8,.2,1);
+    padding:0; display:flex; flex-direction:column; border-radius:22px 0 0 22px; overflow:hidden;
+  }
+  .nav-dropdown.open{transform:translateX(0);}
+  .nav-dropdown-header{
+    background:linear-gradient(135deg, var(--pink-hot), #ff5fa8); padding:26px 20px 22px; position:relative;
+    display:flex; align-items:center; gap:12px; flex-shrink:0;
+  }
+  .nav-dropdown-header img{width:46px; height:46px; border-radius:50%; object-fit:cover; border:2.5px solid rgba(255,255,255,0.85); flex-shrink:0;}
+  .nav-dropdown-header .brand-text{color:#fff; font-family:'Fredoka', sans-serif; font-weight:700; font-size:1.02rem;}
+  .nav-dropdown-close{
+    position:absolute; top:14px; right:14px; background:rgba(255,255,255,0.25); border:none; color:#fff;
+    width:30px; height:30px; border-radius:50%; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .nav-dropdown-links{padding:14px; display:flex; flex-direction:column; gap:3px; overflow-y:auto;}
+  .nav-dropdown a{
+    text-decoration:none; color:var(--ink); font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.92rem;
+    padding:13px 14px; border-radius:14px; transition:background 0.15s; display:flex; align-items:center; gap:10px;
+  }
+  .nav-dropdown a:hover{background:var(--pink-light);}
+  @media (min-width: 720px){ .nav-dropdown, .nav-dropdown-overlay{display:none;} }
     margin-bottom:10px;
     box-shadow:0 4px 14px rgba(0,0,0,0.15);
   }
@@ -127,6 +162,12 @@
     object-fit:cover;
     flex-shrink:0;
   }
+  .cookie-thumb-placeholder{
+    display:flex; align-items:center; justify-content:center;
+    background:var(--pink-light); font-size:1.3rem;
+  }
+  .cookie-allergens{display:flex; gap:3px; margin-top:2px;}
+  .allergen-icon{font-size:0.7rem; cursor:help; opacity:0.8;}
   .qty-control{
     display:flex;
     align-items:center;
@@ -248,6 +289,7 @@
 
 <div class="banner">
 
+  <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-label="Menu">☰</button>
   <img src="assets/logo.png" alt="Mel's Treat" class="banner-logo">
   <h1 style="position:relative; display:inline-block;">Catering Request 🎉
     <svg class="hero-star-accent" viewBox="0 0 100 100" style="top:-16px; right:-24px;" aria-hidden="true">
@@ -264,12 +306,31 @@
   <div class="sub">Big Order? Let's Make It Happen — Fill Out The Details Below!</div>
 </div>
 
+<div class="nav-dropdown-overlay" id="nav-dropdown-overlay"></div>
+<div class="nav-dropdown" id="nav-dropdown">
+  <div class="nav-dropdown-header">
+    <img src="assets/logo.png" alt="Mel's Treat">
+    <span class="brand-text">Mel's Treat</span>
+    <button type="button" class="nav-dropdown-close" id="nav-dropdown-close" aria-label="Close menu">✕</button>
+  </div>
+  <div class="nav-dropdown-links">
+    <a href="shop.html">🏠 Home</a>
+    <a href="menu.html">🍪 Shop The Menu</a>
+    <a href="about.html">💗 About Me</a>
+    <a href="testimonials.html">⭐ Reviews</a>
+    <a href="faq.html">❓ FAQ</a>
+    <a href="catering.html">🎉 Catering</a>
+    <a href="links.html">🔗 All Links</a>
+  </div>
+</div>
+
 <div class="container">
-  <a href="https://ordertreats.melstreat.com/" class="back-link" onclick="return smartBack(event, 'https://ordertreats.melstreat.com/')">← Back</a>
+  <a href="https://melstreat.com/" class="back-link" onclick="return smartBack(event, 'https://melstreat.com/')">← Back</a>
 
   <form id="catering-form" class="card">
     <h2>Tell Me About Your Order</h2>
-    <div class="note-highlight">Catering pricing is $28 per dozen, plus a flat $5 catering fee added once per order. Catering starts at 3 dozen — for smaller orders, use the regular order form!</div>
+    <div class="note-highlight">Catering pricing is $28 per dozen, plus a flat $10 catering fee added once per order. Catering starts at 3 dozen — for smaller orders, use the regular order form!</div>
+    <div class="section-note">⏰ Catering orders take more prep than everyday orders — the earlier you reach out, the more likely I can lock in your exact date.</div>
 
     <label for="full_name">Full Name *</label>
     <input type="text" id="full_name" placeholder="Jane Doe" required />
@@ -296,11 +357,43 @@
 
     <div id="price-preview" class="note-highlight hidden" style="margin-top:14px;"></div>
 
+    <label for="event_type">What's The Occasion?</label>
+    <select id="event_type">
+      <option value="">Select…</option>
+      <option>Birthday</option>
+      <option>Wedding</option>
+      <option>Baby Shower</option>
+      <option>Corporate Event</option>
+      <option>Graduation</option>
+      <option>Holiday Party</option>
+      <option>Other</option>
+    </select>
+
+    <label for="guest_count">About How Many Guests?</label>
+    <input type="number" id="guest_count" min="1" placeholder="e.g. 30" inputmode="numeric">
+
     <label for="event_date">Event Date</label>
     <input type="date" id="event_date" />
 
     <label for="event_time">Event Time</label>
     <input type="time" id="event_time" />
+
+    <label for="packaging_pref">How Would You Like It Packaged?</label>
+    <select id="packaging_pref">
+      <option value="">Select…</option>
+      <option value="Individually Wrapped">Individually Wrapped (great for favors or grab-and-go)</option>
+      <option value="Platter / Tray">Platter / Tray (ready to display)</option>
+      <option value="Boxed by Flavor">Boxed by Flavor</option>
+      <option value="No Preference">No Preference — you decide!</option>
+    </select>
+
+    <label for="contact_pref">Best Way To Reach You?</label>
+    <select id="contact_pref">
+      <option value="">Select…</option>
+      <option value="Email">Email</option>
+      <option value="Phone Call">Phone Call</option>
+      <option value="Text">Text</option>
+    </select>
   </form>
 
   <div class="card">
@@ -320,6 +413,15 @@
       <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" />
     </div>
 
+    <label>Any Allergies Or Dietary Notes? (Optional)</label>
+    <div class="section-note">Checking these doesn't guarantee we can fully accommodate — but it helps me plan and ask the right follow-up questions.</div>
+    <div class="choice-group" id="dietary-checks" style="flex-wrap:wrap;">
+      <div class="choice-card dietary-chip" data-diet="Nut Allergy">🥜 Nut Allergy</div>
+      <div class="choice-card dietary-chip" data-diet="Gluten-Free Interest">🌾 Gluten-Free Interest</div>
+      <div class="choice-card dietary-chip" data-diet="Dairy-Free Interest">🥛 Dairy-Free Interest</div>
+      <div class="choice-card dietary-chip" data-diet="Egg Allergy">🥚 Egg Allergy</div>
+    </div>
+
     <label for="special_instructions">Anything Else I Should Know?</label>
     <textarea id="special_instructions" placeholder="Event details, allergies, gift notes, etc."></textarea>
 
@@ -332,6 +434,23 @@
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer>
+const navMenuBtn = document.getElementById('nav-menu-btn');
+const navDropdown = document.getElementById('nav-dropdown');
+const navDropdownOverlay = document.getElementById('nav-dropdown-overlay');
+const navDropdownClose = document.getElementById('nav-dropdown-close');
+if (navMenuBtn) {
+  function closeNavDropdown() {
+    navDropdown.classList.remove('open');
+    navDropdownOverlay.classList.remove('open');
+  }
+  navMenuBtn.addEventListener('click', () => {
+    navDropdown.classList.toggle('open');
+    navDropdownOverlay.classList.toggle('open');
+  });
+  navDropdownOverlay.addEventListener('click', closeNavDropdown);
+  if (navDropdownClose) navDropdownClose.addEventListener('click', closeNavDropdown);
+}
+
 function smartBack(e, fallbackUrl) {
   e.preventDefault();
   var navigatedAway = false;
@@ -368,30 +487,82 @@ async function getSupabase() {
   return _supabaseClient;
 }
 
-const COOKIES = [
-  { key: 'chocolate_chip', img: 'assets/cookie-chocolate-chip.png', name: 'Chocolate Chip Cookies' },
-  { key: 'mm', img: 'assets/cookie-mm.png', name: "M&M Cookie" },
-  { key: 'cookie_monster', img: 'assets/cookie-monster.png', name: 'Cookie Monster Mash Cookies' },
-  { key: 'red_velvet', img: 'assets/cookie-red-velvet.png', name: 'Red Velvet' },
-  { key: 'smores', img: 'assets/cookie-smores.png', name: "S'mores" },
+// This hardcoded list is a SAFE FALLBACK only — the real source of truth
+// is the database (managed from the admin dashboard's Menu tab). The page
+// renders this immediately so it's never blank, then upgrades to live
+// data moments later if the fetch succeeds.
+let COOKIES = [
+  { key: 'chocolate_chip', img: 'assets/cookie-chocolate-chip.png', name: 'The Classic Chocolate Chip', allergens: ['dairy','eggs','gluten','soy'] },
+  { key: 'mm', img: 'assets/cookie-mm.png', name: "M&M Rainbow Crunch", allergens: ['dairy','eggs','gluten','soy'] },
+  { key: 'cookie_monster', img: 'assets/cookie-monster.png', name: 'Blue Cookie Monster Mash', allergens: ['dairy','eggs','gluten','soy'] },
+  { key: 'red_velvet', img: 'assets/cookie-red-velvet.png', name: 'Oreo Red Velvet Dream', allergens: ['dairy','eggs','gluten','soy'] },
+  { key: 'smores', img: 'assets/cookie-smores.png', name: "Toasty Campfire S'mores", allergens: ['dairy','eggs','gluten','soy'] },
 ];
-const qty = {};
+let qty = {};
 COOKIES.forEach(c => qty[c.key] = 0);
 
+const ALLERGEN_ICONS = { dairy: '🥛', eggs: '🥚', gluten: '🌾', soy: '🫘', nuts: '🥜' };
+const ALLERGEN_NAMES = { dairy: 'Dairy', eggs: 'Eggs', gluten: 'Gluten', soy: 'Soy', nuts: 'Tree Nuts' };
+function allergenIconsHtml(allergens) {
+  if (!Array.isArray(allergens) || allergens.length === 0) return '';
+  return `<div class="cookie-allergens">${allergens.map(a =>
+    `<span class="allergen-icon" title="Contains ${ALLERGEN_NAMES[a] || a}">${ALLERGEN_ICONS[a] || '⚠️'}</span>`
+  ).join('')}</div>`;
+}
+
+function cookieImageHtml(c) {
+  if (c.img) return `<img src="${c.img}" alt="${c.name}" class="cookie-thumb" loading="lazy">`;
+  return `<span class="cookie-thumb cookie-thumb-placeholder">${c.placeholder || '🍪'}</span>`;
+}
+
 const list = document.getElementById('cookie-list');
-COOKIES.forEach(c => {
-  const row = document.createElement('div');
-  row.className = 'cookie-row';
-  row.innerHTML = `
-    <span class="name"><img src="${c.img}" alt="${c.name}" class="cookie-thumb" loading="lazy"> ${c.name}</span>
-    <div class="qty-control">
-      <button type="button" data-action="dec" data-key="${c.key}">−</button>
-      <span id="qty-${c.key}">0</span>
-      <button type="button" data-action="inc" data-key="${c.key}">+</button>
-    </div>
-  `;
-  list.appendChild(row);
-});
+function renderCookieList() {
+  list.innerHTML = '';
+  COOKIES.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'cookie-row';
+    row.innerHTML = `
+      <span class="name">${cookieImageHtml(c)}
+        <span>${c.name}${allergenIconsHtml(c.allergens)}</span>
+      </span>
+      <div class="qty-control">
+        <button type="button" data-action="dec" data-key="${c.key}" aria-label="Decrease ${c.name} quantity">−</button>
+        <span id="qty-${c.key}">${qty[c.key] || 0}</span>
+        <button type="button" data-action="inc" data-key="${c.key}" aria-label="Increase ${c.name} quantity">+</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+renderCookieList();
+
+// Upgrade to live flavor data from the database, same safe pattern as
+// the main menu page: skip the swap if the customer already started
+// picking flavors, so their in-progress selection never gets corrupted.
+(async function loadLiveCookieData() {
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.from('inventory').select('*').eq('active', true).eq('product_type', 'cookie').order('sort_order', { ascending: true });
+    if (error || !data || data.length === 0) return;
+
+    const cartHasItems = Object.values(qty).some(q => q > 0);
+    if (cartHasItems) return;
+
+    COOKIES = data.map(item => ({
+      key: item.id,
+      img: item.img_url || null,
+      placeholder: item.placeholder_emoji || '🍪',
+      name: item.cookie_name,
+      allergens: Array.isArray(item.allergens) ? item.allergens : [],
+    }));
+    qty = {};
+    COOKIES.forEach(c => qty[c.key] = 0);
+    renderCookieList();
+  } catch (err) {
+    console.error('Could not load live flavor data, using fallback:', err);
+  }
+})();
+
 list.addEventListener('click', (e) => {
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -412,8 +583,8 @@ dozensSelect.addEventListener('change', () => {
     return;
   }
   const dozens = parseInt(val);
-  const total = dozens * 28 + 5;
-  pricePreview.textContent = `Estimated Total: $${total.toFixed(2)} (${dozens} × $28/dozen + $5 catering fee)`;
+  const total = dozens * 28 + 10;
+  pricePreview.textContent = `Estimated Total: $${total.toFixed(2)} (${dozens} × $28/dozen + $10 catering fee)`;
   pricePreview.classList.remove('hidden');
 });
 
@@ -426,6 +597,17 @@ document.querySelectorAll('[data-fulfillment]').forEach(card => {
   });
 });
 
+// Dietary chips toggle independently (unlike pickup/delivery) since more
+// than one can apply at once.
+document.querySelectorAll('.dietary-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.classList.toggle('selected');
+  });
+});
+function getSelectedDietaryNotes() {
+  return Array.from(document.querySelectorAll('.dietary-chip.selected')).map(c => c.dataset.diet).join(', ') || null;
+}
+
 const errorBox = document.getElementById('form-error');
 const submitBtn = document.getElementById('submit-btn');
 
@@ -436,8 +618,14 @@ submitBtn.addEventListener('click', async () => {
   const email = document.getElementById('email').value.trim();
   const dozens_count_raw = document.getElementById('dozens_count').value;
 
-  if (!full_name || !email || !dozens_count_raw) {
+  if (!full_name || !dozens_count_raw) {
     errorBox.textContent = 'Please fill out all required fields marked with *';
+    errorBox.style.display = 'block';
+    return;
+  }
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailPattern.test(email)) {
+    errorBox.textContent = 'Please enter a valid email.';
     errorBox.style.display = 'block';
     return;
   }
@@ -452,7 +640,7 @@ submitBtn.addEventListener('click', async () => {
     COOKIES.forEach(c => { if (qty[c.key] > 0) cookiesRequested[c.name] = qty[c.key]; });
 
     const dozens_count = dozens_count_raw === 'more' ? null : parseInt(dozens_count_raw);
-    const quoted_total = dozens_count ? (dozens_count * 28 + 5) : null;
+    const quoted_total = dozens_count ? (dozens_count * 28 + 10) : null;
 
     const requestRow = {
       full_name,
@@ -460,11 +648,16 @@ submitBtn.addEventListener('click', async () => {
       phone: document.getElementById('phone').value.trim() || null,
       event_date: document.getElementById('event_date').value || null,
       event_time: document.getElementById('event_time').value || null,
+      event_type: document.getElementById('event_type').value || null,
+      guest_count: document.getElementById('guest_count').value ? parseInt(document.getElementById('guest_count').value) : null,
+      dietary_notes: getSelectedDietaryNotes(),
       dozens_count,
       quoted_total,
       cookies_requested: cookiesRequested,
       fulfillment_type: fulfillment,
       delivery_address: fulfillment === 'delivery' ? (document.getElementById('delivery_address').value.trim() || null) : null,
+      packaging_preference: document.getElementById('packaging_pref').value || null,
+      contact_preference: document.getElementById('contact_pref').value || null,
       special_instructions: (dozens_count_raw === 'more' ? 'Requested MORE than 10 dozen — needs manual quote. ' : '') + (document.getElementById('special_instructions').value.trim() || ''),
     };
 

@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#e20376" />
 <title>Shop The Menu — Mel's Treat</title>
-<meta name="description" content="Shop fresh baked cookie boxes from Mel's Treat with secure checkout.">
+<meta name="description" content="Shop fresh baked cookies and cinnamon rolls from Mel's Treat with secure checkout.">
+<meta property="og:title" content="Shop The Menu — Mel's Treat">
+<meta property="og:description" content="Shop fresh baked cookies and cinnamon rolls from Mel's Treat with secure checkout.">
+<meta property="og:image" content="https://melstreat.com/assets/welcome-banner-new.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -22,6 +27,7 @@
     --cream:#fffaf6;
     --white:#ffffff;
     --gold:#c8912f;
+    --gold-text:#8a611c;
     --gold-light:#f8e8c8;
     --border:#f7c3d6;
     --shadow: 0 6px 20px rgba(226,3,118,0.10);
@@ -133,6 +139,11 @@
   .page-eyebrow::before, .page-eyebrow::after{content:'✦'; color:#c8912f; font-size:0.65rem;}
   .page-header h1{font-family:'Baloo 2', cursive; font-weight:800; color:#e20376; font-size:clamp(1.6rem, 5.2vw, 2.1rem); margin:0 0 6px;}
   .page-header p{color:var(--ink-soft); font-size:0.9rem; margin:0;}
+  .rating-badge{
+    display:inline-flex; align-items:center; gap:6px; background:var(--white); border:1.5px solid var(--gold);
+    border-radius:20px; padding:6px 14px; margin-top:10px; font-size:0.8rem; font-weight:700; color:var(--ink);
+  }
+  .rating-stars{color:var(--gold-text); letter-spacing:1px; font-size:0.85rem;}
 
   /* Category pills */
   .box-menu-section{background:var(--cream); margin-top:12px; border-top:1.5px solid var(--border); border-bottom:1.5px solid var(--border);}
@@ -229,6 +240,8 @@
   .menu-tile-info{padding:8px 6px 10px;}
   .menu-tile-name{font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.72rem; line-height:1.25; margin-bottom:3px; min-height:1.85em;}
   .menu-tile-price{font-family:'Fredoka', sans-serif; font-weight:700; color:#e20376; font-size:0.8rem;}
+  .menu-tile-allergens{display:flex; gap:3px; justify-content:center; padding:4px 6px 0; flex-wrap:wrap;}
+  .allergen-icon{font-size:0.75rem; cursor:help; opacity:0.85; line-height:1;}
   .menu-tile-qty{
     position:absolute; top:6px; right:6px; background:var(--pink-hot); color:var(--white);
     font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.72rem;
@@ -241,6 +254,7 @@
   }
   .menu-tile-stock-tag.low{background:var(--gold-light); color:#8a5a00;}
   .menu-tile-stock-tag.out{background:#f0d0d8; color:#c0025e;}
+  .menu-tile-stock-tag.ready{background:#d7f0dc; color:#2e7d4f;}
 
   .zoom-btn{
     position:absolute; bottom:8px; right:8px; z-index:2;
@@ -459,9 +473,89 @@
     .mini-cart-badge{width:44px; height:42px; font-size:0.85rem;}
     .mini-cart-panel{bottom:calc(100% + 10px); right:0; width:min(210px, 62vw);}
   }
+#splash-screen{
+    position:fixed; inset:0; z-index:9999;
+    background:linear-gradient(160deg, var(--pink-hot), #ff5fa8 60%, var(--pink-deep));
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    transition:opacity 0.5s ease, visibility 0.5s ease;
+  }
+  #splash-screen.hide{opacity:0; visibility:hidden; pointer-events:none;}
+  .splash-content{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; text-align:center;}
+  .splash-logo{
+    width:120px; height:120px; border-radius:50%; object-fit:cover;
+    border:4px solid rgba(255,255,255,0.85); box-shadow:0 8px 30px rgba(0,0,0,0.25);
+    animation:splashLogoIn 0.7s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .splash-word{
+    font-family:'Baloo 2', cursive; font-weight:800; color:#fff; font-size:1.7rem;
+    margin-top:16px; letter-spacing:0.5px;
+    animation:splashFadeUp 0.6s ease 0.35s both;
+  }
+  .splash-tagline{
+    font-family:'Quicksand', sans-serif; font-weight:600; color:rgba(255,255,255,0.9); font-size:0.9rem;
+    margin-top:6px; animation:splashFadeUp 0.6s ease 0.55s both;
+  }
+  .splash-dots span{animation:splashDotBlink 1.4s infinite; opacity:0;}
+  .splash-dots span:nth-child(2){animation-delay:0.2s;}
+  .splash-dots span:nth-child(3){animation-delay:0.4s;}
+  .splash-decor{position:absolute; inset:0; overflow:hidden;}
+  .splash-decor svg{position:absolute; color:rgba(255,255,255,0.8); animation:splashFloat 3.5s ease-in-out infinite;}
+  .splash-decor .s1{width:28px; top:18%; left:14%; animation-delay:0s;}
+  .splash-decor .s2{width:34px; top:22%; right:12%; animation-delay:0.4s; color:rgba(255,255,255,0.7);}
+  .splash-decor .s3{width:22px; bottom:24%; left:20%; animation-delay:0.8s;}
+  .splash-decor .s4{width:26px; bottom:20%; right:18%; animation-delay:1.1s; color:rgba(255,255,255,0.7);}
+  .splash-decor .s5{width:20px; top:45%; left:8%; animation-delay:1.5s;}
+  @keyframes splashLogoIn{
+    0%{transform:scale(0.3) rotate(-15deg); opacity:0;}
+    100%{transform:scale(1) rotate(0deg); opacity:1;}
+  }
+  @keyframes splashFadeUp{
+    0%{transform:translateY(10px); opacity:0;}
+    100%{transform:translateY(0); opacity:1;}
+  }
+  @keyframes splashDotBlink{
+    0%, 80%, 100%{opacity:0;}
+    40%{opacity:1;}
+  }
+  @keyframes splashFloat{
+    0%, 100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-14px) rotate(8deg);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    #splash-screen{transition:none;}
+    .splash-logo, .splash-word, .splash-tagline{animation:none; opacity:1;}
+    .splash-decor svg{animation:none;}
+  }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Bakery",
+  "name": "Mel's Treat",
+  "description": "Shop fresh baked cookies and cinnamon rolls from Mel's Treat with secure checkout.",
+  "image": "https://melstreat.com/assets/welcome-banner-new.png",
+  "url": "https://melstreat.com/menu.html",
+  "areaServed": ["Anniston, AL", "Oxford, AL"],
+  "servesCuisine": "Bakery",
+  "priceRange": "$"
+}
+</script>
 </head>
 <body>
+<div id="splash-screen">
+  <div class="splash-decor">
+    <svg class="splash-star s1" viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg>
+    <svg class="splash-heart s2" viewBox="0 0 100 90"><use href="#gemHeartShape"/></svg>
+    <svg class="splash-star s3" viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg>
+    <svg class="splash-heart s4" viewBox="0 0 100 90"><use href="#gemHeartShape"/></svg>
+    <svg class="splash-star s5" viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg>
+  </div>
+  <div class="splash-content">
+    <img src="assets/logo.png" alt="Mel's Treat" class="splash-logo">
+    <div class="splash-word">Mel's Treat</div>
+    <div class="splash-tagline">picking out your treats<span class="splash-dots"><span>.</span><span>.</span><span>.</span></span></div>
+  </div>
+</div>
 
 <svg width="0" height="0" style="position:absolute;">
   <defs>
@@ -505,7 +599,7 @@
 <div class="nav-dropdown-overlay" id="nav-dropdown-overlay"></div>
 <div class="nav-dropdown" id="nav-dropdown">
   <div class="nav-dropdown-header">
-    <img src="assets/logo.png" alt="Mel's Treat">
+    <img src="assets/logo.png" alt="Mel's Treat" loading="lazy">
     <span class="brand-text">Mel's Treat</span>
     <button type="button" class="nav-dropdown-close" id="nav-dropdown-close" aria-label="Close menu">✕</button>
   </div>
@@ -537,6 +631,10 @@
     </svg>
   </h1>
   <p>Tap what you want, adjust in your cart, check out when ready.</p>
+  <div class="page-eyebrow" style="background:var(--blush); color:var(--pink-deep); border-radius:14px; padding:8px 14px; display:inline-block; text-transform:none; letter-spacing:normal; font-size:0.78rem; margin-top:8px;">⏰ Cookies need 1 day notice · Cinnamon rolls need 2 days</div>
+  <div class="rating-badge" id="rating-badge" style="display:none;">
+    <span class="rating-stars">★★★★★</span> <span id="rating-text"></span>
+  </div>
 </div>
 
 <div class="cat-pill-row" id="category-tiles"></div>
@@ -557,13 +655,14 @@
 </details>
 
 <div class="menu-wrap">
+  <p style="font-size:0.78rem; color:var(--ink-soft); text-align:center; margin:0 0 12px;">🔍 Tap any treat for ingredients &amp; allergen info — most items contain dairy, eggs &amp; gluten.</p>
   <div class="menu-grid" id="product-grid"></div>
   <p class="tap-hint">Tap a treat to add it — view or edit your cart anytime with the 🛍️ button above.</p>
 </div>
 
 <div class="catering-banner" id="catering-prompt">
-  <div class="catering-banner-title">Need More Than 2 Dozen? 🎉</div>
-  <div class="catering-banner-text">Shop checkout is capped at 24 cookies. For bigger events, place a catering request instead!</div>
+  <div class="catering-banner-title">Need More Than 3 Dozen? 🎉</div>
+  <div class="catering-banner-text">Shop checkout is capped at 36 cookies. For bigger events, place a catering request instead!</div>
   <a href="catering.html" class="catering-banner-btn">Place A Catering Request</a>
 </div>
 
@@ -630,7 +729,7 @@
         <summary>Discount Code</summary>
         <div class="drawer-details-body">
           <div style="display:flex; gap:8px;">
-            <input type="text" id="discount_code_input" placeholder="Enter code" style="flex:1;">
+            <input type="text" id="discount_code_input" placeholder="Enter code" aria-label="Discount code" style="flex:1;">
             <button type="button" id="apply-discount-btn" class="mini-btn">Apply</button>
           </div>
           <div id="discount-message" class="drawer-msg"></div>
@@ -647,7 +746,7 @@
             <button type="button" class="tip-btn" data-tip="custom">Custom</button>
             <button type="button" class="tip-btn selected" data-tip="0">None</button>
           </div>
-          <input type="number" id="tip-custom-input" min="0" step="0.01" placeholder="Enter amount" class="hidden" style="margin-top:10px;" inputmode="decimal">
+          <input type="number" id="tip-custom-input" min="0" step="0.01" placeholder="Enter amount" aria-label="Custom tip amount" class="hidden" style="margin-top:10px;" inputmode="decimal">
         </div>
       </details>
 
@@ -655,7 +754,7 @@
         <label>Pickup Or Delivery</label>
         <div class="choice-group">
           <div class="choice-card selected" data-fulfillment="pickup">Pickup</div>
-          <div class="choice-card" data-fulfillment="delivery">Delivery (+$3)</div>
+          <div class="choice-card" data-fulfillment="delivery">Delivery</div>
         </div>
 
         <label for="pickup_location">Pickup Location</label>
@@ -665,14 +764,20 @@
           <option>Anniston, AL Walmart</option>
           <option>Other (Enter Below)</option>
         </select>
+        <input type="text" id="pickup_location_other" placeholder="Enter your preferred public pickup spot" aria-label="Custom pickup location" class="hidden" style="margin-top:10px;">
 
         <div id="delivery_fields" class="hidden">
           <label for="delivery_address">Delivery Address</label>
-          <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" />
+          <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" autocomplete="street-address" />
+          <div id="delivery-fee-note" style="display:none; font-size:0.8rem; color:var(--pink-hot); font-weight:600; margin-top:4px;"></div>
         </div>
+
+        <label for="contact_phone">Phone Number (optional)</label>
+        <input type="tel" id="contact_phone" placeholder="For day-of updates, e.g. running late" autocomplete="tel" inputmode="tel">
 
         <label for="preferred_date">Preferred Date</label>
         <input type="date" id="preferred_date" />
+        <div id="date-lead-time-note" style="display:none; color:var(--pink-hot); font-weight:600; margin-top:4px; font-size:0.85rem;"></div>
 
         <label for="pickup_time">Pickup Time (7:30am – 6pm)</label>
         <select id="pickup_time"><option value="">Select A Time…</option></select>
@@ -691,7 +796,11 @@
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 let stockData = {};
-let isPreorderMode = false;
+// Mel now runs a made-to-order model — she bakes fresh for whatever date
+// a customer picks, rather than selling from same-day on-hand stock. So
+// ordering is never blocked by current stock; "stockData" below is only
+// used to show an optional "ready today" badge, not to gate the cart.
+let isPreorderMode = true;
 
 const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
@@ -715,15 +824,13 @@ async function getSupabase() {
 }
 
 (async function checkStockOnLoad() {
-  const params = new URLSearchParams(window.location.search);
-  isPreorderMode = params.get('preorder') === '1';
-  if (isPreorderMode) return;
+  // Stock is now purely informational (a "ready today" badge) — orders
+  // are never blocked by it, so this just fetches the data to display,
+  // no more "shop is sold out" modal state to check for.
   try {
     const supabase = await getSupabase();
     const { data, error } = await supabase.from('inventory').select('cookie_name, in_stock, stock_count');
     if (error || !data || data.length === 0) return;
-    const allOut = data.every(item => item.in_stock === false || item.stock_count <= 0);
-    if (allOut) { showOutOfStockModal(); }
     data.forEach(item => { stockData[item.cookie_name] = item; });
     if (typeof renderProductGrid === 'function') renderProductGrid();
   } catch (err) {
@@ -731,104 +838,45 @@ async function getSupabase() {
   }
 })();
 
-function showOutOfStockModal() {
-  const show = () => {
-    const overlay = document.getElementById('oos-modal-overlay');
-    if (overlay) overlay.classList.add('show');
-  };
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', show);
-  } else {
-    show();
+// Real rating badge — pulls your actual average, never hardcoded.
+async function loadRatingBadge() {
+  const badge = document.getElementById('rating-badge');
+  const textEl = document.getElementById('rating-text');
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.from('reviews').select('rating').eq('approved', true);
+    if (error || !data || data.length === 0) return; // stay hidden until there's real data to show
+    const avg = data.reduce((sum, r) => sum + r.rating, 0) / data.length;
+    textEl.textContent = `${avg.toFixed(1)} · ${data.length} Review${data.length === 1 ? '' : 's'}`;
+    badge.style.display = 'inline-flex';
+  } catch (err) {
+    console.error('Could not load rating badge:', err);
   }
 }
+loadRatingBadge();
 
-document.addEventListener('DOMContentLoaded', () => {
-  function activatePreorderMode() {
-    isPreorderMode = true;
-    document.getElementById('oos-modal-overlay').classList.remove('show');
-    const banner = document.createElement('div');
-    banner.textContent = "This is a pre-order — your treats will be made once we're restocked! 💕";
-    banner.style.cssText = 'background:var(--pink-hot); color:#fff; text-align:center; font-weight:700; font-size:0.85rem; padding:10px 16px;';
-    document.body.prepend(banner);
-    if (typeof renderProductGrid === 'function') renderProductGrid();
-    // Switch the floating button back to the normal cart, now that ordering is enabled
-    document.getElementById('floating-preorder-btn').classList.remove('show');
-    document.getElementById('mini-cart').style.display = '';
-  }
-
-  document.getElementById('oos-preorder-btn').addEventListener('click', activatePreorderMode);
-  document.getElementById('floating-preorder-btn').addEventListener('click', activatePreorderMode);
-
-  // Clicking off to the side of the modal (the dark backdrop, not the card
-  // itself) dismisses it without enabling ordering — everything stays
-  // marked sold out, and the floating cart heart is swapped for a
-  // "Pre-Order" button so they can still start one later if they change
-  // their mind while browsing.
-  document.getElementById('oos-modal-overlay').addEventListener('click', (e) => {
-    if (e.target.id !== 'oos-modal-overlay') return; // only the backdrop itself, not the card
-    e.currentTarget.classList.remove('show');
-    if (!isPreorderMode) {
-      document.getElementById('mini-cart').style.display = 'none';
-      document.getElementById('floating-preorder-btn').classList.add('show');
-    }
-  });
-
-  document.getElementById('oos-notify-toggle-btn').addEventListener('click', () => {
-    document.getElementById('oos-notify-form').classList.toggle('show');
-  });
-
-  document.getElementById('oos-notify-submit-btn').addEventListener('click', async () => {
-    const errBox = document.getElementById('oos-notify-error');
-    const successBox = document.getElementById('oos-notify-success');
-    errBox.style.display = 'none';
-    successBox.style.display = 'none';
-
-    const emailInput = document.getElementById('oos-notify-email');
-    const email = emailInput.value.trim();
-    if (!email || !email.includes('@')) {
-      errBox.textContent = 'Please enter a valid email.';
-      errBox.style.display = 'block';
-      return;
-    }
-
-    const btn = document.getElementById('oos-notify-submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
-    try {
-      const supabase = await getSupabase();
-      const { error } = await supabase.from('restock_notifications').insert({ email });
-      if (error && !String(error.message).includes('duplicate')) throw error;
-      successBox.style.display = 'block';
-      emailInput.value = '';
-      emailInput.disabled = true;
-      btn.textContent = "You're Signed Up!";
-    } catch (err) {
-      errBox.textContent = 'Something went wrong. Please try again.';
-      errBox.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Notify Me';
-    }
-  });
-});
-
-const CATEGORIES = [
+// This hardcoded list is a SAFE FALLBACK only — the real, editable source
+// of truth is the database (managed from the admin dashboard's Menu tab).
+// The page renders this immediately so it's never blank, then upgrades to
+// live data moments later once the fetch below completes. If that fetch
+// ever fails, the page keeps working fine on this fallback.
+let CATEGORIES = [
   {
     key: 'cookies', label: 'Cookies', icon: '🍪', unitPrice: 3,
     boxTiers: [ { count: 4, price: 10 }, { count: 6, price: 15 }, { count: 12, price: 28 } ],
-    maxPerOrder: 24,
+    maxPerOrder: 36,
     products: [
-      { key: 'chocolate_chip', img: 'assets/cookie-chocolate-chip.png', name: 'Chocolate Chip', desc: 'Soft, buttery, loaded with delicious chocolate chips.', allergens: ['dairy','eggs','gluten','soy'] },
-      { key: 'mm', img: 'assets/cookie-mm.png', name: "M&M Cookie", desc: "Packed with colorful melty M&M's in every bite.", allergens: ['dairy','eggs','gluten','soy'] },
-      { key: 'cookie_monster', img: 'assets/cookie-monster.png', name: 'Cookie Monster Mash', desc: 'Thick, chewy, loaded with milk & white chocolate.', allergens: ['dairy','eggs','gluten','soy'] },
-      { key: 'red_velvet', img: 'assets/cookie-red-velvet.png', name: 'Red Velvet', desc: 'White chocolate drizzle with Oreo chunks.', allergens: ['dairy','eggs','gluten','soy'] },
-      { key: 'smores', img: 'assets/cookie-smores.png', name: "S'mores", desc: 'Gooey marshmallow, chocolate & graham crackers.', allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'chocolate_chip', img: 'assets/cookie-chocolate-chip.png', name: 'The Classic Chocolate Chip', desc: 'Soft, buttery, loaded with delicious chocolate chips.', allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'mm', img: 'assets/cookie-mm.png', name: "M&M Rainbow Crunch", desc: "Packed with colorful melty M&M's in every bite.", allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'cookie_monster', img: 'assets/cookie-monster.png', name: 'Blue Cookie Monster Mash', desc: 'Thick, chewy, loaded with milk & white chocolate.', allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'red_velvet', img: 'assets/cookie-red-velvet.png', name: 'Oreo Red Velvet Dream', desc: 'White chocolate drizzle with Oreo chunks.', allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'smores', img: 'assets/cookie-smores.png', name: "Toasty Campfire S'mores", desc: 'Gooey marshmallow, chocolate & graham crackers.', allergens: ['dairy','eggs','gluten','soy'] },
     ],
   },
   {
     key: 'cinnamon_rolls', label: 'Cinnamon Rolls', icon: '🥐', unitPrice: 5,
-    boxTiers: [ { count: 3, price: 13 }, { count: 6, price: 24 } ],
-    maxPerOrder: 12,
+    boxTiers: [ { count: 4, price: 17 }, { count: 8, price: 32 }, { count: 12, price: 45 } ],
+    maxPerOrder: 24,
     // Placeholder flavor lineup — swap in real photos and adjust as Mel's actual recipes come together.
     products: [
       { key: 'classic_cinnamon', placeholder: '🥐', name: 'Classic Cinnamon', desc: 'The OG — warm cinnamon swirl with rich cream cheese icing.', allergens: ['dairy','eggs','gluten'] },
@@ -837,12 +885,139 @@ const CATEGORIES = [
       { key: 'smores_roll', placeholder: '🔥', name: "S'mores Roll", desc: 'Chocolate, marshmallow & graham crumble on a cinnamon base.', allergens: ['dairy','eggs','gluten','soy'] },
     ],
   },
+  {
+    key: 'theme_boxes', label: 'Theme Boxes', icon: '🎁', unitPrice: 15,
+    maxPerOrder: 6,
+    isThemeBox: true,
+    products: [
+      { key: 'sweetheart_box', placeholder: '💕', name: 'Sweetheart Box', desc: "A little love note in cookie form — 2 Oreo Red Velvet Dream, 2 M&M Rainbow Crunch, 2 The Classic Chocolate Chip, gift-wrapped.", allergens: ['dairy','eggs','gluten','soy'],
+        contents: { 'Oreo Red Velvet Dream': 2, 'M&M Rainbow Crunch': 2, 'The Classic Chocolate Chip': 2 } },
+      { key: 'party_box', placeholder: '🎉', name: 'Party Box', desc: "The crowd-pleaser lineup — 2 Blue Cookie Monster Mash, 2 M&M Rainbow Crunch, 2 Toasty Campfire S'mores, gift-wrapped.", allergens: ['dairy','eggs','gluten','soy'],
+        contents: { 'Blue Cookie Monster Mash': 2, 'M&M Rainbow Crunch': 2, "Toasty Campfire S'mores": 2 } },
+      { key: 'cinnamon_lovers_box', placeholder: '🥐', name: 'Cinnamon Lovers Box', desc: 'A taste of three cinnamon roll flavors — Classic, Brown Sugar Caramel, and Cookies & Cream.', allergens: ['dairy','eggs','gluten','soy'],
+        contents: { 'Classic Cinnamon': 1, 'Brown Sugar Caramel': 1, 'Cookies & Cream': 1 } },
+    ],
+  },
 ];
 const CINNAMON_ROLLS_ARE_PLACEHOLDER = true; // flip to false once real photos/recipes are in
 
-const ACTIVE_CATEGORIES = CATEGORIES.filter(c => !c.comingSoon);
-const COMING_SOON_CATEGORIES = CATEGORIES.filter(c => c.comingSoon);
-const ALL_PRODUCTS = ACTIVE_CATEGORIES.flatMap(cat => cat.products.map(p => ({ ...p, categoryKey: cat.key })));
+let ACTIVE_CATEGORIES = [];
+let COMING_SOON_CATEGORIES = [];
+let ALL_PRODUCTS = [];
+function rebuildDerivedCategoryData() {
+  ACTIVE_CATEGORIES = CATEGORIES.filter(c => !c.comingSoon);
+  COMING_SOON_CATEGORIES = CATEGORIES.filter(c => c.comingSoon);
+  ALL_PRODUCTS = ACTIVE_CATEGORIES.flatMap(cat => cat.products.map(p => ({ ...p, categoryKey: cat.key })));
+}
+rebuildDerivedCategoryData();
+
+// Upgrades the page from the safe hardcoded fallback above to live data
+// from the database (managed via the admin dashboard's Menu tab) — this
+// is what makes flavors, prices, and box deals editable without a code
+// change. Failure here just leaves the fallback in place; it never
+// breaks the page.
+async function loadLiveMenuData() {
+  try {
+    const supabase = await getSupabase();
+    const [invRes, settingsRes, themeRes] = await Promise.all([
+      supabase.from('inventory').select('*').eq('active', true).order('sort_order', { ascending: true }),
+      supabase.from('settings').select('key, value').in('key', ['box_tiers_cookie', 'box_tiers_cinnamon_roll', 'category_visibility']),
+      supabase.from('theme_boxes').select('*').eq('active', true).order('sort_order', { ascending: true }),
+    ]);
+    if (invRes.error || !invRes.data || invRes.data.length === 0) return; // keep fallback
+
+    const settingsMap = {};
+    (settingsRes.data || []).forEach(s => { settingsMap[s.key] = s.value; });
+    let cookieTiers = CATEGORIES.find(c => c.key === 'cookies')?.boxTiers || [];
+    let cinnamonTiers = CATEGORIES.find(c => c.key === 'cinnamon_rolls')?.boxTiers || [];
+    try { if (settingsMap.box_tiers_cookie) cookieTiers = JSON.parse(settingsMap.box_tiers_cookie); } catch (e) {}
+    try { if (settingsMap.box_tiers_cinnamon_roll) cinnamonTiers = JSON.parse(settingsMap.box_tiers_cinnamon_roll); } catch (e) {}
+
+    // Lets Mel hide an entire category from the shop (e.g. "Cinnamon Rolls")
+    // without touching individual flavors — a category with no explicit
+    // `false` here is treated as visible, so this stays backward-compatible
+    // with sites that never set the setting at all.
+    let categoryVisibility = {};
+    try { if (settingsMap.category_visibility) categoryVisibility = JSON.parse(settingsMap.category_visibility); } catch (e) {}
+    const isCategoryVisible = (key) => categoryVisibility[key] !== false;
+
+    const cookieItems = invRes.data.filter(i => i.product_type === 'cookie');
+    const cinnamonItems = invRes.data.filter(i => i.product_type === 'cinnamon_roll');
+    if (cookieItems.length === 0 && cinnamonItems.length === 0) return; // keep fallback
+
+    const toProduct = (item) => ({
+      key: item.id,
+      img: item.img_url || null,
+      placeholder: item.placeholder_emoji || '🍽️',
+      name: item.cookie_name,
+      desc: item.description || '',
+      allergens: Array.isArray(item.allergens) ? item.allergens : [],
+      onHandCount: item.on_hand_count || 0,
+    });
+
+    const newCategories = [];
+    if (cookieItems.length > 0 && isCategoryVisible('cookies')) {
+      newCategories.push({
+        key: 'cookies', label: 'Cookies', icon: '🍪',
+        unitPrice: Number(cookieItems[0].price) || 3,
+        boxTiers: cookieTiers, maxPerOrder: 36,
+        products: cookieItems.map(toProduct),
+      });
+    }
+    if (cinnamonItems.length > 0 && isCategoryVisible('cinnamon_rolls')) {
+      newCategories.push({
+        key: 'cinnamon_rolls', label: 'Cinnamon Rolls', icon: '🥐',
+        unitPrice: Number(cinnamonItems[0].price) || 5,
+        boxTiers: cinnamonTiers, maxPerOrder: 24,
+        products: cinnamonItems.map(toProduct),
+      });
+    }
+    if (themeRes.data && themeRes.data.length > 0 && isCategoryVisible('theme_boxes')) {
+      newCategories.push({
+        key: 'theme_boxes', label: 'Theme Boxes', icon: '🎁',
+        unitPrice: Number(themeRes.data[0].price) || 15,
+        maxPerOrder: 6, isThemeBox: true,
+        products: themeRes.data.map(box => ({
+          key: box.id, placeholder: box.placeholder_emoji || '🎁', name: box.name,
+          desc: box.description || '', allergens: [], contents: box.contents || {},
+        })),
+      });
+    }
+    // If every category got hidden (or there's simply nothing left to
+    // show), fall back to the hardcoded data rather than leaving the
+    // customer looking at a totally empty shop.
+    if (newCategories.length === 0) return;
+
+    const previousActiveKey = activeCategoryKey;
+
+    // If the customer already started adding things during the brief
+    // window before this fetch resolved, don't swap the underlying
+    // product keys out from under their cart — safer to keep the
+    // fallback data for the rest of this session than risk silently
+    // orphaning what they've already picked.
+    const cartHasItems = Object.values(qty).some(q => q > 0);
+    if (cartHasItems) return;
+
+    CATEGORIES = newCategories;
+    rebuildDerivedCategoryData();
+    // The cart was confirmed empty above, but qty still needs a real 0
+    // (not undefined) for every new live-data key — otherwise a never-
+    // touched item's quantity check (qty[key] <= 0) silently fails since
+    // undefined <= 0 is false in JS, letting it leak into order notes.
+    ALL_PRODUCTS.forEach(p => { if (qty[p.key] === undefined) qty[p.key] = 0; });
+    activeCategoryKey = ACTIVE_CATEGORIES.find(c => c.key === previousActiveKey) ? previousActiveKey : ACTIVE_CATEGORIES[0].key;
+
+    renderCategoryTiles();
+    renderProductGrid();
+    renderBoxTierStrip();
+    renderBoxBuildRow();
+    updateTotal();
+  } catch (err) {
+    console.error('Could not load live menu data, using fallback:', err);
+  }
+}
+loadLiveMenuData();
+
 
 // Cart persists across pages (home <-> menu) via localStorage
 const qty = {};
@@ -858,7 +1033,11 @@ function persistCart() {
 
 let activeCategoryKey = ACTIVE_CATEGORIES[0].key;
 function getCategory(key) { return CATEGORIES.find(c => c.key === key); }
-function categoryCount(categoryKey) { return getCategory(categoryKey).products.reduce((sum, p) => sum + (qty[p.key] || 0), 0); }
+function categoryCount(categoryKey) {
+  const cat = getCategory(categoryKey);
+  if (!cat) return 0;
+  return cat.products.reduce((sum, p) => sum + (qty[p.key] || 0), 0);
+}
 function totalItemCount() { return Object.values(qty).reduce((a, b) => a + b, 0); }
 function getProduct(key) { return ALL_PRODUCTS.find(p => p.key === key); }
 
@@ -897,13 +1076,27 @@ function productImageHtml(p, sizeClass) {
   return `<div class="${sizeClass} placeholder-tile"><span>${p.placeholder || '🍽️'}</span></div>`;
 }
 
+// Small allergen icon row under each photo — the emoji itself is a quick
+// visual flag, and the native title attribute shows the full name on
+// hover/tap-and-hold without needing any extra JS or a tooltip library.
+const ALLERGEN_ICONS = { dairy: '🥛', eggs: '🥚', gluten: '🌾', soy: '🫘', nuts: '🥜' };
+const ALLERGEN_NAMES = { dairy: 'Dairy', eggs: 'Eggs', gluten: 'Gluten', soy: 'Soy', nuts: 'Tree Nuts' };
+function allergenIconsHtml(allergens) {
+  if (!Array.isArray(allergens) || allergens.length === 0) return '';
+  return `<div class="menu-tile-allergens">${allergens.map(a =>
+    `<span class="allergen-icon" title="Contains ${ALLERGEN_NAMES[a] || a}">${ALLERGEN_ICONS[a] || '⚠️'}</span>`
+  ).join('')}</div>`;
+}
+
 function renderProductGrid() {
   const category = getCategory(activeCategoryKey);
   gridEl.innerHTML = category.products.map(p => {
-    const stock = stockData[p.name];
-    const outOfStock = !isPreorderMode && stock && (stock.in_stock === false || stock.stock_count <= 0);
-    const lowStock = stock && !outOfStock && !isPreorderMode && stock.stock_count <= 5;
-    const stockTag = outOfStock ? `<span class="menu-tile-stock-tag out">Sold Out</span>` : lowStock ? `<span class="menu-tile-stock-tag low">${stock.stock_count} left</span>` : '';
+    // Ready-today badge is a nice bonus for anyone who'd love it same-day
+    // — it never blocks ordering, since everything else is still made
+    // fresh to order regardless of this count.
+    const onHandCount = p.onHandCount || 0;
+    const stockTag = onHandCount > 0 ? `<span class="menu-tile-stock-tag ready">🎉 Ready Today</span>` : '';
+    const outOfStock = false;
     const currentQty = qty[p.key];
     return `
       <div class="menu-tile ${outOfStock ? 'sold-out' : ''}" data-key="${p.key}" ${outOfStock ? '' : 'role="button" tabindex="0"'}>
@@ -911,6 +1104,7 @@ function renderProductGrid() {
         ${stockTag}
         <button type="button" class="zoom-btn" data-zoom-key="${p.key}" aria-label="View details">🔍</button>
         ${productImageHtml(p, 'menu-tile-img')}
+        ${allergenIconsHtml(p.allergens)}
         <div class="menu-tile-info">
           <div class="menu-tile-name">${p.name}</div>
           <div class="menu-tile-price">$${category.unitPrice.toFixed(2)}</div>
@@ -933,6 +1127,23 @@ function renderProductGrid() {
   });
 }
 renderProductGrid();
+
+// One-time cute intro on first visit this session — tap-to-skip, never
+// blocks the real page from being usable underneath, and never repeats
+// mid-session (e.g. navigating back here from another page).
+(function initSplash() {
+  const splash = document.getElementById('splash-screen');
+  if (!splash) return;
+  if (sessionStorage.getItem('mels_splash_shown')) {
+    splash.style.display = 'none';
+    return;
+  }
+  sessionStorage.setItem('mels_splash_shown', '1');
+  const dismiss = () => splash.classList.add('hide');
+  splash.addEventListener('click', dismiss);
+  setTimeout(dismiss, 1900);
+  setTimeout(() => { splash.style.display = 'none'; }, 2500);
+})();
 
 const ALLERGEN_LABELS = { dairy: '🥛 Dairy', eggs: '🥚 Eggs', gluten: '🌾 Gluten', soy: '🫘 Soy', nuts: '🥜 Tree Nuts' };
 
@@ -1005,9 +1216,21 @@ function renderBoxTierStrip() {
   const strip = document.getElementById('box-tier-strip');
   const category = getCategory(activeCategoryKey);
   const titleEl = document.getElementById('box-menu-title');
-  if (titleEl) titleEl.textContent = `${category.icon} ${category.label} Box Menu`;
+  const sectionEl = document.getElementById('box-menu-details');
+  const descEl = document.querySelector('.box-menu-desc');
 
-  if (!category.boxTiers) { strip.innerHTML = ''; return; }
+  if (!category.boxTiers) {
+    // Theme Boxes (and any other non-tiered category) don't have a
+    // "pick a size" flow — hide the whole section rather than show
+    // confusing box-building UI with nothing in it.
+    if (sectionEl) sectionEl.style.display = 'none';
+    strip.innerHTML = '';
+    return;
+  }
+  if (sectionEl) sectionEl.style.display = '';
+  if (titleEl) titleEl.textContent = `${category.icon} ${category.label} Box Menu`;
+  if (descEl) descEl.textContent = 'Pick a size, choose your flavors, done — box pricing applies automatically either way.';
+
   strip.innerHTML = `<div class="box-tier-strip-row">${category.boxTiers.map((tier, i) => {
     const isPopular = i === 1;
     const perItem = (tier.price / tier.count).toFixed(2);
@@ -1098,9 +1321,9 @@ function renderBoxBuilderList() {
           ${outOfStock ? '<div style="font-size:0.72rem; color:#c0025e; font-weight:700;">Sold Out</div>' : ''}
         </div>
         <div class="qty-stepper">
-          <button type="button" data-action="dec" data-key="${p.key}" ${count === 0 ? 'disabled' : ''}>−</button>
+          <button type="button" data-action="dec" data-key="${p.key}" aria-label="Decrease ${p.name} quantity" ${count === 0 ? 'disabled' : ''}>−</button>
           <span>${count}</span>
-          <button type="button" data-action="inc" data-key="${p.key}" ${(outOfStock || atBoxLimit || atStockLimit) ? 'disabled' : ''}>+</button>
+          <button type="button" data-action="inc" data-key="${p.key}" aria-label="Increase ${p.name} quantity" ${(outOfStock || atBoxLimit || atStockLimit) ? 'disabled' : ''}>+</button>
         </div>
       </div>
     `;
@@ -1200,9 +1423,9 @@ function renderCartItems() {
           <div class="cart-item-price">$${cat.unitPrice.toFixed(2)} each</div>
         </div>
         <div class="qty-stepper">
-          <button type="button" data-action="dec" data-key="${p.key}">−</button>
+          <button type="button" data-action="dec" data-key="${p.key}" aria-label="Decrease ${p.name} quantity">−</button>
           <span>${qty[p.key]}</span>
-          <button type="button" data-action="inc" data-key="${p.key}">+</button>
+          <button type="button" data-action="inc" data-key="${p.key}" aria-label="Increase ${p.name} quantity">+</button>
         </div>
       </div>
     `;
@@ -1247,8 +1470,23 @@ document.querySelectorAll('[data-fulfillment]').forEach(card => {
     card.classList.add('selected');
     fulfillment = card.dataset.fulfillment;
     document.getElementById('delivery_fields').classList.toggle('hidden', fulfillment !== 'delivery');
+    if (fulfillment === 'delivery') {
+      // Show right away, before they've even typed an address, so the
+      // distance-based pricing isn't a surprise once they do — this gets
+      // replaced with the actual calculated fee once updateDeliveryFee
+      // resolves for whatever they type.
+      const noteEl = document.getElementById('delivery-fee-note');
+      if (!document.getElementById('delivery_address').value.trim()) {
+        noteEl.textContent = '📍 Delivery fee is based on distance — enter your address for an exact quote.';
+        noteEl.style.display = 'block';
+      }
+      updateDeliveryFee();
+    }
     updateTotal();
   });
+});
+document.getElementById('pickup_location').addEventListener('change', (e) => {
+  document.getElementById('pickup_location_other').classList.toggle('hidden', e.target.value !== 'Other (Enter Below)');
 });
 
 let tipAmount = 0;
@@ -1271,9 +1509,40 @@ document.getElementById('tip-custom-input').addEventListener('input', (e) => { t
 function calcSubtotal() {
   let subtotal = 0;
   ACTIVE_CATEGORIES.forEach(cat => { subtotal += computePurchasePlan(cat, categoryCount(cat.key)).price; });
-  if (fulfillment === 'delivery') subtotal += 3;
+  if (fulfillment === 'delivery') subtotal += currentDeliveryFee;
   return subtotal;
 }
+
+// Distance-based delivery pricing — a customer a few minutes away
+// shouldn't pay the same as one 25 miles out. Calculated server-side
+// (the function keeps Mel's home address private) with debouncing so it
+// doesn't fire on every keystroke, and a safe $3 fallback if the lookup
+// fails or hasn't run yet, so checkout is never blocked by this.
+let currentDeliveryFee = 3;
+let deliveryFeeDebounceTimer = null;
+async function updateDeliveryFee() {
+  const address = document.getElementById('delivery_address').value.trim();
+  if (!address || fulfillment !== 'delivery') return;
+  const noteEl = document.getElementById('delivery-fee-note');
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('calculate-delivery-fee', { body: { address } });
+    if (error || !data?.success) return; // keep whatever fee was already showing
+    currentDeliveryFee = data.fee;
+    if (noteEl) {
+      noteEl.textContent = data.distanceKnown ? `📍 Delivery fee: $${data.fee} for this address` : `📍 Delivery fee: $${data.fee} (estimated)`;
+      noteEl.style.display = 'block';
+    }
+    updateTotal();
+  } catch (err) {
+    console.error('Delivery fee lookup failed, using fallback:', err);
+  }
+}
+document.getElementById('delivery_address').addEventListener('input', () => {
+  clearTimeout(deliveryFeeDebounceTimer);
+  deliveryFeeDebounceTimer = setTimeout(updateDeliveryFee, 900);
+});
+
 function calcDiscountAmount(subtotal) {
   if (!appliedDiscount) return 0;
   let amount = 0;
@@ -1320,7 +1589,56 @@ function calcBoxSavings() {
   return savings;
 }
 
+// Cinnamon rolls need more lead time to prep than cookies do, so the
+// earliest selectable pickup/delivery date moves out to 2 days from now
+// the moment one is in the cart — enforced both as a hard floor on the
+// date picker itself and as a fallback check at checkout, in case a
+// customer picked a date before adding a cinnamon roll to their cart.
+function formatDateInput(d) {
+  return d.toISOString().split('T')[0];
+}
+function updateDateConstraints() {
+  const dateInput = document.getElementById('preferred_date');
+  const hasCinnamonRolls = categoryCount('cinnamon_rolls') > 0;
+  const hasThemeBoxes = categoryCount('theme_boxes') > 0;
+
+  // Same-day is only possible when EVERY cookie in the cart can be fully
+  // covered by what's actually baked and on hand right now — cinnamon
+  // rolls and theme boxes always need normal lead time regardless, since
+  // they're never drawn from an "on hand today" pool.
+  const cookieCategory = getCategory('cookies');
+  const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && cookieCategory &&
+    cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
+    categoryCount('cookies') > 0;
+
+  const leadDays = cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1);
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + leadDays);
+  const minDateStr = formatDateInput(minDate);
+  dateInput.min = minDateStr;
+
+  const noteEl = document.getElementById('date-lead-time-note');
+  if (cartCoveredByOnHand) {
+    noteEl.textContent = '🎉 Everything in your cart is baked and ready — same-day pickup or delivery available!';
+    noteEl.style.display = 'block';
+  } else if (hasCinnamonRolls) {
+    noteEl.textContent = '🥐 Cinnamon rolls need at least 2 days notice to prep — earliest date shown below.';
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  // If a date was already picked and it's now too soon (e.g. a cinnamon
+  // roll was just added to a cart that already had a date selected),
+  // bump it forward automatically rather than leaving an invalid date
+  // silently sitting in the field.
+  if (dateInput.value && dateInput.value < minDateStr) {
+    dateInput.value = minDateStr;
+  }
+}
+
 function updateTotal() {
+  updateDateConstraints();
   const subtotal = calcSubtotal();
   const discountAmount = calcDiscountAmount(subtotal);
   const total = subtotal - discountAmount + tipAmount;
@@ -1390,8 +1708,45 @@ checkoutBtn.addEventListener('click', async () => {
   const total = totalItemCount();
   if (total === 0) { errorBox.textContent = 'Please pick at least one item 🍪'; errorBox.style.display = 'block'; return; }
 
+  // Block checkout on missing fulfillment details rather than silently
+  // sending "TBD" to Stripe — a paid order with no real pickup/delivery
+  // info is a real problem to sort out after the fact.
+  if (fulfillment === 'pickup') {
+    const loc = document.getElementById('pickup_location').value;
+    if (!loc) { errorBox.textContent = 'Please select a pickup location.'; errorBox.style.display = 'block'; return; }
+    if (loc === 'Other (Enter Below)' && !document.getElementById('pickup_location_other').value.trim()) {
+      errorBox.textContent = 'Please enter your preferred pickup spot.'; errorBox.style.display = 'block'; return;
+    }
+  } else {
+    if (!document.getElementById('delivery_address').value.trim()) {
+      errorBox.textContent = 'Please enter a delivery address.'; errorBox.style.display = 'block'; return;
+    }
+  }
+  if (!document.getElementById('preferred_date').value) {
+    errorBox.textContent = 'Please select a preferred date.'; errorBox.style.display = 'block'; return;
+  }
+  {
+    const hasCinnamonRolls = categoryCount('cinnamon_rolls') > 0;
+    const hasThemeBoxes = categoryCount('theme_boxes') > 0;
+    const cookieCategory = getCategory('cookies');
+    const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && cookieCategory &&
+      cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
+      categoryCount('cookies') > 0;
+    const requiredLeadDays = cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1);
+    const requiredMinDate = new Date();
+    requiredMinDate.setDate(requiredMinDate.getDate() + requiredLeadDays);
+    if (document.getElementById('preferred_date').value < formatDateInput(requiredMinDate)) {
+      errorBox.textContent = hasCinnamonRolls
+        ? 'Cinnamon rolls need at least 2 days notice — please pick a later date.'
+        : 'Please pick a date at least 1 day out.';
+      errorBox.style.display = 'block';
+      return;
+    }
+  }
+
   const items = [];
   const flavorLines = [];
+  const themeBoxLines = [];
   ACTIVE_CATEGORIES.forEach(cat => {
     const count = categoryCount(cat.key);
     if (count === 0) return;
@@ -1406,18 +1761,42 @@ checkoutBtn.addEventListener('click', async () => {
       const take = Math.min(qty[p.key], remainingSingles);
       if (take > 0) { items.push({ name: p.name, unitAmountCents: Math.round(cat.unitPrice * 100), quantity: take }); remainingSingles -= take; }
     }
-    cat.products.forEach(p => { if (qty[p.key] > 0) flavorLines.push(`${qty[p.key]} × ${p.name}`); });
+    cat.products.forEach(p => {
+      if (qty[p.key] <= 0) return;
+      if (p.contents) {
+        // A theme box isn't a real flavor itself — expand it into what's
+        // actually inside, multiplied by how many boxes were bought, so
+        // the baking note says what to actually bake. Keep this in the
+        // same clean "qty × flavor name" format (no extra annotation)
+        // since the backend parses this exact format to decrement stock
+        // by matching flavor names — an annotated name wouldn't match.
+        Object.entries(p.contents).forEach(([flavorName, flavorQty]) => {
+          flavorLines.push(`${flavorQty * qty[p.key]} × ${flavorName}`);
+        });
+        themeBoxLines.push(`${qty[p.key]} × ${p.name}`);
+      } else {
+        flavorLines.push(`${qty[p.key]} × ${p.name}`);
+      }
+    });
   });
 
-  if (fulfillment === 'delivery') items.push({ name: 'Delivery Fee', unitAmountCents: 300, quantity: 1 });
+  if (fulfillment === 'delivery') items.push({ name: 'Delivery Fee', unitAmountCents: Math.round(currentDeliveryFee * 100), quantity: 1 });
 
+  const pickupLocationValue = document.getElementById('pickup_location').value === 'Other (Enter Below)'
+    ? document.getElementById('pickup_location_other').value.trim()
+    : document.getElementById('pickup_location').value;
   const noteLines = [
     `FLAVOR BREAKDOWN: ${flavorLines.join(', ')}`,
-    `Fulfillment: ${fulfillment}${fulfillment === 'pickup' ? ' — ' + (document.getElementById('pickup_location').value || 'location TBD') : ' — ' + (document.getElementById('delivery_address').value.trim() || 'address TBD')}`,
-    `Preferred Date: ${document.getElementById('preferred_date').value || 'TBD'}`,
-    `Preferred Time: ${document.getElementById('pickup_time').value || 'TBD'}`,
+    `Fulfillment: ${fulfillment}${fulfillment === 'pickup' ? ' — ' + pickupLocationValue : ' — ' + document.getElementById('delivery_address').value.trim()}`,
+    `Preferred Date: ${document.getElementById('preferred_date').value}`,
+    `Preferred Time: ${document.getElementById('pickup_time').value || 'Any time'}`,
   ];
-  if (isPreorderMode) noteLines.push(`PREORDER: true`);
+  if (themeBoxLines.length > 0) noteLines.push(`Theme Boxes: ${themeBoxLines.join(', ')} — pack together as gift boxes`);
+  // Orders are always made-to-order now (no more "preorder" as a special
+  // exception) — the backend no longer decrements current stock for
+  // website orders at all, so there's no flag needed here to signal that.
+  const contactPhone = document.getElementById('contact_phone').value.trim();
+  if (contactPhone) noteLines.push(`Phone: ${contactPhone}`);
   const instructions = document.getElementById('special_instructions').value.trim();
   if (instructions) noteLines.push(`Notes: ${instructions}`);
   const note = noteLines.join(' | ');
@@ -1574,31 +1953,6 @@ window.addEventListener('load', () => {
 });
 </script>
 
-<!-- Out-of-stock modal — shows in front of the menu instead of redirecting
-     away. Choosing "Place A Pre-Order" clears it and reveals the menu
-     behind it, now in pre-order mode. -->
-<div class="oos-modal-overlay" id="oos-modal-overlay">
-  <div class="oos-modal-card">
-    <img src="assets/logo.png" alt="Mel's Treat" class="oos-modal-logo">
-    <div class="oos-modal-emoji">🍪💤</div>
-    <h2>We're Out Of Stock!</h2>
-    <p>All our cookies are sold out right now — but don't worry, we're already planning our next bake! Choose an option below:</p>
-
-    <div class="oos-modal-choices">
-      <button type="button" class="oos-choice-btn primary" id="oos-preorder-btn">Place A Pre-Order</button>
-      <button type="button" class="oos-choice-btn" id="oos-notify-toggle-btn">Notify Me When Back In Stock</button>
-    </div>
-
-    <div class="oos-notify-form" id="oos-notify-form">
-      <label for="oos-notify-email">Your Email</label>
-      <input type="email" id="oos-notify-email" placeholder="you@example.com">
-      <div id="oos-notify-error" class="oos-error"></div>
-      <div id="oos-notify-success" class="oos-success-msg">You're on the list! We'll email you the moment we're back. 💕</div>
-      <button type="button" class="oos-submit-btn" id="oos-notify-submit-btn">Notify Me</button>
-    </div>
-  </div>
-</div>
-
 <!-- Mini cart — collapsed floating badge on the side, expands into a small
      panel showing current items without needing to scroll to checkout -->
 <div class="mini-cart" id="mini-cart">
@@ -1618,11 +1972,6 @@ window.addEventListener('load', () => {
     <a href="#checkout-btn" class="mini-cart-checkout-btn" id="mini-cart-checkout-btn">Go To Checkout →</a>
   </div>
 </div>
-
-<!-- Shown instead of the mini-cart heart when the customer dismisses the
-     out-of-stock modal by clicking off to the side — everything stays
-     marked sold out until they tap this to actually start a pre-order. -->
-<button type="button" class="floating-preorder-btn" id="floating-preorder-btn">Pre-Order</button>
 
 </body>
 </html>

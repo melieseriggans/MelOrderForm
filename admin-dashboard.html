@@ -413,6 +413,19 @@
     background:var(--cream); border:1px solid var(--border); border-radius:12px;
     padding:12px 14px; font-size:0.78rem; color:var(--ink-soft); line-height:1.5; margin-top:14px;
   }
+  .choice-group{display:flex; gap:10px; margin-top:6px;}
+  .choice-card{
+    flex:1;
+    border:1.5px solid var(--border);
+    border-radius:16px;
+    padding:10px 14px;
+    cursor:pointer;
+    transition:0.15s;
+    text-align:center;
+    font-weight:700;
+    font-size:0.85rem;
+  }
+  .choice-card.selected{border-color:var(--pink-hot); background:var(--pink-light);}
 </style>
 </head>
 <body>
@@ -436,6 +449,7 @@
     <button type="button" id="logout-btn" class="logout-btn">Log Out ↩</button>
     <div class="tabs">
       <button class="tab-btn active" data-tab="today">Today</button>
+      <button class="tab-btn" data-tab="menu-mgmt">Menu</button>
       <button class="tab-btn" data-tab="orders">Orders</button>
       <button class="tab-btn" data-tab="customers">Customers</button>
       <button class="tab-btn" data-tab="catering">Catering</button>
@@ -511,6 +525,90 @@
         </div>
         <div id="business-notes-list" style="margin-top:12px;"></div>
       </div>
+    </div>
+
+    <!-- MENU MANAGEMENT TAB -->
+    <div class="tab-panel" id="tab-menu-mgmt">
+      <div class="card" id="menu-mgmt-category-card">
+        <h2>👁️ Shop Categories</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Hide an entire category from your shop without deleting anything — flip it back on whenever you're ready to launch it. Customers only ever see what's turned on here.</div>
+        <div id="menu-mgmt-category-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>🍪 Cookie Flavors</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Add, edit, or retire flavors here — changes show up on your live menu right away, no code needed.</div>
+        <div id="menu-mgmt-cookie-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>🥐 Cinnamon Roll Flavors</h2>
+        <div id="menu-mgmt-cinnamon-list"></div>
+      </div>
+
+      <div class="card" id="menu-mgmt-add-card">
+        <h2>➕ Add A New Flavor</h2>
+        <label for="mm-new-name">Flavor Name</label>
+        <input type="text" id="mm-new-name" placeholder="e.g. Birthday Cake Blast">
+        <label for="mm-new-type" style="margin-top:10px;">Type</label>
+        <select id="mm-new-type">
+          <option value="cookie">Cookie</option>
+          <option value="cinnamon_roll">Cinnamon Roll</option>
+        </select>
+        <label for="mm-new-price" style="margin-top:10px;">Price Per Item ($)</label>
+        <input type="number" id="mm-new-price" min="0" step="0.01" placeholder="e.g. 3.00">
+        <label for="mm-new-desc" style="margin-top:10px;">Description</label>
+        <textarea id="mm-new-desc" placeholder="What makes it special?"></textarea>
+        <label for="mm-new-emoji" style="margin-top:10px;">Placeholder Emoji (shown until you add a real photo)</label>
+        <input type="text" id="mm-new-emoji" placeholder="e.g. 🎂" maxlength="4">
+        <label style="margin-top:10px;">Allergens</label>
+        <div class="choice-group" id="mm-new-allergens" style="flex-wrap:wrap;">
+          <div class="choice-card mm-allergen-chip" data-allergen="dairy">🥛 Dairy</div>
+          <div class="choice-card mm-allergen-chip" data-allergen="eggs">🥚 Eggs</div>
+          <div class="choice-card mm-allergen-chip" data-allergen="gluten">🌾 Gluten</div>
+          <div class="choice-card mm-allergen-chip" data-allergen="soy">🫘 Soy</div>
+          <div class="choice-card mm-allergen-chip" data-allergen="nuts">🥜 Tree Nuts</div>
+        </div>
+        <div id="mm-new-stock-wrap" style="display:flex; gap:10px; margin-top:10px;">
+          <div style="flex:1;">
+            <label for="mm-new-on-hand">🎉 Baked &amp; Ready Today</label>
+            <input type="number" id="mm-new-on-hand" min="0" placeholder="0">
+          </div>
+          <div style="flex:1;">
+            <label for="mm-new-stock">🧊 Frozen Dough Balls</label>
+            <input type="number" id="mm-new-stock" min="0" placeholder="0">
+          </div>
+        </div>
+        <div id="mm-add-error" class="error"></div>
+        <button class="btn" id="mm-add-btn" style="margin-top:14px;">Add Flavor</button>
+      </div>
+
+      <details class="card collapsible-card" id="menu-mgmt-pricing-card">
+        <summary class="collapsible-summary">
+          <h2 style="margin:0;">💲 Box Deal Pricing</h2>
+          <span class="chevron">▸</span>
+        </summary>
+        <div class="collapsible-body">
+          <div class="order-detail" style="margin:0 0 12px;">These are the box discounts customers see on your menu (e.g. "4 for $10"). Changing these updates pricing on your live site immediately.</div>
+          <div id="menu-mgmt-cookie-tiers"></div>
+          <button class="btn btn-small" id="mm-add-cookie-tier-btn" style="margin-top:8px;">+ Add Cookie Tier</button>
+          <h3 style="margin-top:20px;">Cinnamon Roll Tiers</h3>
+          <div id="menu-mgmt-cinnamon-tiers"></div>
+          <button class="btn btn-small" id="mm-add-cinnamon-tier-btn" style="margin-top:8px;">+ Add Cinnamon Roll Tier</button>
+          <button class="btn" id="mm-save-tiers-btn" style="margin-top:16px; width:100%;">Save Box Pricing</button>
+        </div>
+      </details>
+
+      <details class="card collapsible-card" id="menu-mgmt-theme-card">
+        <summary class="collapsible-summary">
+          <h2 style="margin:0;">🎁 Theme Boxes</h2>
+          <span class="chevron">▸</span>
+        </summary>
+        <div class="collapsible-body">
+          <div class="order-detail" style="margin:0 0 12px;">Curated gift boxes made from your existing flavors.</div>
+          <div id="menu-mgmt-theme-list"></div>
+        </div>
+      </details>
     </div>
 
     <!-- ORDERS TAB -->
@@ -610,7 +708,8 @@
     <!-- INVENTORY TAB -->
     <div class="tab-panel" id="tab-inventory">
       <div class="card">
-        <h2>Cookie Stock</h2>
+        <h2>🍪 Cookies On Hand Today</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Update these daily: "Baked & Ready Today" for cookies already made and waiting to be picked up, and "Frozen Dough Balls" for what's in the freezer waiting to be baked. Both are just for your own reference and the Quick Add in-person sale form — they never limit what customers can order online.</div>
         <div id="inventory-list"></div>
       </div>
     </div>
@@ -1227,6 +1326,314 @@ function restoreLastTab() {
 
 function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
 
+// Escapes customer-supplied text (names, emails, addresses, reviews, etc.)
+// before it goes into innerHTML — without this, a malicious value typed
+// into a public form (checkout name, catering request, review) could
+// inject a script that runs in this admin dashboard when viewed.
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ===== Menu Management: lets Mel add/edit/retire flavors and adjust box
+// pricing herself, without needing code changes. The live menu page reads
+// this same data straight from the database.
+function flavorRowHtml(item) {
+  const allergenList = Array.isArray(item.allergens) ? item.allergens : [];
+  return `
+    <div class="mm-flavor-row" data-id="${item.id}" style="padding:12px 0; border-bottom:1px solid var(--pink-light);">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;">
+        <span style="font-weight:700; ${item.active === false ? 'color:var(--ink-soft); text-decoration:line-through;' : ''}">${escapeHtml(item.cookie_name)}</span>
+        <span style="font-weight:700; color:var(--pink-hot); flex-shrink:0;">${money(item.price || 0)}</span>
+      </div>
+      <div class="order-detail" style="margin:2px 0 6px;">${escapeHtml(item.description || 'No description yet')}</div>
+      ${allergenList.length ? `<div class="order-detail" style="margin:0 0 6px;">Allergens: ${allergenList.map(escapeHtml).join(', ')}</div>` : ''}
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-small mm-edit-btn" data-id="${item.id}" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">Edit</button>
+        <button type="button" class="btn btn-small mm-toggle-active-btn" data-id="${item.id}" data-active="${item.active !== false}" style="background:var(--white); color:${item.active === false ? '#2e8b57' : '#c9962c'}; border:1.5px solid ${item.active === false ? '#2e8b57' : '#c9962c'};">${item.active === false ? 'Reactivate' : 'Remove From Menu'}</button>
+      </div>
+    </div>
+  `;
+}
+
+// ===== Category visibility: a single on/off switch per shop category
+// (Cookies, Cinnamon Rolls, Theme Boxes), stored as one JSON settings row
+// (category_visibility) rather than touching every flavor's `active` flag.
+// A category missing from the JSON is treated as visible, so this is safe
+// even the very first time it's ever saved.
+const CATEGORY_DEFS = [
+  { key: 'cookies', label: 'Cookies', icon: '🍪' },
+  { key: 'cinnamon_rolls', label: 'Cinnamon Rolls', icon: '🥐' },
+  { key: 'theme_boxes', label: 'Theme Boxes', icon: '🎁' },
+];
+function getCategoryVisibility() {
+  try { return JSON.parse(dashboardData.settings.category_visibility || '{}'); } catch (e) { return {}; }
+}
+function renderCategoryVisibility() {
+  const el = document.getElementById('menu-mgmt-category-list');
+  if (!el) return;
+  const visibility = getCategoryVisibility();
+  el.innerHTML = CATEGORY_DEFS.map(cat => {
+    const isVisible = visibility[cat.key] !== false;
+    return `
+      <div class="mm-flavor-row" style="padding:12px 0; border-bottom:1px solid var(--pink-light); display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <span style="font-weight:700; ${!isVisible ? 'color:var(--ink-soft);' : ''}">${cat.icon} ${cat.label}${!isVisible ? ' · Hidden from shop' : ''}</span>
+        <button type="button" class="btn btn-small mm-toggle-category-btn" data-key="${cat.key}" data-visible="${isVisible}" style="background:var(--white); color:${isVisible ? '#c9962c' : '#2e8b57'}; border:1.5px solid ${isVisible ? '#c9962c' : '#2e8b57'}; flex-shrink:0;">${isVisible ? 'Hide From Shop' : 'Show On Shop'}</button>
+      </div>
+    `;
+  }).join('');
+
+  el.querySelectorAll('.mm-toggle-category-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const key = btn.dataset.key;
+      const isVisible = btn.dataset.visible === 'true';
+      btn.disabled = true;
+      try {
+        const visibility = getCategoryVisibility();
+        visibility[key] = !isVisible;
+        await callAdmin('update_setting', { key: 'category_visibility', value: JSON.stringify(visibility) });
+        dashboardData.settings.category_visibility = JSON.stringify(visibility);
+        renderCategoryVisibility();
+        showToast(!isVisible ? `${key.replace('_', ' ')} is back on your shop ✧` : `${key.replace('_', ' ')} is hidden from your shop`);
+      } catch (err) {
+        alert('Could not update category: ' + err.message);
+        btn.disabled = false;
+      }
+    });
+  });
+}
+
+function renderMenuManagement() {
+  const cookieListEl = document.getElementById('menu-mgmt-cookie-list');
+  const cinnamonListEl = document.getElementById('menu-mgmt-cinnamon-list');
+  renderCategoryVisibility();
+  if (!cookieListEl) return; // tab not on this page build
+
+  const inventory = dashboardData.inventory || [];
+  const cookies = inventory.filter(i => i.product_type === 'cookie').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
+  const cinnamonRolls = inventory.filter(i => i.product_type === 'cinnamon_roll').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
+
+  cookieListEl.innerHTML = cookies.length ? cookies.map(flavorRowHtml).join('') : '<div class="empty-note">No cookie flavors yet.</div>';
+  cinnamonListEl.innerHTML = cinnamonRolls.length ? cinnamonRolls.map(flavorRowHtml).join('') : '<div class="empty-note">No cinnamon roll flavors yet.</div>';
+
+  document.querySelectorAll('.mm-toggle-active-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const isActive = btn.dataset.active === 'true';
+      btn.disabled = true;
+      try {
+        await callAdmin('update_inventory', { id: btn.dataset.id, active: !isActive });
+        const item = dashboardData.inventory.find(i => i.id === btn.dataset.id);
+        if (item) item.active = !isActive;
+        renderMenuManagement();
+        showToast(isActive ? 'Removed from menu ✧' : 'Back on the menu ✧');
+      } catch (err) {
+        alert('Could not update: ' + err.message);
+        btn.disabled = false;
+      }
+    });
+  });
+
+  document.querySelectorAll('.mm-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => openFlavorEditPrompt(btn.dataset.id));
+  });
+
+  renderBoxTierEditors();
+  renderThemeBoxManagement();
+}
+
+// A lightweight inline edit flow using prompt() for the handful of fields
+// that change rarely (name/price/description) — keeps this shippable
+// without building a full modal system.
+async function openFlavorEditPrompt(id) {
+  const item = dashboardData.inventory.find(i => i.id === id);
+  if (!item) return;
+  const newName = prompt('Flavor name:', item.cookie_name);
+  if (newName === null) return;
+  const newPriceStr = prompt('Price per item ($):', item.price || 0);
+  if (newPriceStr === null) return;
+  const newDesc = prompt('Description:', item.description || '');
+  if (newDesc === null) return;
+  const newPrice = parseFloat(newPriceStr);
+  if (isNaN(newPrice) || newPrice < 0) { alert('Please enter a valid price.'); return; }
+
+  try {
+    await callAdmin('update_inventory', { id, cookie_name: newName.trim(), price: newPrice, description: newDesc.trim() });
+    item.cookie_name = newName.trim();
+    item.price = newPrice;
+    item.description = newDesc.trim();
+    renderMenuManagement();
+    showToast('Flavor updated ✧');
+  } catch (err) {
+    alert('Could not save changes: ' + err.message);
+  }
+}
+
+document.querySelectorAll('.mm-allergen-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('selected'));
+});
+
+// Cinnamon rolls are always made to order — there's no "on hand" concept
+// for them, so hide the stock field entirely when that type is selected.
+document.getElementById('mm-new-type').addEventListener('change', (e) => {
+  document.getElementById('mm-new-stock-wrap').style.display = e.target.value === 'cinnamon_roll' ? 'none' : 'flex';
+});
+
+document.getElementById('mm-add-btn').addEventListener('click', async () => {
+  const errorBox = document.getElementById('mm-add-error');
+  errorBox.style.display = 'none';
+  const name = document.getElementById('mm-new-name').value.trim();
+  const type = document.getElementById('mm-new-type').value;
+  const price = parseFloat(document.getElementById('mm-new-price').value);
+  const desc = document.getElementById('mm-new-desc').value.trim();
+  const emoji = document.getElementById('mm-new-emoji').value.trim();
+  const onHand = parseInt(document.getElementById('mm-new-on-hand').value) || 0;
+  const stock = parseInt(document.getElementById('mm-new-stock').value) || 0;
+  const allergens = Array.from(document.querySelectorAll('.mm-allergen-chip.selected')).map(c => c.dataset.allergen);
+
+  if (!name || isNaN(price) || price < 0) {
+    errorBox.textContent = 'Please enter a flavor name and a valid price.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('mm-add-btn');
+  btn.disabled = true;
+  btn.textContent = 'Adding...';
+  try {
+    await callAdmin('add_menu_item', {
+      cookie_name: name, product_type: type, price, description: desc || null,
+      allergens, placeholder_emoji: emoji || null, stock_count: stock, on_hand_count: onHand,
+    });
+    document.getElementById('mm-new-name').value = '';
+    document.getElementById('mm-new-price').value = '';
+    document.getElementById('mm-new-desc').value = '';
+    document.getElementById('mm-new-emoji').value = '';
+    document.getElementById('mm-new-on-hand').value = '';
+    document.getElementById('mm-new-stock').value = '';
+    document.querySelectorAll('.mm-allergen-chip.selected').forEach(c => c.classList.remove('selected'));
+    const refreshed = await callAdmin('dashboard_data');
+    if (refreshed.success) { dashboardData = refreshed; renderAll(); }
+    showToast('New flavor added ✧');
+  } catch (err) {
+    errorBox.textContent = 'Could not add flavor: ' + err.message;
+    errorBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Add Flavor';
+  }
+});
+
+// Box tier editors — a simple list of "count → price" rows per product
+// type, matching how box deals actually work on the live menu.
+let mmCookieTiers = [];
+let mmCinnamonTiers = [];
+function renderBoxTierEditors() {
+  try { mmCookieTiers = JSON.parse(dashboardData.settings.box_tiers_cookie || '[]'); } catch (e) { mmCookieTiers = []; }
+  try { mmCinnamonTiers = JSON.parse(dashboardData.settings.box_tiers_cinnamon_roll || '[]'); } catch (e) { mmCinnamonTiers = []; }
+  renderTierRows('menu-mgmt-cookie-tiers', mmCookieTiers);
+  renderTierRows('menu-mgmt-cinnamon-tiers', mmCinnamonTiers);
+}
+function renderTierRows(elId, tiers) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.innerHTML = tiers.map((tier, i) => `
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <input type="number" min="1" value="${tier.count}" data-tier-field="count" data-tier-list="${elId}" data-tier-index="${i}" style="width:80px;" placeholder="Count">
+      <span>for $</span>
+      <input type="number" min="0" step="0.01" value="${tier.price}" data-tier-field="price" data-tier-list="${elId}" data-tier-index="${i}" style="width:90px;" placeholder="Price">
+      <button type="button" class="mm-remove-tier-btn" data-tier-list="${elId}" data-tier-index="${i}" style="background:none; border:none; color:#c0025e; cursor:pointer; font-size:1.1rem;">✕</button>
+    </div>
+  `).join('');
+  el.querySelectorAll('input[data-tier-field]').forEach(input => {
+    input.addEventListener('input', () => {
+      const list = input.dataset.tierList === 'menu-mgmt-cookie-tiers' ? mmCookieTiers : mmCinnamonTiers;
+      const idx = parseInt(input.dataset.tierIndex);
+      const field = input.dataset.tierField;
+      list[idx][field] = parseFloat(input.value) || 0;
+    });
+  });
+  el.querySelectorAll('.mm-remove-tier-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const list = btn.dataset.tierList === 'menu-mgmt-cookie-tiers' ? mmCookieTiers : mmCinnamonTiers;
+      list.splice(parseInt(btn.dataset.tierIndex), 1);
+      renderTierRows(btn.dataset.tierList, list);
+    });
+  });
+}
+document.getElementById('mm-add-cookie-tier-btn').addEventListener('click', () => {
+  mmCookieTiers.push({ count: 4, price: 10 });
+  renderTierRows('menu-mgmt-cookie-tiers', mmCookieTiers);
+});
+document.getElementById('mm-add-cinnamon-tier-btn').addEventListener('click', () => {
+  mmCinnamonTiers.push({ count: 3, price: 13 });
+  renderTierRows('menu-mgmt-cinnamon-tiers', mmCinnamonTiers);
+});
+document.getElementById('mm-save-tiers-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('mm-save-tiers-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    await callAdmin('update_box_tiers', { product_type: 'cookie', tiers: mmCookieTiers });
+    await callAdmin('update_box_tiers', { product_type: 'cinnamon_roll', tiers: mmCinnamonTiers });
+    dashboardData.settings.box_tiers_cookie = JSON.stringify(mmCookieTiers);
+    dashboardData.settings.box_tiers_cinnamon_roll = JSON.stringify(mmCinnamonTiers);
+    showToast('Box pricing saved ✧');
+  } catch (err) {
+    alert('Could not save pricing: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Box Pricing';
+  }
+});
+
+function renderThemeBoxManagement() {
+  const el = document.getElementById('menu-mgmt-theme-list');
+  if (!el) return;
+  const boxes = dashboardData.themeBoxes || [];
+  el.innerHTML = boxes.length ? boxes.map(box => `
+    <div style="padding:10px 0; border-bottom:1px solid var(--pink-light);">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <span style="font-weight:700; ${box.active === false ? 'color:var(--ink-soft); text-decoration:line-through;' : ''}">${box.placeholder_emoji || '🎁'} ${escapeHtml(box.name)}</span>
+        <span style="font-weight:700; color:var(--pink-hot);">${money(box.price)}</span>
+      </div>
+      <div class="order-detail" style="margin:2px 0 6px;">${escapeHtml(box.description || '')}</div>
+      <button type="button" class="btn btn-small mm-toggle-theme-btn" data-id="${box.id}" data-active="${box.active !== false}" style="background:var(--white); color:${box.active === false ? '#2e8b57' : '#c9962c'}; border:1.5px solid ${box.active === false ? '#2e8b57' : '#c9962c'};">${box.active === false ? 'Reactivate' : 'Remove From Menu'}</button>
+    </div>
+  `).join('') : '<div class="empty-note">No theme boxes yet.</div>';
+
+  el.querySelectorAll('.mm-toggle-theme-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const isActive = btn.dataset.active === 'true';
+      btn.disabled = true;
+      try {
+        await callAdmin('update_theme_box', { id: btn.dataset.id, active: !isActive });
+        const box = dashboardData.themeBoxes.find(b => b.id === btn.dataset.id);
+        if (box) box.active = !isActive;
+        renderThemeBoxManagement();
+        showToast(isActive ? 'Removed from menu ✧' : 'Back on the menu ✧');
+      } catch (err) {
+        alert('Could not update: ' + err.message);
+        btn.disabled = false;
+      }
+    });
+  });
+}
+
 function getWeekStart(dateStr) {
   const d = new Date(dateStr);
   const day = d.getDay();
@@ -1271,6 +1678,7 @@ function renderAll() {
   renderBakingTodo();
   renderMonthlyGoal();
   renderBusinessNotes();
+  renderMenuManagement();
   renderOrders();
   renderCatering();
   renderInventory();
@@ -1406,7 +1814,7 @@ function renderTodayTab() {
     list.innerHTML = todaysOrders.map(o => `
       <div class="today-mini-row">
         <div>
-          <div class="name">${o.full_name}</div>
+          <div class="name">${escapeHtml(o.full_name)}</div>
           <div class="detail">${o.fulfillment_type === 'pickup' ? 'Pickup' : 'Delivery'} · ${o.pickup_time || 'Time TBD'}</div>
         </div>
         <div class="order-total">${money(o.total)}</div>
@@ -1437,7 +1845,7 @@ function renderTodayTab() {
     document.getElementById('today-pending-catering-list').innerHTML = pendingCatering.map(r => `
       <div class="today-mini-row">
         <div>
-          <div class="name">${r.full_name}</div>
+          <div class="name">${escapeHtml(r.full_name)}</div>
           <div class="detail">${r.dozens_count ? r.dozens_count + ' dozen' : 'Amount TBD'} · ${r.event_date || 'Date TBD'}</div>
         </div>
       </div>
@@ -1621,10 +2029,10 @@ function renderCustomerDirectory() {
     return `
       <div style="padding:10px 0; border-bottom:1px solid var(--pink-light);">
         <div style="display:flex; justify-content:space-between; align-items:baseline;">
-          <span style="font-weight:600;">${c.name}</span>
+          <span style="font-weight:600;">${escapeHtml(c.name)}</span>
           <span style="font-size:0.8rem; color:var(--ink-soft);">${c.orderCount} order${c.orderCount === 1 ? '' : 's'} · ${money(c.totalSpent)}</span>
         </div>
-        <div class="order-detail" style="margin:2px 0 0;">Last order${lapsedTag}${favorite ? ` · Usually gets ${favorite[0]}` : ''}</div>
+        <div class="order-detail" style="margin:2px 0 0;">Last order${lapsedTag}${favorite ? ` · Usually gets ${escapeHtml(favorite[0])}` : ''}</div>
         ${contactLinksHtml(c.phone, c.email)}
       </div>
     `;
@@ -1642,7 +2050,7 @@ function contactLinksHtml(phone, email) {
     links.push(`<a href="sms:${cleanPhone}" class="btn btn-small" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">💬 Text</a>`);
   }
   if (email && !email.includes('in-person-sale@melstreat.com')) {
-    links.push(`<a href="mailto:${email}" class="btn btn-small" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">✉️ Email</a>`);
+    links.push(`<a href="mailto:${escapeHtml(email)}" class="btn btn-small" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">✉️ Email</a>`);
   }
   return links.length ? `<div style="display:flex; gap:8px; margin:4px 0 0; flex-wrap:wrap;">${links.join('')}</div>` : '';
 }
@@ -1661,13 +2069,13 @@ function orderRowHtml(o, customerCounts) {
   return `
     <div class="order-row ${o.is_preorder ? 'preorder-row' : ''}">
       <div class="order-top">
-        <span class="order-name">${o.full_name}${o.is_preorder ? ' <span class="preorder-badge">🎁 Pre-Order</span>' : ''}${isReturning ? ' <span class="returning-badge">🔁 Returning</span>' : ''}</span>
+        <span class="order-name">${escapeHtml(o.full_name)}${o.is_preorder ? ' <span class="preorder-badge">🎁 Pre-Order</span>' : ''}${isReturning ? ' <span class="returning-badge">🔁 Returning</span>' : ''}</span>
         <span class="order-total">${money(o.total)}</span>
       </div>
       ${contactLinksHtml(o.phone, o.email)}
       <div class="order-detail">${cookieText || 'No items listed'}</div>
       ${extras.length ? `<div class="order-detail" style="color:var(--pink-hot); font-weight:600;">${extras.join(' · ')}</div>` : ''}
-      <div class="order-detail">${o.fulfillment_type === 'pickup' ? 'Pickup — ' + (o.pickup_location || 'TBD') : 'Delivery — ' + (o.delivery_address || 'TBD')}</div>
+      <div class="order-detail">${o.fulfillment_type === 'pickup' ? 'Pickup — ' + escapeHtml(o.pickup_location || 'TBD') : 'Delivery — ' + escapeHtml(o.delivery_address || 'TBD')}</div>
       ${(() => {
         const isDelivery = o.fulfillment_type === 'delivery';
         const dest = isDelivery ? o.delivery_address : o.pickup_location;
@@ -1796,10 +2204,45 @@ document.getElementById('qa-address').addEventListener('input', (e) => {
 });
 
 let qaQty = {};
+// Mirrors the exact same box pricing customers see on the actual order
+// page — so an in-person sale gets priced the same way a website order
+// would be, instead of a flat per-item guess that ignores box discounts
+// and (for cinnamon rolls) even the right base price.
+const QA_BOX_PRICING = {
+  cookie: { unitPrice: 3, boxTiers: [ { count: 4, price: 10 }, { count: 6, price: 15 }, { count: 12, price: 28 } ] },
+  cinnamon_roll: { unitPrice: 5, boxTiers: [ { count: 3, price: 13 }, { count: 6, price: 24 } ] },
+};
+function computeBoxPlanPrice(unitPrice, boxTiers, totalCount) {
+  if (totalCount === 0) return 0;
+  const memo = new Array(totalCount + 1).fill(Infinity);
+  memo[0] = 0;
+  for (let i = 1; i <= totalCount; i++) {
+    memo[i] = memo[i - 1] + unitPrice;
+    (boxTiers || []).forEach(tier => {
+      if (i >= tier.count && memo[i - tier.count] + tier.price < memo[i]) memo[i] = memo[i - tier.count] + tier.price;
+    });
+  }
+  return memo[totalCount];
+}
+function computeQaSuggestedTotal() {
+  const typeByName = {};
+  (dashboardData.inventory || []).forEach(item => { typeByName[item.cookie_name] = item.product_type || 'cookie'; });
+  const countsByType = {};
+  Object.entries(qaQty).forEach(([name, qty]) => {
+    if (!qty) return;
+    const type = typeByName[name] || 'cookie';
+    countsByType[type] = (countsByType[type] || 0) + qty;
+  });
+  return Object.entries(countsByType).reduce((sum, [type, count]) => {
+    const pricing = QA_BOX_PRICING[type] || QA_BOX_PRICING.cookie;
+    return sum + computeBoxPlanPrice(pricing.unitPrice, pricing.boxTiers, count);
+  }, 0);
+}
+
 function renderQuickAddItems() {
   const suggestionsEl = document.getElementById('qa-customer-suggestions');
   const directory = buildCustomerDirectory();
-  suggestionsEl.innerHTML = Object.values(directory).map(c => `<option value="${c.name}">`).join('');
+  suggestionsEl.innerHTML = Object.values(directory).map(c => `<option value="${escapeHtml(c.name)}">`).join('');
 
   const listEl = document.getElementById('qa-items-list');
   const items = dashboardData.inventory || [];
@@ -1819,9 +2262,10 @@ function renderQuickAddItems() {
       const current = qaQty[name] || 0;
       qaQty[name] = btn.dataset.action === 'inc' ? current + 1 : Math.max(0, current - 1);
       document.getElementById(`qa-qty-${name.replace(/\s+/g,'_')}`).textContent = qaQty[name];
-      // Suggest a total at $3/item as a starting point — she can always
-      // override it for box deals, discounts, or special pricing.
-      const suggestedTotal = Object.values(qaQty).reduce((sum, q) => sum + q * 3, 0);
+      // Suggest a total using the real box pricing (same as the website
+      // charges) as a starting point — she can always override it for
+      // discounts or special pricing.
+      const suggestedTotal = computeQaSuggestedTotal();
       const totalInput = document.getElementById('qa-total');
       if (!totalInput.dataset.manuallyEdited) totalInput.value = suggestedTotal.toFixed(2);
     });
@@ -2079,13 +2523,18 @@ function renderCatering() {
       return `
         <div class="order-row">
           <div class="order-top">
-            <span class="order-name">${r.full_name}</span>
+            <span class="order-name">${escapeHtml(r.full_name)}</span>
             <span class="order-total">${r.quoted_total ? money(r.quoted_total) : 'Not quoted'}</span>
           </div>
-          <div class="order-detail">${r.dozens_count ? r.dozens_count + ' dozen' : 'Amount TBD'} — ${r.email}</div>
+          <div class="order-detail">${r.dozens_count ? r.dozens_count + ' dozen' : 'Amount TBD'} — ${escapeHtml(r.email)}</div>
           ${contactLinksHtml(r.phone, r.email)}
           <div class="order-detail">${r.event_date || 'Date TBD'} ${r.event_time || ''}</div>
-          ${dest ? `<div class="order-detail">📍 ${dest}</div>` : ''}
+          ${r.event_type || r.guest_count ? `<div class="order-detail">${r.event_type ? escapeHtml(r.event_type) : ''}${r.event_type && r.guest_count ? ' · ' : ''}${r.guest_count ? '~' + r.guest_count + ' guests' : ''}</div>` : ''}
+          ${r.dietary_notes ? `<div class="order-detail" style="color:#c9962c; font-weight:700;">⚠️ ${escapeHtml(r.dietary_notes)}</div>` : ''}
+          ${r.packaging_preference ? `<div class="order-detail">📦 ${escapeHtml(r.packaging_preference)}</div>` : ''}
+          ${r.contact_preference ? `<div class="order-detail">📞 Prefers: ${escapeHtml(r.contact_preference)}</div>` : ''}
+          ${r.quoted_total ? `<button type="button" class="btn btn-small copy-payment-link-btn" data-catering-id="${r.id}" style="margin:4px 0 0; background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">🔗 Copy Payment Link</button>` : ''}
+          ${dest ? `<div class="order-detail">📍 ${escapeHtml(dest)}</div>` : ''}
           ${dest ? `<div style="display:flex; gap:8px; margin:4px 0 0; flex-wrap:wrap;">${mapsLinksHtml(dest)}<button type="button" class="btn btn-small estimate-catering-mileage-btn" data-catering-id="${r.id}" style="background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">📍 Log Mileage</button></div>` : ''}
           <div class="order-detail">Requested ${new Date(r.created_at).toLocaleString()}</div>
           <div class="order-status-row">
@@ -2152,6 +2601,9 @@ function renderCatering() {
     reqList.querySelectorAll('.next-step-btn').forEach(btn => {
       btn.addEventListener('click', () => advanceStatus(btn.dataset.table, btn.dataset.id, btn.dataset.nextStatus, btn));
     });
+    reqList.querySelectorAll('.copy-payment-link-btn').forEach(btn => {
+      btn.addEventListener('click', () => copyPaymentLink(btn.dataset.cateringId, btn));
+    });
   }
 
   const payList = document.getElementById('payments-list');
@@ -2162,11 +2614,12 @@ function renderCatering() {
     payList.innerHTML = payments.map(p => `
       <div class="order-row">
         <div class="order-top">
-          <span class="order-name">${p.full_name}</span>
+          <span class="order-name">${escapeHtml(p.full_name)}</span>
           <span class="order-total">${money(p.amount_paid)}</span>
         </div>
-        <div class="order-detail">${p.email}</div>
-        ${p.receipt_url ? `<div class="order-detail"><a href="${p.receipt_url}" target="_blank" style="color:var(--pink-hot); font-weight:700;">View Receipt</a></div>` : ''}
+        <div class="order-detail">${escapeHtml(p.email)}${p.payment_method ? ' · via ' + escapeHtml(p.payment_method) : ''}</div>
+        ${p.order_context ? `<div class="order-detail">For: ${escapeHtml(p.order_context)}</div>` : ''}
+        ${p.receipt_url ? `<div class="order-detail"><a href="${escapeHtml(p.receipt_url)}" target="_blank" style="color:var(--pink-hot); font-weight:700;">View Receipt</a></div>` : ''}
         <div class="order-detail">${new Date(p.created_at).toLocaleString()}</div>
       </div>
     `).join('');
@@ -2204,20 +2657,26 @@ async function advanceStatus(table, id, nextStatus, btn) {
 }
 
 function inventoryRowHtml(item) {
-  const outOfStock = item.in_stock === false;
+  const isRetired = item.active === false;
+  const totalAvailable = (item.on_hand_count || 0) + (item.stock_count || 0);
   return `
-    <div class="inv-row">
-      <span class="inv-name ${outOfStock ? 'low-stock' : (item.stock_count <= 3 ? 'low-stock' : '')}">
-        ${item.cookie_name}
-        ${outOfStock ? ' — OUT OF STOCK' : (item.stock_count <= 3 ? ' ⚠️' : '')}
+    <div class="inv-row" style="${isRetired ? 'opacity:0.6;' : ''} flex-direction:column; align-items:stretch;">
+      <span class="inv-name ${totalAvailable === 0 ? 'low-stock' : ''}">
+        ${escapeHtml(item.cookie_name)}
+        ${isRetired ? ' <span style="color:var(--ink-soft); font-weight:700; font-size:0.75rem;">(Retired — off menu)</span>' : ''}
+        ${totalAvailable === 0 ? ' — Nothing on hand or in the freezer' : ''}
       </span>
-      <div class="inv-controls">
-        <input type="number" min="0" value="${item.stock_count}" data-id="${item.id}" class="stock-input" ${outOfStock ? 'disabled' : ''}>
-        <button class="btn btn-small save-stock-btn" data-id="${item.id}">Save</button>
-        <button class="btn btn-small stock-toggle-btn" data-id="${item.id}" data-instock="${item.in_stock}" style="${outOfStock ? '' : 'background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);'}">
-          ${outOfStock ? 'Mark In Stock' : 'Mark Out Of Stock'}
-        </button>
+      <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:140px;">
+          <label style="font-size:0.75rem; font-weight:700; color:var(--pink-hot); display:block; margin-bottom:4px;">🎉 Baked &amp; Ready Today</label>
+          <input type="number" min="0" value="${item.on_hand_count || 0}" data-id="${item.id}" data-field="on_hand_count" class="stock-input on-hand-input" style="width:100%;">
+        </div>
+        <div style="flex:1; min-width:140px;">
+          <label style="font-size:0.75rem; font-weight:700; color:var(--ink-soft); display:block; margin-bottom:4px;">🧊 Frozen Dough Balls</label>
+          <input type="number" min="0" value="${item.stock_count || 0}" data-id="${item.id}" data-field="stock_count" class="stock-input frozen-input" style="width:100%;">
+        </div>
       </div>
+      <button class="btn btn-small save-stock-btn" data-id="${item.id}" style="margin-top:8px; align-self:flex-start;">Save</button>
     </div>
   `;
 }
@@ -2225,48 +2684,35 @@ function inventoryRowHtml(item) {
 function renderInventory() {
   const list = document.getElementById('inventory-list');
   const cookies = dashboardData.inventory.filter(i => (i.product_type || 'cookie') !== 'cinnamon_roll');
-  const cinnamonRolls = dashboardData.inventory.filter(i => i.product_type === 'cinnamon_roll');
 
-  let html = '';
-  if (cookies.length) {
-    html += `<div class="inv-section-label">🍪 Cookies</div>` + cookies.map(inventoryRowHtml).join('');
-  }
-  if (cinnamonRolls.length) {
-    html += `<div class="inv-section-label">🥐 Cinnamon Rolls</div>` + cinnamonRolls.map(inventoryRowHtml).join('');
-  }
+  // Cinnamon rolls are always made fresh to order — there's no "on hand"
+  // concept for them, so they intentionally don't get a stock-tracking
+  // row here at all (unlike cookies, which Mel pre-preps as frozen dough
+  // balls and bakes same-day from whatever's on hand).
+  let html = cookies.length ? cookies.map(inventoryRowHtml).join('') : '<div class="empty-note">No cookie flavors yet.</div>';
+  html += `<div class="order-detail" style="margin-top:14px; padding-top:12px; border-top:1px solid var(--pink-light);">🥐 Cinnamon rolls aren't tracked here — they're always made fresh to order, so there's nothing "on hand" to count.</div>`;
   list.innerHTML = html;
 
   list.querySelectorAll('.save-stock-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = btn.dataset.id;
-      const input = list.querySelector(`.stock-input[data-id="${id}"]`);
-      const stock_count = parseInt(input.value) || 0;
+      const onHandInput = list.querySelector(`.on-hand-input[data-id="${id}"]`);
+      const frozenInput = list.querySelector(`.frozen-input[data-id="${id}"]`);
+      const on_hand_count = parseInt(onHandInput.value) || 0;
+      const stock_count = parseInt(frozenInput.value) || 0;
+      // in_stock is kept in sync automatically from these two counts —
+      // it just means "is there anything at all to sell right now,"
+      // used elsewhere for low/no-stock styling.
+      const in_stock = (on_hand_count + stock_count) > 0;
       btn.disabled = true;
       try {
-        await callAdmin('update_inventory', { id, stock_count });
+        await callAdmin('update_inventory', { id, on_hand_count, stock_count, in_stock });
         const item = dashboardData.inventory.find(i => i.id === id);
-        if (item) item.stock_count = stock_count;
+        if (item) { item.on_hand_count = on_hand_count; item.stock_count = stock_count; item.in_stock = in_stock; }
         renderInventory();
+        showToast('Stock updated ✧');
       } catch (err) {
         alert('Could not update stock: ' + err.message);
-        btn.disabled = false;
-      }
-    });
-  });
-
-  list.querySelectorAll('.stock-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.dataset.id;
-      const currentlyInStock = btn.dataset.instock === 'true';
-      const newInStock = !currentlyInStock;
-      btn.disabled = true;
-      try {
-        await callAdmin('update_inventory', { id, in_stock: newInStock });
-        const item = dashboardData.inventory.find(i => i.id === id);
-        if (item) item.in_stock = newInStock;
-        renderInventory();
-      } catch (err) {
-        alert('Could not update stock status: ' + err.message);
         btn.disabled = false;
       }
     });
@@ -2919,6 +3365,28 @@ async function estimateOrderMileage(orderId, btn) {
     btn.disabled = false;
     btn.textContent = originalText;
   }
+}
+
+function copyPaymentLink(cateringId, btn) {
+  const request = dashboardData.catering.find(r => r.id === cateringId);
+  if (!request || !request.quoted_total) return;
+
+  const url = new URL('https://melstreat.com/catering-payment.html');
+  url.searchParams.set('amount', request.quoted_total);
+  url.searchParams.set('name', request.full_name);
+  if (request.email) url.searchParams.set('email', request.email);
+  url.searchParams.set('request_id', request.id);
+  if (request.event_type) url.searchParams.set('event_type', request.event_type);
+  if (request.event_date) url.searchParams.set('event_date', request.event_date);
+  if (request.dozens_count) url.searchParams.set('dozens', request.dozens_count);
+
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = original; }, 2000);
+  }).catch(() => {
+    alert('Could not copy automatically — here is the link:\n\n' + url.toString());
+  });
 }
 
 async function estimateCateringMileage(cateringId, btn) {
@@ -3734,13 +4202,13 @@ function renderReviewsMgmt() {
       <div class="review-mgmt-row ${r.approved ? '' : 'pending'}" data-id="${r.id}">
         <div class="review-mgmt-top">
           <div>
-            <span class="review-mgmt-name">${r.customer_name}</span>
+            <span class="review-mgmt-name">${escapeHtml(r.customer_name)}</span>
             <div class="review-mgmt-status ${r.approved ? 'approved' : 'pending-badge'}">${r.approved ? 'Approved · Public' : 'Pending Review'}</div>
           </div>
           <span class="review-mgmt-stars">${reviewStarString(r.rating)}</span>
         </div>
-        ${r.order_reference ? `<div class="review-mgmt-order">Ordered: ${r.order_reference}</div>` : ''}
-        ${r.review_text ? `<div class="review-mgmt-text">"${r.review_text}"</div>` : '<div class="review-mgmt-text" style="color:var(--ink-soft); font-style:italic;">No written review left.</div>'}
+        ${r.order_reference ? `<div class="review-mgmt-order">Ordered: ${escapeHtml(r.order_reference)}</div>` : ''}
+        ${r.review_text ? `<div class="review-mgmt-text">"${escapeHtml(r.review_text)}"</div>` : '<div class="review-mgmt-text" style="color:var(--ink-soft); font-style:italic;">No written review left.</div>'}
         ${subParts.length ? `<div class="review-mgmt-subratings">${subParts.join(' · ')}</div>` : ''}
         <div class="review-mgmt-date">${new Date(r.created_at).toLocaleDateString()}</div>
         <div class="review-mgmt-actions">
@@ -3949,26 +4417,26 @@ document.getElementById('send-campaign-btn').addEventListener('click', async () 
 
 // --- Links tab ---
 const SITE_LINKS = [
-  { name: 'Home Page', url: 'https://ordertreats.melstreat.com/shop.html' },
-  { name: 'Shop / Menu', url: 'https://ordertreats.melstreat.com/menu.html' },
-  { name: 'Order Form', url: 'https://ordertreats.melstreat.com/index.html' },
-  { name: 'About Me', url: 'https://ordertreats.melstreat.com/about.html' },
-  { name: 'Reviews', url: 'https://ordertreats.melstreat.com/testimonials.html' },
-  { name: 'Leave A Review', url: 'https://ordertreats.melstreat.com/reviews.html' },
-  { name: 'FAQ', url: 'https://ordertreats.melstreat.com/faq.html' },
-  { name: 'Catering', url: 'https://ordertreats.melstreat.com/catering.html' },
-  { name: 'Catering Payment', url: 'https://ordertreats.melstreat.com/catering-payment.html' },
-  { name: 'Catering Payment — Thank You', url: 'https://ordertreats.melstreat.com/catering-payment-thankyou.html' },
-  { name: 'Catering — Thank You', url: 'https://ordertreats.melstreat.com/catering-thankyou.html' },
-  { name: 'Order — Thank You', url: 'https://ordertreats.melstreat.com/shop-thankyou.html' },
-  { name: 'Review — Thank You', url: 'https://ordertreats.melstreat.com/review-thankyou.html' },
-  { name: 'Donations', url: 'https://ordertreats.melstreat.com/donations.html' },
-  { name: 'Links Page', url: 'https://ordertreats.melstreat.com/links.html' },
-  { name: 'Privacy Policy', url: 'https://ordertreats.melstreat.com/privacy-policy.html' },
-  { name: 'Admin Dashboard', url: 'https://ordertreats.melstreat.com/admin-dashboard.html' },
-  { name: 'Admin — Discount Codes', url: 'https://ordertreats.melstreat.com/admin-discounts.html' },
-  { name: 'Admin — Reviews', url: 'https://ordertreats.melstreat.com/admin-reviews.html' },
-  { name: 'Recipe Book', url: 'https://ordertreats.melstreat.com/recipe-book.html' },
+  { name: 'Home Page', url: 'https://melstreat.com/shop.html' },
+  { name: 'Shop / Menu', url: 'https://melstreat.com/menu.html' },
+  { name: 'Order Form (legacy)', url: 'https://melstreat.com/order-form-legacy.html' },
+  { name: 'About Me', url: 'https://melstreat.com/about.html' },
+  { name: 'Reviews', url: 'https://melstreat.com/testimonials.html' },
+  { name: 'Leave A Review', url: 'https://melstreat.com/reviews.html' },
+  { name: 'FAQ', url: 'https://melstreat.com/faq.html' },
+  { name: 'Catering', url: 'https://melstreat.com/catering.html' },
+  { name: 'Catering Payment', url: 'https://melstreat.com/catering-payment.html' },
+  { name: 'Catering Payment — Thank You', url: 'https://melstreat.com/catering-payment-thankyou.html' },
+  { name: 'Catering — Thank You', url: 'https://melstreat.com/catering-thankyou.html' },
+  { name: 'Order — Thank You', url: 'https://melstreat.com/shop-thankyou.html' },
+  { name: 'Review — Thank You', url: 'https://melstreat.com/review-thankyou.html' },
+  { name: 'Donations', url: 'https://melstreat.com/donations.html' },
+  { name: 'Links Page', url: 'https://melstreat.com/links.html' },
+  { name: 'Privacy Policy', url: 'https://melstreat.com/privacy-policy.html' },
+  { name: 'Admin Dashboard', url: 'https://melstreat.com/admin-dashboard.html' },
+  { name: 'Admin — Discount Codes', url: 'https://melstreat.com/admin-discounts.html' },
+  { name: 'Admin — Reviews', url: 'https://melstreat.com/admin-reviews.html' },
+  { name: 'Recipe Book', url: 'https://melstreat.com/recipe-book.html' },
 ];
 
 function renderLinksTab() {

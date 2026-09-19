@@ -106,6 +106,12 @@
     font-size:2.4rem;
     line-height:1.2;
   }
+  .order-context-line{
+    font-size:0.85rem;
+    color:var(--ink-soft, #6b4a56);
+    margin-top:8px;
+    font-weight:600;
+  }
   .payment-links{
     display:flex;
     flex-direction:column;
@@ -230,46 +236,23 @@
   <div id="amount-owed-banner" class="amount-owed-banner hidden">
     <div class="amount-owed-label">Amount Owed</div>
     <div class="amount-owed-value" id="amount-owed-value">$0.00</div>
+    <div id="order-context-line" class="order-context-line hidden"></div>
   </div>
 
   <form id="payment-form" class="card">
-    <h2>Payment Options</h2>
-    <div class="section-note">Use the amount Meliese confirmed with you, then send payment using one of the links below.</div>
-    <div class="payment-links">
-      <a href="https://venmo.com/u/Meliese-Riggans" target="_blank" rel="noopener" class="payment-link-box">
-        <span class="pay-icon">💳</span>
-        <span><span class="pay-label">Venmo</span><span class="pay-handle">@Meliese-Riggans</span></span>
-      </a>
-      <a href="https://cash.app/$Melieseriggans" target="_blank" rel="noopener" class="payment-link-box">
-        <span class="pay-icon">💵</span>
-        <span><span class="pay-label">CashApp</span><span class="pay-handle">$Melieseriggans</span></span>
-      </a>
-      <a href="https://www.paypal.me/triggans18" target="_blank" rel="noopener" class="payment-link-box">
-        <span class="pay-icon">🅿️</span>
-        <span><span class="pay-label">PayPal</span><span class="pay-handle">paypal.me/triggans18</span></span>
-      </a>
-    </div>
-
-    <h2 style="margin-top:20px;">Confirm Your Payment</h2>
-    <div class="section-note">After sending payment above, fill this out so Meliese knows to expect it.</div>
+    <h2>Pay Securely With Stripe</h2>
+    <div class="section-note">Your card is processed securely by Stripe — I never see or store your card details.</div>
 
     <label for="full_name">Full Name *</label>
-    <input type="text" id="full_name" placeholder="Jane Doe" required />
+    <input type="text" id="full_name" placeholder="Jane Doe" required autocomplete="name" />
 
     <label for="email">Email *</label>
-    <input type="email" id="email" placeholder="jane@example.com" required />
-
-    <label for="amount_paid">Amount Paid *</label>
-    <input type="number" id="amount_paid" min="0" step="0.01" placeholder="e.g. 89.00" required />
-
-    <label for="receipt">Upload Payment Receipt</label>
-    <input type="file" id="receipt" accept="image/*,.pdf" />
-
-    <label for="notes">Notes (optional)</label>
-    <textarea id="notes" placeholder="Anything Meliese should know"></textarea>
+    <input type="email" id="email" placeholder="jane@example.com" required autocomplete="email" />
 
     <div id="form-error" class="error"></div>
-    <button type="submit" class="submit-btn" id="submit-btn">Confirm Payment</button>
+    <button type="submit" class="submit-btn" id="submit-btn">Pay With Stripe 🔒</button>
+
+    <div class="section-note" style="margin-top:14px; text-align:center;">Prefer to pay another way? <a href="mailto:meliese-riggans@melstreat.com">Email Meliese</a> to arrange it.</div>
   </form>
 
 
@@ -299,19 +282,38 @@ async function getSupabase() {
   return _supabaseClient;
 }
 
-// Pre-fill from URL params, e.g. catering-payment.html?amount=89&name=Jane+Doe&email=jane@example.com
+// Pre-fill from URL params, e.g.
+// catering-payment.html?amount=89&name=Jane+Doe&email=jane@example.com&request_id=abc123&event_type=Birthday&event_date=2026-02-01&dozens=4
 const params = new URLSearchParams(window.location.search);
 const urlAmount = params.get('amount');
 const urlName = params.get('name');
 const urlEmail = params.get('email');
+const urlRequestId = params.get('request_id');
+const urlEventType = params.get('event_type');
+const urlEventDate = params.get('event_date');
+const urlDozens = params.get('dozens');
 
 if (urlAmount && !isNaN(parseFloat(urlAmount))) {
   document.getElementById('amount-owed-value').textContent = `$${parseFloat(urlAmount).toFixed(2)}`;
   document.getElementById('amount-owed-banner').classList.remove('hidden');
-  document.getElementById('amount_paid').value = parseFloat(urlAmount).toFixed(2);
 }
 if (urlName) document.getElementById('full_name').value = urlName;
 if (urlEmail) document.getElementById('email').value = urlEmail;
+
+// Show exactly what this payment is for, so there's no confusion about
+// which order it belongs to — helpful the moment there's more than one
+// catering conversation happening at once.
+const contextParts = [];
+if (urlDozens) contextParts.push(`${urlDozens} dozen`);
+if (urlEventType) contextParts.push(urlEventType);
+if (urlEventDate) {
+  const d = new Date(urlEventDate + 'T00:00:00');
+  contextParts.push(d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }));
+}
+if (contextParts.length > 0) {
+  document.getElementById('order-context-line').textContent = `For your ${contextParts.join(' · ')} order`;
+  document.getElementById('order-context-line').classList.remove('hidden');
+}
 
 const form = document.getElementById('payment-form');
 const errorBox = document.getElementById('form-error');
@@ -323,55 +325,47 @@ form.addEventListener('submit', async (e) => {
 
   const full_name = document.getElementById('full_name').value.trim();
   const email = document.getElementById('email').value.trim();
-  const amount_paid = document.getElementById('amount_paid').value;
 
-  if (!full_name || !email || !amount_paid) {
+  if (!full_name) {
     errorBox.textContent = 'Please fill out all required fields marked with *';
+    errorBox.style.display = 'block';
+    return;
+  }
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailPattern.test(email)) {
+    errorBox.textContent = 'Please enter a valid email.';
+    errorBox.style.display = 'block';
+    return;
+  }
+  if (!urlAmount || isNaN(parseFloat(urlAmount)) || parseFloat(urlAmount) <= 0) {
+    errorBox.textContent = 'This payment link is missing a valid amount — please ask Meliese to resend it.';
     errorBox.style.display = 'block';
     return;
   }
 
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Submitting...';
+  submitBtn.textContent = 'Redirecting to checkout...';
 
   try {
     const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('create-catering-checkout', {
+      body: {
+        amount: parseFloat(urlAmount),
+        fullName: full_name,
+        email,
+        requestId: urlRequestId || null,
+        orderContext: contextParts.length > 0 ? contextParts.join(' · ') : null,
+      }
+    });
+    if (error || !data?.success) throw new Error(data?.message || error?.message || 'Could not start checkout.');
 
-    let receipt_url = null;
-    const fileInput = document.getElementById('receipt');
-    if (fileInput.files.length > 0) {
-      const file = fileInput.files[0];
-      const path = `catering_${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage.from('receipts').upload(path, file);
-      if (uploadError) throw uploadError;
-      const { data: publicUrlData } = supabase.storage.from('receipts').getPublicUrl(path);
-      receipt_url = publicUrlData.publicUrl;
-    }
-
-    const paymentRow = {
-      full_name,
-      email,
-      amount_paid: parseFloat(amount_paid),
-      receipt_url,
-      notes: document.getElementById('notes').value.trim() || null,
-    };
-
-    const { error } = await supabase.from('catering_payments').insert(paymentRow);
-    if (error) throw error;
-
-    try {
-      await supabase.functions.invoke('send-catering-payment-email', { body: paymentRow });
-    } catch (emailErr) {
-      console.error('Email notification failed (payment was still saved):', emailErr);
-    }
-
-    window.location.href = 'catering-payment-thankyou.html';
+    window.location.href = data.url;
   } catch (err) {
     console.error(err);
-    errorBox.textContent = 'Something went wrong submitting your payment confirmation. Please try again: ' + (err.message || '');
+    errorBox.textContent = 'Something went wrong starting checkout. Please try again: ' + (err.message || '');
     errorBox.style.display = 'block';
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Confirm Payment';
+    submitBtn.textContent = 'Pay With Stripe 🔒';
   }
 });
 

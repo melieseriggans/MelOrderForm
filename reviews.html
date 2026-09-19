@@ -266,7 +266,7 @@
 </div>
 
 <div class="container">
-  <a href="https://ordertreats.melstreat.com/" class="back-link" id="back-link" onclick="return smartBack(event, 'https://ordertreats.melstreat.com/')">← Back</a>
+  <a href="https://melstreat.com/" class="back-link" id="back-link" onclick="return smartBack(event, 'https://melstreat.com/')">← Back</a>
 
   <form id="review-form" class="card">
     <label>Your Rating *</label>
@@ -314,13 +314,13 @@
     <div class="section-hint">Taste, packaging, and communication are optional — rate whatever feels relevant!</div>
 
     <label for="customer_name">Your Name *</label>
-    <input type="text" id="customer_name" placeholder="Jane Doe" required />
+    <input type="text" id="customer_name" placeholder="Jane Doe" required maxlength="60" />
 
     <label for="order_reference">What Did You Order? (optional)</label>
-    <input type="text" id="order_reference" placeholder="e.g. 6-Count Box, Red Velvet + S'mores" />
+    <input type="text" id="order_reference" placeholder="e.g. 6-Count Box, Oreo Red Velvet Dream + Toasty Campfire S'mores" maxlength="100" />
 
     <label for="review_text">Your Review</label>
-    <textarea id="review_text" placeholder="Tell me what you thought! ♡"></textarea>
+    <textarea id="review_text" placeholder="Tell me what you thought! ♡" maxlength="600"></textarea>
 
     <div id="form-error" class="error"></div>
     <button type="submit" class="submit-btn" id="submit-btn">Submit Review</button>
