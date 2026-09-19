@@ -546,6 +546,18 @@
         <div id="menu-mgmt-cinnamon-list"></div>
       </div>
 
+      <div class="card">
+        <h2>🍰 Cake Slices</h2>
+        <div class="order-detail" style="margin:0 0 12px;">New category — hidden from your shop until you turn it on above.</div>
+        <div id="menu-mgmt-cake-slice-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>🍫 Brownies</h2>
+        <div class="order-detail" style="margin:0 0 12px;">New category — hidden from your shop until you turn it on above.</div>
+        <div id="menu-mgmt-brownie-list"></div>
+      </div>
+
       <div class="card" id="menu-mgmt-add-card">
         <h2>➕ Add A New Flavor</h2>
         <label for="mm-new-name">Flavor Name</label>
@@ -554,6 +566,8 @@
         <select id="mm-new-type">
           <option value="cookie">Cookie</option>
           <option value="cinnamon_roll">Cinnamon Roll</option>
+          <option value="cake_slice">Cake Slice</option>
+          <option value="brownie">Brownie</option>
         </select>
         <label for="mm-new-price" style="margin-top:10px;">Price Per Item ($)</label>
         <input type="number" id="mm-new-price" min="0" step="0.01" placeholder="e.g. 3.00">
@@ -837,8 +851,14 @@
         <h2>📧 Send An Email</h2>
         <div class="order-detail" style="margin:0 0 14px;">Pick a template to start, tweak it, then send it to your opted-in email list.</div>
 
-        <label>Quick Templates</label>
+        <label>Who's This Going To?</label>
         <div class="tabs" style="margin-bottom:4px;">
+          <button type="button" class="email-audience-btn active" data-audience="signups">💌 Welcome List</button>
+          <button type="button" class="email-audience-btn" data-audience="restock">🍪 Restock Signups</button>
+        </div>
+
+        <label style="margin-top:14px;">Quick Templates</label>
+        <div class="tabs" style="margin-bottom:4px;" id="email-template-row">
           <button type="button" class="email-template-btn" data-template="restock">🍪 Back In Stock</button>
           <button type="button" class="email-template-btn" data-template="newflavor">✨ New Flavor</button>
           <button type="button" class="email-template-btn" data-template="thankyou">💕 Thank You</button>
@@ -847,6 +867,9 @@
           <button type="button" class="email-template-btn" data-template="holiday">🎄 Holiday Pre-Order</button>
           <button type="button" class="email-template-btn" data-template="missyou">🥺 We Miss You</button>
           <button type="button" class="email-template-btn" data-template="vip">👑 VIP Early Access</button>
+          <button type="button" class="email-template-btn" data-template="noWaitlist">🎉 No More Waitlist</button>
+          <button type="button" class="email-template-btn" data-template="welcomeSubscriber">💌 Welcome New Subscriber</button>
+          <button type="button" class="email-template-btn" data-template="meetMeliese">👋 Meet Meliese</button>
           <button type="button" class="email-template-btn" data-template="blank">📝 Blank</button>
         </div>
 
@@ -857,8 +880,17 @@
         <textarea id="email-body-input" style="min-height:160px;" placeholder="Write your message here..."></textarea>
         <div class="order-detail" style="margin:4px 0 0;">Basic HTML is okay (like &lt;strong&gt;bold&lt;/strong&gt;), but plain text works great too.</div>
 
+        <label for="email-image-input" style="margin-top:12px;">Add A Picture (optional)</label>
+        <input type="file" id="email-image-input" accept="image/*">
+        <div class="order-detail" style="margin:4px 0 0;">A flyer, sale graphic, or photo — it goes at the top of the email, above your message.</div>
+        <div id="email-image-preview-wrap" style="display:none; margin-top:10px; position:relative; max-width:260px;">
+          <img id="email-image-preview" style="width:100%; border-radius:10px; display:block;">
+          <button type="button" id="email-image-remove-btn" style="position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.55); color:#fff; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:1rem; line-height:1;">✕</button>
+        </div>
+        <div id="email-image-status" class="order-detail" style="display:none; margin-top:6px;"></div>
+
         <div class="order-detail" id="audience-count-note" style="margin:14px 0 0; background:var(--cream); padding:10px 12px; border-radius:10px;">Loading your opted-in list...</div>
-        <div class="order-detail" style="margin:6px 0 0; font-size:0.76rem;">This only ever goes to people who signed up for the $2-off welcome offer — never to emails collected from regular orders. That keeps things opt-in only, the way email marketing should work.</div>
+        <div class="order-detail" id="audience-consent-note" style="margin:6px 0 0; font-size:0.76rem;">This only ever goes to people who signed up for the $2-off welcome offer — never to emails collected from regular orders. That keeps things opt-in only, the way email marketing should work.</div>
 
         <div id="email-error" class="error"></div>
         <div id="email-success" class="drawer-msg" style="display:none; color:var(--pink-hot); font-weight:600; margin-top:10px;"></div>
@@ -1409,6 +1441,8 @@ const CATEGORY_DEFS = [
   { key: 'cookies', label: 'Cookies', icon: '🍪' },
   { key: 'cinnamon_rolls', label: 'Cinnamon Rolls', icon: '🥐' },
   { key: 'theme_boxes', label: 'Theme Boxes', icon: '🎁' },
+  { key: 'cake_slices', label: 'Cake Slices', icon: '🍰' },
+  { key: 'brownies', label: 'Brownies', icon: '🍫' },
 ];
 function getCategoryVisibility() {
   try { return JSON.parse(dashboardData.settings.category_visibility || '{}'); } catch (e) { return {}; }
@@ -1450,15 +1484,21 @@ function renderCategoryVisibility() {
 function renderMenuManagement() {
   const cookieListEl = document.getElementById('menu-mgmt-cookie-list');
   const cinnamonListEl = document.getElementById('menu-mgmt-cinnamon-list');
+  const cakeSliceListEl = document.getElementById('menu-mgmt-cake-slice-list');
+  const brownieListEl = document.getElementById('menu-mgmt-brownie-list');
   renderCategoryVisibility();
   if (!cookieListEl) return; // tab not on this page build
 
   const inventory = dashboardData.inventory || [];
   const cookies = inventory.filter(i => i.product_type === 'cookie').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
   const cinnamonRolls = inventory.filter(i => i.product_type === 'cinnamon_roll').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
+  const cakeSlices = inventory.filter(i => i.product_type === 'cake_slice').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
+  const brownies = inventory.filter(i => i.product_type === 'brownie').sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
 
   cookieListEl.innerHTML = cookies.length ? cookies.map(flavorRowHtml).join('') : '<div class="empty-note">No cookie flavors yet.</div>';
   cinnamonListEl.innerHTML = cinnamonRolls.length ? cinnamonRolls.map(flavorRowHtml).join('') : '<div class="empty-note">No cinnamon roll flavors yet.</div>';
+  if (cakeSliceListEl) cakeSliceListEl.innerHTML = cakeSlices.length ? cakeSlices.map(flavorRowHtml).join('') : '<div class="empty-note">No cake slice flavors yet — add one below.</div>';
+  if (brownieListEl) brownieListEl.innerHTML = brownies.length ? brownies.map(flavorRowHtml).join('') : '<div class="empty-note">No brownie flavors yet — add one below.</div>';
 
   document.querySelectorAll('.mm-toggle-active-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -4650,6 +4690,18 @@ const EMAIL_TEMPLATES = {
     subject: "You're Getting First Dibs 👑",
     body: "Because you're on my list, you get to hear about this before anyone else!\n\n[Share your announcement here — new flavor, early access, limited batch, etc.]\n\nThanks for being one of my favorite people to bake for.\n— Meliese",
   },
+  noWaitlist: {
+    subject: "Good News — No More Waiting List! 🍪",
+    body: "You asked to be notified when a flavor came back in stock — and I've got good news: I don't run out the way I used to, so there's no more waiting list needed!\n\nCome on over and order whenever you're craving something sweet.\n\nIf you'd like to keep hearing from me about new flavors and promos going forward, grab the $2-off welcome offer on my home page — that's my main list these days.\n\nCan't wait to bake for you!\n— Meliese",
+  },
+  welcomeSubscriber: {
+    subject: "Welcome To The Family! 💌",
+    body: "Hey there — thank you so much for joining my list! I'm so glad you're here.\n\nAs a reminder, your $2-off code is ready to use on your very first order whenever you're ready. From here on, I'll use this list to let you know about new flavors, sales, and anything fun happening at Mel's Treat — nothing spammy, promise!\n\nCan't wait to bake for you soon.\n\nXO,\nMeliese",
+  },
+  meetMeliese: {
+    subject: "A Little About Mel's Treat 👋",
+    body: "Hi! Since you just joined my list, I wanted to introduce myself.\n\nI'm Meliese, and Mel's Treat started as just me and a mixing bowl, baking treats for family and friends. Now I get to bake for you too, and it means more to me than you know.\n\nFeel free to reply to this email anytime — I love hearing from my customers!\n\nTalk soon,\nMeliese",
+  },
   blank: { subject: "", body: "" },
 };
 
@@ -4663,19 +4715,78 @@ document.querySelectorAll('.email-template-btn').forEach(btn => {
   });
 });
 
-let audienceCounts = { signups: 0 };
+let audienceCounts = { signups: 0, restock: 0 };
+let emailAudience = 'signups';
+
+document.querySelectorAll('.email-audience-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.email-audience-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    emailAudience = btn.dataset.audience;
+    updateAudienceNote();
+  });
+});
 
 function updateAudienceNote() {
   const note = document.getElementById('audience-count-note');
-  const count = audienceCounts.signups ?? 0;
-  note.textContent = count > 0
-    ? `💌 This will send to ${count} opted-in subscriber${count === 1 ? '' : 's'}.`
-    : `💌 Nobody's opted in yet — this list fills up as customers use the "$2 off" signup on your home page.`;
+  const consentNote = document.getElementById('audience-consent-note');
+  const count = audienceCounts[emailAudience] ?? 0;
+
+  if (emailAudience === 'restock') {
+    note.textContent = count > 0
+      ? `🍪 This will send to ${count} customer${count === 1 ? '' : 's'} who asked to be told when an item was back in stock.`
+      : `🍪 Nobody's on this list yet — it fills up whenever a customer asks to be notified an item is back in stock.`;
+    consentNote.textContent = 'These folks specifically asked to hear about availability, not general promos — best used for a one-time "here\'s what changed" note (like the "No More Waitlist" template) rather than ongoing marketing.';
+  } else {
+    note.textContent = count > 0
+      ? `💌 This will send to ${count} opted-in subscriber${count === 1 ? '' : 's'}.`
+      : `💌 Nobody's opted in yet — this list fills up as customers use the "$2 off" signup on your home page.`;
+    consentNote.textContent = 'This only ever goes to people who signed up for the $2-off welcome offer — never to emails collected from regular orders. That keeps things opt-in only, the way email marketing should work.';
+  }
 }
 
 function textToHtml(text) {
   return text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
 }
+
+let emailImageUrl = null;
+
+function buildEmailHtml(body) {
+  const imageHtml = emailImageUrl
+    ? `<img src="${emailImageUrl}" alt="" style="max-width:100%; border-radius:12px; margin-bottom:16px; display:block;">`
+    : '';
+  return imageHtml + textToHtml(body);
+}
+
+document.getElementById('email-image-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  const statusEl = document.getElementById('email-image-status');
+  if (!file) return;
+
+  statusEl.style.display = 'block';
+  statusEl.textContent = 'Uploading picture...';
+  try {
+    const supabase = await getSupabase();
+    const path = `email_${Date.now()}_${file.name}`;
+    const { error: uploadError } = await supabase.storage.from('email-images').upload(path, file);
+    if (uploadError) throw uploadError;
+    const { data: publicUrlData } = supabase.storage.from('email-images').getPublicUrl(path);
+    emailImageUrl = publicUrlData.publicUrl;
+
+    document.getElementById('email-image-preview').src = emailImageUrl;
+    document.getElementById('email-image-preview-wrap').style.display = 'block';
+    statusEl.style.display = 'none';
+  } catch (err) {
+    console.error('Image upload failed:', err);
+    statusEl.textContent = 'Could not upload that picture — please try again.';
+  }
+});
+
+document.getElementById('email-image-remove-btn').addEventListener('click', () => {
+  emailImageUrl = null;
+  document.getElementById('email-image-input').value = '';
+  document.getElementById('email-image-preview-wrap').style.display = 'none';
+});
 
 async function loadAudienceCounts() {
   try {
@@ -4708,7 +4819,7 @@ document.getElementById('send-test-email-btn').addEventListener('click', async (
   btn.textContent = 'Sending...';
   try {
     const data = await callFunction('send-marketing-email', 'send_campaign', {
-      subject, html: textToHtml(body), testEmail: 'meliese-riggans@melstreat.com',
+      subject, html: buildEmailHtml(body), testEmail: 'meliese-riggans@melstreat.com', audience: emailAudience,
     });
     if (!data.success) throw new Error(data.message || 'Could not send test email.');
     successBox.textContent = 'Test email sent to your inbox! 💌';
@@ -4736,24 +4847,28 @@ document.getElementById('send-campaign-btn').addEventListener('click', async () 
     return;
   }
 
-  const count = audienceCounts.signups ?? 0;
+  const count = audienceCounts[emailAudience] ?? 0;
+  const audienceLabel = emailAudience === 'restock' ? 'restock-alert signup' : 'opted-in subscriber';
   if (count === 0) {
-    errBox.textContent = 'No opted-in subscribers to send to yet.';
+    errBox.textContent = `No ${audienceLabel}s to send to yet.`;
     errBox.style.display = 'block';
     return;
   }
-  if (!confirm(`Send this email to ${count} opted-in subscriber${count === 1 ? '' : 's'}? This can't be undone.`)) return;
+  if (!confirm(`Send this email to ${count} ${audienceLabel}${count === 1 ? '' : 's'}? This can't be undone.`)) return;
 
   const btn = document.getElementById('send-campaign-btn');
   btn.disabled = true;
   btn.textContent = 'Sending...';
   try {
     const data = await callFunction('send-marketing-email', 'send_campaign', {
-      subject, html: textToHtml(body),
+      subject, html: buildEmailHtml(body), audience: emailAudience,
     });
     if (!data.success) throw new Error(data.message || 'Could not send campaign.');
     successBox.textContent = `Sent to ${data.sent} of ${data.total} recipients! 🎉`;
     successBox.style.display = 'block';
+    emailImageUrl = null;
+    document.getElementById('email-image-input').value = '';
+    document.getElementById('email-image-preview-wrap').style.display = 'none';
   } catch (err) {
     errBox.textContent = err.message || 'Something went wrong.';
     errBox.style.display = 'block';
