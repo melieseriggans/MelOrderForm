@@ -568,6 +568,9 @@
           <div class="choice-card mm-allergen-chip" data-allergen="gluten">🌾 Gluten</div>
           <div class="choice-card mm-allergen-chip" data-allergen="soy">🫘 Soy</div>
           <div class="choice-card mm-allergen-chip" data-allergen="nuts">🥜 Tree Nuts</div>
+          <div class="choice-card mm-allergen-chip" data-allergen="marshmallow">🍡 Marshmallow</div>
+          <div class="choice-card mm-allergen-chip" data-allergen="corn">🌽 Corn / Corn Syrup</div>
+          <div class="choice-card mm-allergen-chip" data-allergen="gelatin">🧴 Gelatin</div>
         </div>
         <div id="mm-new-stock-wrap" style="display:flex; gap:10px; margin-top:10px;">
           <div style="flex:1;">
@@ -605,8 +608,23 @@
           <span class="chevron">▸</span>
         </summary>
         <div class="collapsible-body">
-          <div class="order-detail" style="margin:0 0 12px;">Curated gift boxes made from your existing flavors.</div>
+          <div class="order-detail" style="margin:0 0 12px;">Curated gift boxes made from your existing flavors. Turn one of the starter ideas below on whenever you're ready, or build your own.</div>
           <div id="menu-mgmt-theme-list"></div>
+
+          <h3 style="margin-top:20px;">➕ Add A New Theme Box</h3>
+          <label for="tb-new-name">Box Name</label>
+          <input type="text" id="tb-new-name" placeholder="e.g. Movie Night Box">
+          <label for="tb-new-price" style="margin-top:10px;">Price ($)</label>
+          <input type="number" id="tb-new-price" min="0" step="0.01" placeholder="e.g. 15.00">
+          <label for="tb-new-emoji" style="margin-top:10px;">Placeholder Emoji</label>
+          <input type="text" id="tb-new-emoji" placeholder="e.g. 🍿" maxlength="4">
+          <label for="tb-new-desc" style="margin-top:10px;">Description</label>
+          <textarea id="tb-new-desc" placeholder="What's in it, in your own words"></textarea>
+          <label style="margin-top:10px;">What's Inside</label>
+          <div class="order-detail" style="margin:0 0 8px;">Set how many of each flavor goes in the box. Leave anything at 0 to leave it out.</div>
+          <div id="tb-new-contents"></div>
+          <div id="tb-add-error" class="error"></div>
+          <button class="btn" id="tb-add-btn" style="margin-top:14px; width:100%;">Add Theme Box</button>
         </div>
       </details>
     </div>
@@ -999,6 +1017,9 @@
           <label for="expense-receipt-input" style="margin-top:12px;">Receipt (optional)</label>
           <input type="file" id="expense-receipt-input" accept="image/*,.pdf,.heic">
           <div class="order-detail" style="margin:4px 0 0;">One receipt covers this whole trip.</div>
+          <button type="button" class="btn btn-small" id="scan-receipt-btn" style="width:100%; margin-top:10px; background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">📷 Scan This Receipt &amp; Add Items For Me</button>
+          <div class="order-detail" id="scan-receipt-status" style="display:none; margin-top:6px;"></div>
+          <div class="order-detail" style="margin:4px 0 0;">Snap a clear photo of the whole receipt above, then tap this — it reads the line items and prices straight off it and drops them in your cart below so you're not typing each one in by hand. Always double-check the cart before saving; photo reading isn't perfect, especially on faded or crumpled receipts.</div>
 
           <label for="expense-category-select" style="margin-top:14px;">Category</label>
           <div class="tabs" style="margin-bottom:4px;">
@@ -1040,6 +1061,13 @@
           <button class="btn" id="add-to-cart-btn" style="width:100%;">+ Add To Cart</button>
 
           <div id="expense-cart-list" style="margin-top:16px;"></div>
+
+          <div id="expense-tax-wrap" style="display:none; margin-top:10px;">
+            <label for="expense-tax-input">Sales Tax For This Trip (optional)</label>
+            <input type="number" id="expense-tax-input" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+            <div class="order-detail" style="margin:4px 0 0;">Check your receipt's tax line and add it here — it gets tracked as its own line item so your spending totals (and profit/tax estimate) reflect what you actually paid, not just the item prices.</div>
+          </div>
+
           <button class="btn" id="save-trip-btn" style="width:100%; display:none;">Save Shopping Trip</button>
 
           <details class="history-details">
@@ -1170,6 +1198,7 @@
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
 <script defer>
 const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
@@ -1459,6 +1488,8 @@ function renderMenuManagement() {
 // A lightweight inline edit flow using prompt() for the handful of fields
 // that change rarely (name/price/description) — keeps this shippable
 // without building a full modal system.
+const KNOWN_ALLERGEN_KEYS = ['dairy', 'eggs', 'gluten', 'soy', 'nuts', 'marshmallow', 'corn', 'gelatin'];
+
 async function openFlavorEditPrompt(id) {
   const item = dashboardData.inventory.find(i => i.id === id);
   if (!item) return;
@@ -1468,14 +1499,28 @@ async function openFlavorEditPrompt(id) {
   if (newPriceStr === null) return;
   const newDesc = prompt('Description:', item.description || '');
   if (newDesc === null) return;
+  const currentAllergens = (Array.isArray(item.allergens) ? item.allergens : []).join(', ');
+  const newAllergensStr = prompt(
+    `Allergens, comma-separated (choose from: ${KNOWN_ALLERGEN_KEYS.join(', ')}):`,
+    currentAllergens
+  );
+  if (newAllergensStr === null) return;
   const newPrice = parseFloat(newPriceStr);
   if (isNaN(newPrice) || newPrice < 0) { alert('Please enter a valid price.'); return; }
 
+  const requested = newAllergensStr.split(',').map(a => a.trim().toLowerCase()).filter(Boolean);
+  const allergens = requested.filter(a => KNOWN_ALLERGEN_KEYS.includes(a));
+  const unrecognized = requested.filter(a => !KNOWN_ALLERGEN_KEYS.includes(a));
+  if (unrecognized.length > 0) {
+    alert(`Didn't recognize: ${unrecognized.join(', ')} — those were skipped. Everything else saved fine.`);
+  }
+
   try {
-    await callAdmin('update_inventory', { id, cookie_name: newName.trim(), price: newPrice, description: newDesc.trim() });
+    await callAdmin('update_inventory', { id, cookie_name: newName.trim(), price: newPrice, description: newDesc.trim(), allergens });
     item.cookie_name = newName.trim();
     item.price = newPrice;
     item.description = newDesc.trim();
+    item.allergens = allergens;
     renderMenuManagement();
     showToast('Flavor updated ✧');
   } catch (err) {
@@ -1605,16 +1650,23 @@ function renderThemeBoxManagement() {
   const el = document.getElementById('menu-mgmt-theme-list');
   if (!el) return;
   const boxes = dashboardData.themeBoxes || [];
-  el.innerHTML = boxes.length ? boxes.map(box => `
+  el.innerHTML = boxes.length ? boxes.map(box => {
+    const contentsList = Object.entries(box.contents || {}).map(([name, qty]) => `${qty} × ${name}`).join(', ');
+    return `
     <div style="padding:10px 0; border-bottom:1px solid var(--pink-light);">
       <div style="display:flex; justify-content:space-between; align-items:baseline;">
         <span style="font-weight:700; ${box.active === false ? 'color:var(--ink-soft); text-decoration:line-through;' : ''}">${box.placeholder_emoji || '🎁'} ${escapeHtml(box.name)}</span>
         <span style="font-weight:700; color:var(--pink-hot);">${money(box.price)}</span>
       </div>
       <div class="order-detail" style="margin:2px 0 6px;">${escapeHtml(box.description || '')}</div>
-      <button type="button" class="btn btn-small mm-toggle-theme-btn" data-id="${box.id}" data-active="${box.active !== false}" style="background:var(--white); color:${box.active === false ? '#2e8b57' : '#c9962c'}; border:1.5px solid ${box.active === false ? '#2e8b57' : '#c9962c'};">${box.active === false ? 'Reactivate' : 'Remove From Menu'}</button>
+      ${contentsList ? `<div class="order-detail" style="margin:0 0 6px;">Contains: ${escapeHtml(contentsList)}</div>` : ''}
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-small mm-edit-theme-btn" data-id="${box.id}" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">Edit</button>
+        <button type="button" class="btn btn-small mm-toggle-theme-btn" data-id="${box.id}" data-active="${box.active !== false}" style="background:var(--white); color:${box.active === false ? '#2e8b57' : '#c9962c'}; border:1.5px solid ${box.active === false ? '#2e8b57' : '#c9962c'};">${box.active === false ? 'Reactivate' : 'Remove From Menu'}</button>
+      </div>
     </div>
-  `).join('') : '<div class="empty-note">No theme boxes yet.</div>';
+  `;
+  }).join('') : '<div class="empty-note">No theme boxes yet.</div>';
 
   el.querySelectorAll('.mm-toggle-theme-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -1632,6 +1684,114 @@ function renderThemeBoxManagement() {
       }
     });
   });
+
+  el.querySelectorAll('.mm-edit-theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => openThemeBoxEditPrompt(btn.dataset.id));
+  });
+
+  renderThemeBoxContentPicker();
+}
+
+// Lists every currently-active cookie/cinnamon roll flavor with a quantity
+// input, so building a new box's contents is pick-a-number rather than
+// typing flavor names by hand (which is easy to typo against what the
+// live menu actually calls each flavor).
+function renderThemeBoxContentPicker() {
+  const el = document.getElementById('tb-new-contents');
+  if (!el) return;
+  const flavors = (dashboardData.inventory || []).filter(i => i.active !== false);
+  el.innerHTML = flavors.length ? flavors.map(item => `
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
+      <span style="font-size:0.9rem;">${item.placeholder_emoji || '🍽️'} ${escapeHtml(item.cookie_name)}</span>
+      <input type="number" min="0" value="0" data-flavor-name="${escapeHtml(item.cookie_name)}" class="tb-content-qty" style="width:70px;">
+    </div>
+  `).join('') : '<div class="empty-note">Add a flavor above first — theme boxes are built from your existing flavors.</div>';
+}
+
+document.getElementById('tb-add-btn').addEventListener('click', async () => {
+  const errorBox = document.getElementById('tb-add-error');
+  errorBox.style.display = 'none';
+  const name = document.getElementById('tb-new-name').value.trim();
+  const price = parseFloat(document.getElementById('tb-new-price').value);
+  const emoji = document.getElementById('tb-new-emoji').value.trim();
+  const desc = document.getElementById('tb-new-desc').value.trim();
+
+  const contents = {};
+  document.querySelectorAll('.tb-content-qty').forEach(input => {
+    const qty = parseInt(input.value) || 0;
+    if (qty > 0) contents[input.dataset.flavorName] = qty;
+  });
+
+  if (!name || isNaN(price) || price < 0) {
+    errorBox.textContent = 'Please enter a box name and a valid price.';
+    errorBox.style.display = 'block';
+    return;
+  }
+  if (Object.keys(contents).length === 0) {
+    errorBox.textContent = 'Set a quantity for at least one flavor.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('tb-add-btn');
+  btn.disabled = true;
+  btn.textContent = 'Adding...';
+  try {
+    await callAdmin('add_theme_box', { name, price, placeholder_emoji: emoji || null, description: desc || null, contents });
+    const refreshed = await callAdmin('dashboard_data');
+    if (refreshed.success) { dashboardData = refreshed; renderMenuManagement(); }
+    document.getElementById('tb-new-name').value = '';
+    document.getElementById('tb-new-price').value = '';
+    document.getElementById('tb-new-emoji').value = '';
+    document.getElementById('tb-new-desc').value = '';
+    showToast('Theme box added ✧');
+  } catch (err) {
+    errorBox.textContent = err.message || 'Something went wrong adding this box.';
+    errorBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Add Theme Box';
+  }
+});
+
+// Same lightweight prompt() pattern as flavor editing — contents are edited
+// as "Flavor:qty, Flavor:qty" so this doesn't need a second full form.
+async function openThemeBoxEditPrompt(id) {
+  const box = dashboardData.themeBoxes.find(b => b.id === id);
+  if (!box) return;
+  const newName = prompt('Box name:', box.name);
+  if (newName === null) return;
+  const newPriceStr = prompt('Price ($):', box.price || 0);
+  if (newPriceStr === null) return;
+  const newDesc = prompt('Description:', box.description || '');
+  if (newDesc === null) return;
+  const currentContents = Object.entries(box.contents || {}).map(([n, q]) => `${n}:${q}`).join(', ');
+  const newContentsStr = prompt('Contents, as "Flavor:qty, Flavor:qty":', currentContents);
+  if (newContentsStr === null) return;
+
+  const newPrice = parseFloat(newPriceStr);
+  if (isNaN(newPrice) || newPrice < 0) { alert('Please enter a valid price.'); return; }
+
+  const contents = {};
+  newContentsStr.split(',').forEach(pair => {
+    const [rawName, rawQty] = pair.split(':');
+    if (!rawName || !rawQty) return;
+    const qty = parseInt(rawQty.trim());
+    if (qty > 0) contents[rawName.trim()] = qty;
+  });
+  if (Object.keys(contents).length === 0) { alert('Please list at least one flavor with a quantity.'); return; }
+
+  try {
+    await callAdmin('update_theme_box', { id, name: newName.trim(), price: newPrice, description: newDesc.trim(), contents });
+    box.name = newName.trim();
+    box.price = newPrice;
+    box.description = newDesc.trim();
+    box.contents = contents;
+    renderThemeBoxManagement();
+    showToast('Theme box updated ✧');
+  } catch (err) {
+    alert('Could not save changes: ' + err.message);
+  }
 }
 
 function getWeekStart(dateStr) {
@@ -2055,6 +2215,39 @@ function contactLinksHtml(phone, email) {
   return links.length ? `<div style="display:flex; gap:8px; margin:4px 0 0; flex-wrap:wrap;">${links.join('')}</div>` : '';
 }
 
+// Checks this order's items against CURRENT combined stock (on-hand +
+// frozen dough), so Mel can see at a glance whether she can fulfill it
+// from what she has right now or needs to bake more first. This checks
+// each order on its own — it doesn't net out demand from her other
+// pending orders competing for the same stock (the Baking To-Do List
+// above already covers that combined view).
+function orderStockStatus(o) {
+  const byName = {};
+  (dashboardData.inventory || []).forEach(item => { byName[item.cookie_name] = item; });
+  const shortfalls = [];
+  Object.entries(o.cookies || {}).forEach(([name, qtyNeeded]) => {
+    const item = byName[name];
+    if (!item) return; // not a tracked flavor (e.g. a theme box name) — nothing to check
+    const available = (item.on_hand_count || 0) + (item.stock_count || 0);
+    if (Number(qtyNeeded) > available) {
+      shortfalls.push({ name, needed: Number(qtyNeeded), available });
+    }
+  });
+  return { ok: shortfalls.length === 0, shortfalls };
+}
+
+function orderStockBadgeHtml(o) {
+  // Only worth showing for orders that still need baking/fulfilling —
+  // a completed or cancelled order isn't waiting on stock anymore.
+  if (o.status === 'completed' || o.status === 'cancelled') return '';
+  const { ok, shortfalls } = orderStockStatus(o);
+  if (ok) {
+    return `<div class="order-detail" style="color:#2e8b57; font-weight:600;">✅ Enough in stock right now</div>`;
+  }
+  const detail = shortfalls.map(s => `${escapeHtml(s.name)} (need ${s.needed}, have ${s.available})`).join(', ');
+  return `<div class="order-detail" style="color:#c0025e; font-weight:600;">⚠️ Short: ${detail}</div>`;
+}
+
 function orderRowHtml(o, customerCounts) {
   const typeByName = {};
   (dashboardData.inventory || []).forEach(item => { typeByName[item.cookie_name] = item.product_type || 'cookie'; });
@@ -2074,6 +2267,7 @@ function orderRowHtml(o, customerCounts) {
       </div>
       ${contactLinksHtml(o.phone, o.email)}
       <div class="order-detail">${cookieText || 'No items listed'}</div>
+      ${orderStockBadgeHtml(o)}
       ${extras.length ? `<div class="order-detail" style="color:var(--pink-hot); font-weight:600;">${extras.join(' · ')}</div>` : ''}
       <div class="order-detail">${o.fulfillment_type === 'pickup' ? 'Pickup — ' + escapeHtml(o.pickup_location || 'TBD') : 'Delivery — ' + escapeHtml(o.delivery_address || 'TBD')}</div>
       ${(() => {
@@ -3743,7 +3937,14 @@ function renderRepeatTripButton() {
   btn.style.display = 'block';
   btn.textContent = `🔁 Repeat Last Trip (${tripItems.length} item${tripItems.length === 1 ? '' : 's'})`;
   btn.onclick = () => {
+    // The tax line from last time goes into the tax field, not the cart —
+    // otherwise it'd sit alongside the tax field and risk being counted twice.
+    let repeatedTax = 0;
     tripItems.forEach(e => {
+      if (e.ingredient === 'Sales Tax' && !e.custom_note) {
+        repeatedTax += Number(e.amount);
+        return;
+      }
       expenseCart.push({
         ingredient: e.ingredient,
         custom_note: e.custom_note,
@@ -3752,6 +3953,7 @@ function renderRepeatTripButton() {
         category: e.category || 'ingredient',
       });
     });
+    if (repeatedTax > 0) document.getElementById('expense-tax-input').value = repeatedTax.toFixed(2);
     renderCart();
     document.getElementById('expense-cart-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
@@ -3760,14 +3962,19 @@ function renderRepeatTripButton() {
 function renderCart() {
   const list = document.getElementById('expense-cart-list');
   const saveBtn = document.getElementById('save-trip-btn');
+  const taxWrap = document.getElementById('expense-tax-wrap');
 
   if (expenseCart.length === 0) {
     list.innerHTML = '';
     saveBtn.style.display = 'none';
+    taxWrap.style.display = 'none';
     return;
   }
 
-  const total = expenseCart.reduce((sum, item) => sum + item.amount, 0);
+  const itemsTotal = expenseCart.reduce((sum, item) => sum + item.amount, 0);
+  const taxAmount = parseFloat(document.getElementById('expense-tax-input').value) || 0;
+  const grandTotal = itemsTotal + taxAmount;
+
   list.innerHTML = expenseCart.map((item, i) => {
     const typeTag = item.product_type === 'cinnamon_roll' ? ' · 🥐' : item.product_type === 'cookie' ? ' · 🍪' : '';
     return `
@@ -3779,7 +3986,9 @@ function renderCart() {
       <button class="cart-remove-btn" data-index="${i}" title="Remove">✕</button>
     </div>
   `;
-  }).join('') + `<div class="cart-summary"><span>Cart Total</span><span>${money(total)}</span></div>`;
+  }).join('')
+  + (taxAmount > 0 ? `<div class="cart-item"><div><div class="cart-item-name">Sales Tax</div></div><span>${money(taxAmount)}</span></div>` : '')
+  + `<div class="cart-summary"><span>Trip Total</span><span>${money(grandTotal)}</span></div>`;
 
   list.querySelectorAll('.cart-remove-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3789,7 +3998,9 @@ function renderCart() {
   });
 
   saveBtn.style.display = 'block';
+  taxWrap.style.display = 'block';
 }
+document.getElementById('expense-tax-input').addEventListener('input', renderCart);
 
 function addToCart() {
   const errBox = document.getElementById('expense-error');
@@ -3829,11 +4040,139 @@ document.getElementById('expense-amount-input').addEventListener('keydown', (e) 
   if (e.key === 'Enter') addToCart();
 });
 
+// Reads a photo of a receipt right in the browser (nothing uploaded
+// anywhere for this step) and drops each line item straight into the
+// cart, so a busy shopping trip doesn't need to be retyped by hand from
+// a paper receipt later. This is best-effort text recognition, not a
+// guarantee — lines it can't confidently read as "name + price" are just
+// skipped rather than guessed at, and everything lands in the cart for
+// her to review, edit, or remove before saving.
+const RECEIPT_SKIP_KEYWORDS = [
+  'subtotal', 'sub total', 'total', 'tax', 'cash', 'change due', 'change',
+  'debit', 'credit', 'visa', 'mastercard', 'discover', 'amex', 'balance',
+  'card', 'tend', 'ref #', 'ref#', 'auth', 'approved', 'savings', 'you saved',
+  'coupon', 'ebt', 'member', 'thank you', 'www.', '.com', 'store #', 'manager',
+  'cashier', 'terminal', 'transaction', 'items sold', '# items', 'survey',
+];
+
+function parseReceiptText(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const items = [];
+  const priceLine = /^(.{2,40}?)\s+\$?(\d{1,4}\.\d{2})\s*[A-Za-z]?$/;
+
+  for (const line of lines) {
+    const lower = line.toLowerCase();
+    if (RECEIPT_SKIP_KEYWORDS.some(kw => lower.includes(kw))) continue;
+
+    const match = line.match(priceLine);
+    if (!match) continue;
+
+    let name = match[1].replace(/[\s._-]+$/, '').trim();
+    const amount = parseFloat(match[2]);
+    // Skip anything that's basically just a number/barcode with no real name
+    if (!name || /^[\d\s]+$/.test(name) || amount <= 0 || amount > 500) continue;
+
+    // Title-case for readability — receipts are usually shouty all-caps
+    name = name.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+
+    items.push({ name, amount });
+  }
+  return items;
+}
+
+// Pulls a total sales-tax amount off the same receipt text, so scanning a
+// receipt can fill in the new Sales Tax field automatically instead of
+// making her look it up and retype it. Looks for a line that reads like
+// "TAX" or "SALES TAX" followed by a dollar amount — if a receipt shows
+// tax broken out by category (state tax, local tax, etc.) this adds them
+// together, since that's still what she actually paid in tax.
+function parseReceiptTax(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const taxLine = /^[a-z .]*tax[a-z .]*\s+\$?(\d{1,3}\.\d{2})\s*$/i;
+  let total = 0;
+  for (const line of lines) {
+    if (/subtotal/i.test(line)) continue;
+    const match = line.match(taxLine);
+    if (match) total += parseFloat(match[1]);
+  }
+  return Math.round(total * 100) / 100;
+}
+
+document.getElementById('scan-receipt-btn').addEventListener('click', async () => {
+  const fileInput = document.getElementById('expense-receipt-input');
+  const statusEl = document.getElementById('scan-receipt-status');
+  const btn = document.getElementById('scan-receipt-btn');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    showToast('Choose a receipt photo above first');
+    return;
+  }
+  if (typeof Tesseract === 'undefined') {
+    showToast('Photo scanning failed to load — check your connection and try again');
+    return;
+  }
+
+  btn.disabled = true;
+  statusEl.style.display = 'block';
+  statusEl.textContent = '📷 Reading your receipt… this can take a moment';
+
+  try {
+    const result = await Tesseract.recognize(file, 'eng', {
+      logger: (info) => {
+        if (info.status === 'recognizing text' && info.progress) {
+          statusEl.textContent = `📷 Reading your receipt… ${Math.round(info.progress * 100)}%`;
+        }
+      },
+    });
+    const text = (result?.data?.text || '').trim();
+    if (!text) {
+      showToast('Could not find any readable text in that photo — try a clearer, flatter shot');
+      return;
+    }
+
+    const parsedItems = parseReceiptText(text);
+    const parsedTax = parseReceiptTax(text);
+    if (parsedItems.length === 0 && parsedTax === 0) {
+      showToast("Couldn't confidently pick out line items — you may need to add these by hand this time");
+      return;
+    }
+
+    parsedItems.forEach(({ name, amount }) => {
+      expenseCart.push({
+        ingredient: 'Other',
+        custom_note: name,
+        amount,
+        quantity: 1,
+        category: expenseCategory,
+        product_type: null,
+      });
+    });
+    if (parsedTax > 0) {
+      const taxInput = document.getElementById('expense-tax-input');
+      const existing = parseFloat(taxInput.value) || 0;
+      taxInput.value = (existing + parsedTax).toFixed(2);
+    }
+    renderCart();
+    document.getElementById('expense-cart-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const taxNote = parsedTax > 0 ? ` plus ${money(parsedTax)} tax` : '';
+    showToast(`Added ${parsedItems.length} item${parsedItems.length === 1 ? '' : 's'}${taxNote} from your receipt — check them over before saving ✧`);
+  } catch (err) {
+    console.error('Receipt scan failed:', err);
+    showToast('Something went wrong reading that receipt — please try again');
+  } finally {
+    statusEl.style.display = 'none';
+    btn.disabled = false;
+  }
+});
+
 async function saveShoppingTrip() {
   if (expenseCart.length === 0) return;
   const date_spent = document.getElementById('expense-date-input').value || null;
   const vendor = document.getElementById('expense-vendor-input').value.trim() || null;
   const storeAddress = document.getElementById('trip-store-address-input').value.trim();
+  const taxInput = document.getElementById('expense-tax-input');
+  const taxAmount = parseFloat(taxInput.value) || 0;
   const btn = document.getElementById('save-trip-btn');
   btn.disabled = true;
   btn.textContent = 'Saving...';
@@ -3850,8 +4189,16 @@ async function saveShoppingTrip() {
       receipt_url = publicUrlData.publicUrl;
     }
 
-    await callAdmin('add_manual_expenses_batch', { items: expenseCart, date_spent, vendor, receipt_url });
-    expenseCart.forEach(item => {
+    // The sales tax paid on a trip is tracked as its own line item (named
+    // "Sales Tax") rather than folded silently into an item's price — that
+    // way it shows up honestly in her spend totals and profit/tax estimate,
+    // while still being easy to spot and exclude if she ever wants to.
+    const itemsToSave = taxAmount > 0
+      ? [...expenseCart, { ingredient: 'Sales Tax', custom_note: null, amount: taxAmount, quantity: 1, category: expenseCategory, product_type: null }]
+      : expenseCart;
+
+    await callAdmin('add_manual_expenses_batch', { items: itemsToSave, date_spent, vendor, receipt_url });
+    itemsToSave.forEach(item => {
       dashboardData.manualExpenses.unshift({
         id: 'temp-' + Date.now() + Math.random(),
         ingredient: item.ingredient,
@@ -3867,6 +4214,7 @@ async function saveShoppingTrip() {
       });
     });
     expenseCart = [];
+    taxInput.value = '';
     fileInput.value = '';
     renderCart();
     renderEarnings();
