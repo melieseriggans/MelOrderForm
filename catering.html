@@ -97,6 +97,16 @@
     max-width:520px;
     margin:-26px auto 0;
     padding:0 16px;
+    /* The banner overlaps this by design (it floats the "← Back" pill and
+       first card up over its rounded bottom edge), but the banner's JS-
+       generated sparkle layer is position:absolute with z-index:0, which
+       CSS always paints above plain static content regardless of source
+       order — so without this, that decorative layer visually sat on top
+       of the Back button in the overlap zone. Positioning the container
+       and giving it a real z-index puts it back on top, where it visually
+       belongs. */
+    position:relative;
+    z-index:1;
   }
   .card{
     background:var(--white);
@@ -368,11 +378,13 @@
       <option>Holiday Party</option>
       <option>Other</option>
     </select>
+    <input type="text" id="event_type_other" class="hidden" placeholder="Tell us the occasion" style="margin-top:8px;" />
 
     <label for="guest_count">About How Many Guests?</label>
     <input type="number" id="guest_count" min="1" placeholder="e.g. 30" inputmode="numeric">
 
     <label for="event_date">Event Date</label>
+    <div class="section-note">Please choose a date at least a week out — catering orders need advance notice.</div>
     <input type="date" id="event_date" />
 
     <label for="event_time">Event Time</label>
@@ -413,13 +425,10 @@
       <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" />
     </div>
 
-    <label>Any Allergies Or Dietary Notes? (Optional)</label>
-    <div class="section-note">Checking these doesn't guarantee we can fully accommodate — but it helps me plan and ask the right follow-up questions.</div>
+    <label>Nut Allergy? (Optional)</label>
+    <div class="section-note">Checking this doesn't guarantee we can fully accommodate — but it helps me plan and ask the right follow-up questions.</div>
     <div class="choice-group" id="dietary-checks" style="flex-wrap:wrap;">
-      <div class="choice-card dietary-chip" data-diet="Nut Allergy">🥜 Nut Allergy</div>
-      <div class="choice-card dietary-chip" data-diet="Gluten-Free Interest">🌾 Gluten-Free Interest</div>
-      <div class="choice-card dietary-chip" data-diet="Dairy-Free Interest">🥛 Dairy-Free Interest</div>
-      <div class="choice-card dietary-chip" data-diet="Egg Allergy">🥚 Egg Allergy</div>
+      <div class="choice-card dietary-chip" data-diet="Nut Allergy" style="flex:none; width:auto; padding:10px 18px;">🥜 Nut Allergy</div>
     </div>
 
     <label for="special_instructions">Anything Else I Should Know?</label>
@@ -597,6 +606,22 @@ document.querySelectorAll('[data-fulfillment]').forEach(card => {
   });
 });
 
+// Event date must be at least a week out — set the date picker's minimum
+// and keep a copy of that cutoff for the submit-time check below.
+const eventDateInput = document.getElementById('event_date');
+const minEventDate = new Date();
+minEventDate.setHours(0, 0, 0, 0);
+minEventDate.setDate(minEventDate.getDate() + 7);
+eventDateInput.min = minEventDate.toISOString().slice(0, 10);
+
+// Show a small text box to type in a custom occasion when "Other" is picked.
+const eventTypeSelect = document.getElementById('event_type');
+const eventTypeOther = document.getElementById('event_type_other');
+eventTypeSelect.addEventListener('change', () => {
+  eventTypeOther.classList.toggle('hidden', eventTypeSelect.value !== 'Other');
+  if (eventTypeSelect.value !== 'Other') eventTypeOther.value = '';
+});
+
 // Dietary chips toggle independently (unlike pickup/delivery) since more
 // than one can apply at once.
 document.querySelectorAll('.dietary-chip').forEach(chip => {
@@ -630,6 +655,16 @@ submitBtn.addEventListener('click', async () => {
     return;
   }
 
+  const event_date_raw = document.getElementById('event_date').value;
+  if (event_date_raw) {
+    const chosenDate = new Date(event_date_raw + 'T00:00:00');
+    if (chosenDate < minEventDate) {
+      errorBox.textContent = 'Please choose an event date at least a week out — catering orders need advance notice.';
+      errorBox.style.display = 'block';
+      return;
+    }
+  }
+
   submitBtn.disabled = true;
   submitBtn.textContent = 'Submitting...';
 
@@ -648,7 +683,9 @@ submitBtn.addEventListener('click', async () => {
       phone: document.getElementById('phone').value.trim() || null,
       event_date: document.getElementById('event_date').value || null,
       event_time: document.getElementById('event_time').value || null,
-      event_type: document.getElementById('event_type').value || null,
+      event_type: document.getElementById('event_type').value === 'Other'
+        ? (document.getElementById('event_type_other').value.trim() || 'Other')
+        : (document.getElementById('event_type').value || null),
       guest_count: document.getElementById('guest_count').value ? parseInt(document.getElementById('guest_count').value) : null,
       dietary_notes: getSelectedDietaryNotes(),
       dozens_count,
