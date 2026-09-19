@@ -104,15 +104,33 @@
   .real-sticker {
     position: absolute;
     z-index: 3;
-    border: 4px solid #fff;
-    outline: 1.5px solid #ff8fd6;
-    outline-offset: -1px;
-    box-shadow: 0 4px 10px rgba(74,0,40,0.45);
-    object-fit: cover;
-    clip-path: polygon(96.0% 50.0%, 101.7% 55.8%, 94.8% 60.2%, 87.8% 63.2%, 91.4% 70.0%, 94.0% 77.7%, 86.0% 78.7%, 78.3% 78.3%, 78.7% 86.0%, 77.7% 94.0%, 70.0% 91.4%, 63.2% 87.8%, 60.2% 94.8%, 55.8% 101.7%, 50.0% 96.0%, 45.5% 89.7%, 39.8% 94.8%, 32.8% 99.1%, 30.0% 91.4%, 28.7% 83.9%, 21.3% 86.0%, 13.2% 86.8%, 14.0% 78.7%, 16.1% 71.3%, 8.6% 70.0%, 0.9% 67.2%, 5.2% 60.2%, 10.3% 54.5%, 4.0% 50.0%, -1.7% 44.2%, 5.2% 39.8%, 12.2% 36.8%, 8.6% 30.0%, 6.0% 22.3%, 14.0% 21.3%, 21.7% 21.7%, 21.3% 14.0%, 22.3% 6.0%, 30.0% 8.6%, 36.8% 12.2%, 39.8% 5.2%, 44.2% -1.7%, 50.0% 4.0%, 54.5% 10.3%, 60.2% 5.2%, 67.2% 0.9%, 70.0% 8.6%, 71.3% 16.1%, 78.7% 14.0%, 86.8% 13.2%, 86.0% 21.3%, 83.9% 28.7%, 91.4% 30.0%, 99.1% 32.8%, 94.8% 39.8%, 89.7% 45.5%);
+    object-fit: contain;
+    /* True die-cut sticker edge: the white + pink ring is baked directly
+       into each PNG (traced from its own alpha silhouette), so at runtime
+       this is just one cheap drop-shadow for lift instead of a dozen
+       stacked filters — which rendered fine but was too heavy for real
+       phones once animated. */
+    filter: drop-shadow(0 2.5px 5px rgba(74,0,40,0.5));
   }
-  .real-sticker.rs-1 { width: 72px; height: 76px; bottom: -20px; left: 8px; transform: rotate(-8deg); }
-  .real-sticker.rs-2 { width: 68px; height: 86px; bottom: -24px; right: 10px; transform: rotate(7deg); }
+  .real-sticker.rs-1 { width: 72px; height: auto; bottom: -20px; left: 8px; transform: rotate(-8deg); }
+  .real-sticker.rs-2 { width: 68px; height: auto; bottom: -24px; right: 10px; transform: rotate(7deg); }
+  /* More stickers running down the sides of a recipe page, not just
+     clustered in the top strip — pinned into the page-content box so
+     they scroll along with the ingredients/instructions instead of
+     staying fixed at the top. .recipe-body-safe (below) reserves a real
+     46px gutter on each side the whole way down, on top of the page's
+     own 22px padding, so these sit in genuinely guaranteed blank margin
+     — not just "usually short enough" text — and never sit on top of a
+     word no matter how long a line runs. */
+  .side-sticker { position: absolute; z-index: 3; width: 46px; height: auto; object-fit: contain; filter: drop-shadow(0 2.5px 5px rgba(74,0,40,0.5)); }
+  .side-sticker.side-l1 { top: 300px; left: -6px; transform: rotate(-10deg); }
+  .side-sticker.side-r1 { top: 480px; right: -6px; transform: rotate(9deg); }
+  .side-sticker.side-l2 { top: 700px; left: -6px; transform: rotate(8deg); }
+  .side-sticker.side-r2 { top: 920px; right: -6px; transform: rotate(-11deg); }
+  /* The reserved gutter itself: every line of ingredients/instructions
+     wraps inside this narrower column, so the side-stickers above always
+     have real empty space to sit in. */
+  .recipe-body-safe { padding: 0 46px; position: relative; }
   .collage-strip.c3 { background-image: url('assets/mcbling-collage-3.jpg'); background-position: center 10%; }
   .sparkle {
     position: absolute;
@@ -237,18 +255,50 @@
      its own timing so the page feels alive without being distracting. */
   .cover-sticker {
     position: absolute;
-    border: 5px solid #fff;
-    outline: 2px solid #ff8fd6;
-    outline-offset: -1px;
-    box-shadow: 0 5px 14px rgba(74,0,40,0.55);
-    object-fit: cover;
+    object-fit: contain;
     z-index: 2;
-    clip-path: polygon(96.0% 50.0%, 101.7% 55.8%, 94.8% 60.2%, 87.8% 63.2%, 91.4% 70.0%, 94.0% 77.7%, 86.0% 78.7%, 78.3% 78.3%, 78.7% 86.0%, 77.7% 94.0%, 70.0% 91.4%, 63.2% 87.8%, 60.2% 94.8%, 55.8% 101.7%, 50.0% 96.0%, 45.5% 89.7%, 39.8% 94.8%, 32.8% 99.1%, 30.0% 91.4%, 28.7% 83.9%, 21.3% 86.0%, 13.2% 86.8%, 14.0% 78.7%, 16.1% 71.3%, 8.6% 70.0%, 0.9% 67.2%, 5.2% 60.2%, 10.3% 54.5%, 4.0% 50.0%, -1.7% 44.2%, 5.2% 39.8%, 12.2% 36.8%, 8.6% 30.0%, 6.0% 22.3%, 14.0% 21.3%, 21.7% 21.7%, 21.3% 14.0%, 22.3% 6.0%, 30.0% 8.6%, 36.8% 12.2%, 39.8% 5.2%, 44.2% -1.7%, 50.0% 4.0%, 54.5% 10.3%, 60.2% 5.2%, 67.2% 0.9%, 70.0% 8.6%, 71.3% 16.1%, 78.7% 14.0%, 86.8% 13.2%, 86.0% 21.3%, 83.9% 28.7%, 91.4% 30.0%, 99.1% 32.8%, 94.8% 39.8%, 89.7% 45.5%);
+    /* Real cutout PNGs (true transparent backgrounds), each with its
+       white + pink die-cut ring baked directly into the image, traced
+       from its own alpha silhouette — so this is just one cheap
+       drop-shadow for lift, not a dozen stacked filters per sticker
+       (that rendered fine but was too heavy once animated on a phone). */
+    filter: drop-shadow(0 3px 7px rgba(74,0,40,0.5));
     animation: coverStickerFloat 5s ease-in-out infinite;
   }
   @keyframes coverStickerFloat {
     0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
     50% { transform: translateY(-7px) rotate(var(--r, 0deg)); }
+  }
+  /* Washi-tape accents pinning a couple of the stickers down like
+     they're really taped into a scrapbook, not just floating png's. */
+  .cover-tape {
+    position: absolute;
+    z-index: 4;
+    width: 46px;
+    height: 18px;
+    background: repeating-linear-gradient(45deg, #fff0f8, #fff0f8 4px, #ff9ad9 4px, #ff9ad9 8px);
+    opacity: 0.9;
+    box-shadow: 0 2px 4px rgba(74,0,40,0.3);
+    pointer-events: none;
+  }
+  /* A torn scrap of paper "pasted" behind the tagline, like a real
+     journaling strip on a scrapbook page. */
+  .cover-tag-wrap {
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+    background: #fff8fb;
+    padding: 10px 22px 8px;
+    margin-top: 10px;
+    transform: rotate(-1.3deg);
+    box-shadow: 0 5px 14px rgba(74,0,40,0.4);
+    clip-path: polygon(2% 6%, 14% 1%, 30% 4%, 46% 0%, 62% 3%, 79% 0%, 93% 4%, 100% 10%, 97% 26%, 100% 42%, 96% 58%, 100% 74%, 97% 90%, 100% 98%, 86% 100%, 70% 96%, 54% 100%, 38% 97%, 22% 100%, 8% 96%, 0% 90%, 4% 74%, 0% 58%, 4% 42%, 0% 26%, 3% 10%);
+  }
+  .cover-tag-wrap .tag {
+    border-top: none;
+    padding-top: 0;
+    color: #b6006a;
+    text-shadow: none;
   }
 
   /* Index page */
@@ -558,17 +608,13 @@
   .ing-side-sticker {
     position: absolute;
     top: 24px;
-    right: -8px;
+    right: -14px;
     width: 62px;
-    height: 62px;
-    border: 4px solid #fff;
-    outline: 1.5px solid #ff8fd6;
-    outline-offset: -1px;
-    box-shadow: 0 3px 8px rgba(74,0,40,0.4);
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     transform: rotate(7deg);
     z-index: 2;
-    clip-path: polygon(96.0% 50.0%, 101.7% 55.8%, 94.8% 60.2%, 87.8% 63.2%, 91.4% 70.0%, 94.0% 77.7%, 86.0% 78.7%, 78.3% 78.3%, 78.7% 86.0%, 77.7% 94.0%, 70.0% 91.4%, 63.2% 87.8%, 60.2% 94.8%, 55.8% 101.7%, 50.0% 96.0%, 45.5% 89.7%, 39.8% 94.8%, 32.8% 99.1%, 30.0% 91.4%, 28.7% 83.9%, 21.3% 86.0%, 13.2% 86.8%, 14.0% 78.7%, 16.1% 71.3%, 8.6% 70.0%, 0.9% 67.2%, 5.2% 60.2%, 10.3% 54.5%, 4.0% 50.0%, -1.7% 44.2%, 5.2% 39.8%, 12.2% 36.8%, 8.6% 30.0%, 6.0% 22.3%, 14.0% 21.3%, 21.7% 21.7%, 21.3% 14.0%, 22.3% 6.0%, 30.0% 8.6%, 36.8% 12.2%, 39.8% 5.2%, 44.2% -1.7%, 50.0% 4.0%, 54.5% 10.3%, 60.2% 5.2%, 67.2% 0.9%, 70.0% 8.6%, 71.3% 16.1%, 78.7% 14.0%, 86.8% 13.2%, 86.0% 21.3%, 83.9% 28.7%, 91.4% 30.0%, 99.1% 32.8%, 94.8% 39.8%, 89.7% 45.5%);
+    filter: drop-shadow(0 2.5px 5px rgba(74,0,40,0.5));
   }
   .notes-toggle {
     display: inline-flex;
@@ -1324,6 +1370,70 @@ function saveCheckState() {
   }
 }
 
+// The full sticker sheet — every die-cut PNG available for the little
+// collage-strip pairs on index/recipe/edit pages. Add a new filename here
+// (drop the matching assets/<name>.png in place) and every page that picks
+// stickers from this pool — including brand-new recipes added later —
+// automatically starts drawing from it too. Nothing else needs editing.
+const STICKER_POOL = [
+  'bunny','star','cherries','teddy','skull','chanel','moneybag','lvheart',
+  'carebear','hellokitty','cassette','moneymotive',
+  'tweety','minnie','lips','devilhk','jesushk','bettyboop','leopardhk',
+  'godsfav','naughty','girlgetup','smokinghk','vampirehk','adulthood',
+  'heart3d','butter','adventuretime','nighttown','hxhsled','toyshop'
+];
+// A tiny deterministic hash so the *same* recipe always shows the *same*
+// sticker pair (no flicker/reshuffle on every re-render), while different
+// recipes land on different pairs across the pool instead of repeating
+// the same two stickers on every page.
+function stickerHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
+function stickerPairFor(seed) {
+  const pool = STICKER_POOL;
+  const h = stickerHash(String(seed));
+  const i1 = h % pool.length;
+  let i2 = Math.floor(h / pool.length) % pool.length;
+  if (i2 === i1) i2 = (i2 + 1) % pool.length;
+  return [pool[i1], pool[i2]];
+}
+function stickerStripHtml(seed, rs1Extra, rs2Extra) {
+  const [a, b] = stickerPairFor(seed);
+  return `<img src="assets/${a}.png" class="real-sticker rs-1${rs1Extra ? ' ' + rs1Extra : ''}" alt="">
+    <img src="assets/${b}.png" class="real-sticker rs-2${rs2Extra ? ' ' + rs2Extra : ''}" alt="">`;
+}
+// Picks `count` DISTINCT stickers for one page, none repeating another —
+// used for the extra ones running down the sides so a recipe never shows
+// the same sticker twice on the same page.
+function stickerSetFor(seed, count, exclude) {
+  const pool = STICKER_POOL;
+  const used = new Set(exclude || []);
+  const out = [];
+  let h = stickerHash(String(seed));
+  let guard = 0;
+  while (out.length < count && guard < pool.length * 4) {
+    const idx = h % pool.length;
+    const name = pool[idx];
+    if (!used.has(name)) { used.add(name); out.push(name); }
+    h = stickerHash(h + ':' + guard);
+    guard++;
+  }
+  return out;
+}
+// The four little stickers pinned down the margins of a recipe page,
+// scrolling along with the ingredients/instructions instead of only
+// living in the top strip.
+function sideStickersHtml(seed, topPair) {
+  const [c, d, e, f] = stickerSetFor(seed + '-side', 4, topPair);
+  return `
+    <img src="assets/${c}.png" class="side-sticker side-l1" alt="">
+    <img src="assets/${d}.png" class="side-sticker side-r1" alt="">
+    <img src="assets/${e}.png" class="side-sticker side-l2" alt="">
+    <img src="assets/${f}.png" class="side-sticker side-r2" alt="">`;
+}
+
 let categories = [];
 let pageList = [];
 let current = 0;
@@ -1545,21 +1655,30 @@ function renderCover() {
       <div class="cover-charm" style="top:10%; right:8%;">&#10022;</div>
       <div class="cover-charm" style="bottom:10%; left:9%;">&#10022;</div>
       <div class="cover-charm" style="bottom:8%; right:7%;">&#9825;</div>
-      <img src="assets/bunny.png" class="cover-sticker" style="top:3%; left:18%; width:82px; height:74px; --r:-10deg; animation-delay:0s;">
-      <img src="assets/star.png" class="cover-sticker" style="top:4%; right:18%; width:78px; height:88px; --r:9deg; animation-delay:0.6s;">
-      <img src="assets/cherries.png" class="cover-sticker" style="top:18%; left:1%; width:78px; height:82px; --r:-14deg; animation-delay:1.1s;">
-      <img src="assets/teddy.png" class="cover-sticker" style="top:20%; right:0%; width:78px; height:94px; --r:12deg; animation-delay:1.7s;">
-      <img src="assets/skull.png" class="cover-sticker" style="top:37%; left:0%; width:76px; height:74px; --r:8deg; animation-delay:0.3s;">
-      <img src="assets/chanel.png" class="cover-sticker" style="top:39%; right:-1%; width:70px; height:86px; --r:-9deg; animation-delay:2.1s;">
-      <img src="assets/moneybag.png" class="cover-sticker" style="bottom:29%; left:0%; width:78px; height:92px; --r:13deg; animation-delay:1.4s;">
-      <img src="assets/lvheart.png" class="cover-sticker" style="bottom:27%; right:0%; width:86px; height:70px; --r:-8deg; animation-delay:0.8s;">
-      <img src="assets/carebear.png" class="cover-sticker" style="bottom:14%; left:19%; width:80px; height:82px; --r:-11deg; animation-delay:2.4s;">
-      <img src="assets/hellokitty.png" class="cover-sticker" style="bottom:15%; right:18%; width:80px; height:76px; --r:10deg; animation-delay:1.9s;">
-      <img src="assets/cassette.png" class="cover-sticker" style="top:14%; left:34%; width:84px; height:56px; --r:-6deg; animation-delay:0.4s;">
-      <img src="assets/moneymotive.png" class="cover-sticker" style="bottom:8%; left:33%; width:72px; height:90px; --r:7deg; animation-delay:1.2s;">
+      <!-- Her own picks — pulled straight from the mood-board images she
+           sent, cut down to real die-cut stickers, bigger and piled up
+           corner by corner like a sheet of stickers pressed onto the page. -->
+      <img src="assets/leopardhk.png" class="cover-sticker" style="top:0%; left:0%; width:128px; height:auto; --r:-9deg; z-index:5; animation-delay:0s;">
+      <img src="assets/tweety.png" class="cover-sticker" style="top:9%; left:20%; width:82px; height:auto; --r:12deg; z-index:6; animation-delay:0.5s;">
+      <img src="assets/godsfav.png" class="cover-sticker" style="top:20%; left:2%; width:86px; height:auto; --r:10deg; z-index:7; animation-delay:1.1s;">
+      <div class="cover-tape" style="top:18%; left:19%; transform:rotate(18deg);"></div>
+
+      <img src="assets/devilhk.png" class="cover-sticker" style="top:0%; right:0%; width:118px; height:auto; --r:10deg; z-index:5; animation-delay:0.3s;">
+      <img src="assets/jesushk.png" class="cover-sticker" style="top:10%; right:19%; width:96px; height:auto; --r:-11deg; z-index:6; animation-delay:0.8s;">
+      <img src="assets/bettyboop.png" class="cover-sticker" style="top:21%; right:2%; width:88px; height:auto; --r:-8deg; z-index:7; animation-delay:1.4s;">
+
+      <img src="assets/minnie.png" class="cover-sticker" style="bottom:0%; left:0%; width:108px; height:auto; --r:-10deg; z-index:5; animation-delay:0.2s;">
+      <img src="assets/lips.png" class="cover-sticker" style="bottom:11%; left:19%; width:86px; height:auto; --r:14deg; z-index:6; animation-delay:0.7s;">
+      <img src="assets/smokinghk.png" class="cover-sticker" style="bottom:22%; left:2%; width:78px; height:auto; --r:8deg; z-index:7; animation-delay:1.3s;">
+      <div class="cover-tape" style="bottom:19%; left:19%; transform:rotate(-16deg);"></div>
+
+      <img src="assets/girlgetup.png" class="cover-sticker" style="bottom:0%; right:0%; width:92px; height:auto; --r:8deg; z-index:5; animation-delay:0.4s;">
+      <img src="assets/vampirehk.png" class="cover-sticker" style="bottom:16%; right:18%; width:82px; height:auto; --r:-9deg; z-index:6; animation-delay:1.0s;">
+      <img src="assets/adulthood.png" class="cover-sticker" style="bottom:0%; right:26%; width:78px; height:auto; --r:7deg; z-index:6; animation-delay:1.7s;">
+      <img src="assets/naughty.png" class="cover-sticker" style="bottom:24%; right:2%; width:76px; height:auto; --r:-13deg; z-index:7; animation-delay:2.3s;">
       <div class="name">NIYA'S</div>
       <div class="sub">~ cook book ~</div>
-      <div class="tag">Just For Me 💋</div>
+      <div class="cover-tag-wrap"><div class="tag">Just For Me 💋</div></div>
     </div>`;
   return div;
 }
@@ -1618,8 +1737,7 @@ function renderIndex() {
   div.innerHTML = `
     <div class="page-content">
       <div class="collage-strip c1">
-        <img src="assets/bunny.png" class="real-sticker rs-1" alt="">
-        <img src="assets/star.png" class="real-sticker rs-2" alt="">
+        ${stickerStripHtml('index')}
       </div>
       <div class="index-title">Index</div>
       <span class="photo-sticker pos-title-r"></span>
@@ -1708,27 +1826,36 @@ function renderRecipeView(recipe, catName, ci, ri) {
        <button class="cook-reset" data-cook-reset="${key}">Reset Checks</button>`
     : `<button class="cook-toggle" data-cook-toggle="${key}">👩‍🍳 Cook Mode</button>`;
 
+  // One sticker pick per recipe, shared across the top strip, the little
+  // one tucked by the ingredients, and the run of them down the sides —
+  // all different from each other so a single page never repeats a sticker.
+  const [topA, topB] = stickerPairFor(key + '-view');
+  const ingPick = stickerSetFor(key + '-ing', 1, [topA, topB])[0];
+
   div.innerHTML = `
     <div class="page-content">
       <div class="collage-strip c2">
-        <img src="assets/cherries.png" class="real-sticker rs-1" alt="">
-        <img src="assets/teddy.png" class="real-sticker rs-2" alt="">
+        <img src="assets/${topA}.png" class="real-sticker rs-1" alt="">
+        <img src="assets/${topB}.png" class="real-sticker rs-2" alt="">
       </div>
+      ${sideStickersHtml(key, [topA, topB, ingPick])}
       <div class="recipe-cat-tag">${escapeHtml(catName)}</div>
       <div class="recipe-title">${escapeHtml(recipe.title)}</div>
       <span class="photo-sticker pos-recipe-l"></span>
       <div class="recipe-sub">${escapeHtml(recipe.sub || '')}</div>
       <div class="cook-bar">${cookBtnHtml}${notesHtml}</div>
       ${stickyOverlay}
-      <div class="section-label">Ingredients</div>
-      ${ingSetSwitcher}
-      <div class="ingredients-wrap">
-        ${ingHtml}
-        ${!cooking ? '<img src="assets/hellokitty.png" class="ing-side-sticker" alt="">' : ''}
+      <div class="recipe-body-safe">
+        <div class="section-label">Ingredients</div>
+        ${ingSetSwitcher}
+        <div class="ingredients-wrap">
+          ${ingHtml}
+          ${!cooking ? `<img src="assets/${ingPick}.png" class="ing-side-sticker" alt="">` : ''}
+        </div>
+        ${doubledHtml}
+        <div class="section-label">Instructions</div>
+        ${stepHtml}
       </div>
-      ${doubledHtml}
-      <div class="section-label">Instructions</div>
-      ${stepHtml}
     </div>
     <div class="page-footer">
       <div class="page-num">${escapeHtml(recipe.title)}</div>
@@ -1744,8 +1871,7 @@ function renderRecipeEdit(recipe, ci, ri) {
   div.innerHTML = `
     <div class="page-content">
       <div class="collage-strip c3">
-        <img src="assets/carebear.png" class="real-sticker rs-1" alt="">
-        <img src="assets/hellokitty.png" class="real-sticker rs-2" alt="">
+        ${stickerStripHtml(`${ci}-${ri}-edit`)}
       </div>
       <div class="edit-form">
         <div class="quick-paste-box">
@@ -1893,8 +2019,7 @@ function renderComparePaneContent(key, paneIdx) {
   if (!recipe) return `<div class="compare-empty">Pick a recipe above ✧</div>`;
 
   const cooking = compareCooking[paneIdx];
-  const hasDoubled = recipe.doubled && recipe.doubled.length > 0;
-  const activeSet = (hasDoubled && cookIngSet[key] === 'doubled') ? 'doubled' : 'regular';
+  const activeSet = 'regular';
   if (!checkState[key]) checkState[key] = { ing: { regular: {}, doubled: {} }, steps: {} };
   const state = checkState[key];
 
@@ -1903,18 +2028,23 @@ function renderComparePaneContent(key, paneIdx) {
        <button class="cook-reset" data-pane-cook-reset="${key}">Reset Checks</button>`
     : `<button class="cook-toggle" data-pane-cook-toggle="${paneIdx}">👩‍🍳 Cook Mode</button>`;
 
+  // Same 1x–4x scale picker as the regular recipe pages — compare panes
+  // used to only offer the old hand-typed "doubled" list (or nothing),
+  // so scaling was missing here in both cook mode and the normal view.
+  const scale = recipeScale[key] || 1;
+  const isExpanded = !!scaleExpanded[key];
+  const scaleMiniRow = `
+    <div class="scale-widget">
+      <button type="button" class="scale-toggle-chip ${scale !== 1 ? 'active' : ''}" data-pane-scale-toggle="${key}">⚖️ Scale${scale !== 1 ? ` (${scale}x)` : ''} ${isExpanded ? '▲' : '▼'}</button>
+      ${isExpanded ? `<div class="scale-mini-row">${[1,2,3,4].map(n => `<button type="button" class="scale-mini-btn ${scale === n ? 'active' : ''}" data-pane-scale="${key}" data-scale-value="${n}">${n}x</button>`).join('')}</div>` : ''}
+    </div>`;
+
   let ingHtml, stepHtml, doubledHtml, ingSetSwitcher = '';
 
   if (cooking) {
-    const ingList = activeSet === 'doubled' ? recipe.doubled : recipe.ingredients;
+    const ingList = scale === 1 ? recipe.ingredients : scaledIngredientList(recipe, scale);
     const ingState = state.ing[activeSet] || {};
-    if (hasDoubled) {
-      ingSetSwitcher = `
-        <div class="ingset-switch">
-          <button class="ingset-btn ${activeSet === 'regular' ? 'active' : ''}" data-pane-ingset="${key}" data-ingset-value="regular">Regular</button>
-          <button class="ingset-btn ${activeSet === 'doubled' ? 'active' : ''}" data-pane-ingset="${key}" data-ingset-value="doubled">Doubled</button>
-        </div>`;
-    }
+    ingSetSwitcher = scaleMiniRow;
     ingHtml = ingList.map((i, idx) => `
       <label class="check-row">
         <input type="checkbox" data-pane-check="${key}" data-check-type="ing" data-check-set="${activeSet}" data-check-idx="${idx}" ${ingState[idx] ? 'checked' : ''}>
@@ -1927,11 +2057,11 @@ function renderComparePaneContent(key, paneIdx) {
       </label>`).join('');
     doubledHtml = '';
   } else {
-    ingHtml = recipe.ingredients.map(i => `<div class="item-row ing">${escapeHtml(i)}</div>`).join('');
+    const displayIngredients = scale === 1 ? recipe.ingredients : scaledIngredientList(recipe, scale);
+    ingHtml = displayIngredients.map(i => `<div class="item-row ing">${escapeHtml(i)}</div>`).join('');
     stepHtml = recipe.instructions.map((s, i) => `<div class="item-row step"><span class="num">${i+1}.</span>${escapeHtml(s)}</div>`).join('');
-    doubledHtml = hasDoubled
-      ? `<div class="doubled-box"><div class="section-label">To Double</div>${recipe.doubled.map(i => `<div class="item-row ing">${escapeHtml(i)}</div>`).join('')}</div>`
-      : '';
+    ingSetSwitcher = scaleMiniRow;
+    doubledHtml = '';
   }
 
   const hasNotes = recipe.notes && recipe.notes.trim();
@@ -2062,6 +2192,21 @@ function buildCompareOverlay() {
       const key = btn.getAttribute('data-pane-ingset');
       const value = btn.getAttribute('data-ingset-value');
       cookIngSet[key] = value;
+      buildCompareOverlay();
+    });
+  });
+  panesEl.querySelectorAll('[data-pane-scale]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-pane-scale');
+      const value = parseInt(btn.getAttribute('data-scale-value'));
+      recipeScale[key] = value;
+      buildCompareOverlay();
+    });
+  });
+  panesEl.querySelectorAll('[data-pane-scale-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-pane-scale-toggle');
+      scaleExpanded[key] = !scaleExpanded[key];
       buildCompareOverlay();
     });
   });
