@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff5f8",
-  "theme_color": "#e20376",
+  "theme_color": "#b8005a",
   "icons": [
     {
       "src": "assets/quickpay-icon-192.png",

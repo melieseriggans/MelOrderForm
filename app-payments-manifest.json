@@ -6,8 +6,8 @@
   "scope": "/app-payments.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#fffaf0",
-  "theme_color": "#c8912f",
+  "background_color": "#fff7fb",
+  "theme_color": "#ff5fae",
   "icons": [
     {
       "src": "assets/apppay-icon-192.png",

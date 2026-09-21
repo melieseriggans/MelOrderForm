@@ -12,6 +12,16 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="assets/logo.png">
+<!-- Add-to-Home-Screen / PWA setup — lets the whole site install as one
+     app (see manifest.json) so it opens full-screen without the browser's
+     address bar, same as Quick Pay / App Payments. -->
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mel's Treat">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Pacifico&family=Quicksand:wght@500;600;700&family=Nunito:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -456,5 +466,21 @@ window.addEventListener('load', () => {
 });
 </script>
 
+<!-- Small "open in browser" button — installed-app mode hides the
+     address bar on purpose; this gives a one-tap way to pop into the real
+     browser (to copy/share the link, etc.) only when it's actually wanted. -->
+<button id="melsBrowserBarBtn" onclick="window.open(location.href, '_blank')" aria-label="Open in browser" style="position:fixed; bottom:18px; right:18px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:linear-gradient(135deg,#e20376,#ff6fb0); color:#fff; font-size:1.2rem; box-shadow:0 6px 16px rgba(226,3,118,0.35); display:none; align-items:center; justify-content:center; cursor:pointer;">🔗</button>
+<script>
+(function(){
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone) {
+    var btn = document.getElementById('melsBrowserBarBtn');
+    if (btn) btn.style.display = 'flex';
+  }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  }
+})();
+</script>
 </body>
 </html>
