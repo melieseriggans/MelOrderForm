@@ -382,6 +382,12 @@
   }
   .choice-card:hover{border-color:#e20376;}
   .choice-card.selected{border-color:#e20376; background:var(--blush); color:var(--pink-deep);}
+  .drawer-section-title{
+    font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.78rem; text-transform:uppercase;
+    letter-spacing:0.04em; color:#e20376; margin:0 0 4px; display:flex; align-items:center; gap:6px;
+  }
+  .drawer-section-title:not(:first-child){margin-top:4px;}
+  .drawer-subdivider{border-top:1px dashed var(--border); margin:20px 0 16px;}
   .hidden{display:none;}
   .checkout-btn{
     width:100%; background:linear-gradient(180deg, var(--pink-glow), var(--pink-hot)); color:var(--white); border:none; border-radius:15px;
@@ -751,6 +757,20 @@
       </details>
 
       <div class="drawer-section">
+        <div class="drawer-section-title">📇 Contact Info</div>
+
+        <label for="customer_full_name">Full Name *</label>
+        <input type="text" id="customer_full_name" placeholder="Your name" autocomplete="name">
+
+        <label for="customer_email">Email *</label>
+        <input type="email" id="customer_email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+
+        <label for="contact_phone">Phone Number *</label>
+        <input type="tel" id="contact_phone" placeholder="For day-of updates, e.g. running late" autocomplete="tel" inputmode="tel">
+
+        <div class="drawer-subdivider"></div>
+        <div class="drawer-section-title">🚚 Fulfillment Details</div>
+
         <label>Pickup Or Delivery</label>
         <div class="choice-group">
           <div class="choice-card selected" data-fulfillment="pickup">Pickup</div>
@@ -772,9 +792,6 @@
           <div id="delivery-fee-note" style="display:none; font-size:0.8rem; color:var(--pink-hot); font-weight:600; margin-top:4px;"></div>
         </div>
 
-        <label for="contact_phone">Phone Number (optional)</label>
-        <input type="tel" id="contact_phone" placeholder="For day-of updates, e.g. running late" autocomplete="tel" inputmode="tel">
-
         <label for="preferred_date">Preferred Date</label>
         <input type="date" id="preferred_date" />
         <div id="date-lead-time-note" style="display:none; color:var(--pink-hot); font-weight:600; margin-top:4px; font-size:0.85rem;"></div>
@@ -788,7 +805,7 @@
 
       <div id="form-error" class="error"></div>
       <button type="button" class="checkout-btn" id="checkout-btn">Checkout With Stripe 🔒</button>
-      <div class="checkout-note">You'll enter your name, contact info, and payment securely on Stripe's checkout page.</div>
+      <div class="checkout-note">You'll confirm your info and pay securely on Stripe's checkout page.</div>
     </div>
   </div>
 </div>
@@ -1483,6 +1500,7 @@ document.querySelectorAll('[data-fulfillment]').forEach(card => {
       updateDeliveryFee();
     }
     updateTotal();
+    persistCheckoutFields();
   });
 });
 document.getElementById('pickup_location').addEventListener('change', (e) => {
@@ -1505,6 +1523,56 @@ document.querySelectorAll('.tip-btn').forEach(btn => {
   });
 });
 document.getElementById('tip-custom-input').addEventListener('input', (e) => { tipAmount = parseFloat(e.target.value) || 0; updateTotal(); });
+
+// Save everything typed into the checkout form (not just the cart items)
+// so a reload, an accidental swipe-back, or backing out of Stripe's page
+// doesn't wipe out a customer's name/contact/fulfillment info and force
+// them to start over. Cleared out automatically once an order actually
+// goes through.
+const CHECKOUT_FIELDS_KEY = 'mels_checkout_fields';
+const CHECKOUT_FIELD_IDS = [
+  'customer_full_name', 'customer_email', 'contact_phone',
+  'pickup_location', 'pickup_location_other', 'delivery_address',
+  'preferred_date', 'pickup_time', 'special_instructions',
+];
+function persistCheckoutFields() {
+  try {
+    const data = { fulfillment };
+    CHECKOUT_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) data[id] = el.value;
+    });
+    localStorage.setItem(CHECKOUT_FIELDS_KEY, JSON.stringify(data));
+  } catch (e) { /* storage unavailable, form just won't persist */ }
+}
+function restoreCheckoutFields() {
+  try {
+    const raw = localStorage.getItem(CHECKOUT_FIELDS_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    CHECKOUT_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && data[id] !== undefined) el.value = data[id];
+    });
+    if (data.fulfillment === 'delivery') {
+      const deliveryCard = document.querySelector('[data-fulfillment="delivery"]');
+      if (deliveryCard) deliveryCard.click();
+    }
+    // Re-run the field-dependent visibility toggles now that values are
+    // restored, same as if the customer had just interacted with them.
+    document.getElementById('pickup_location_other').classList.toggle(
+      'hidden', document.getElementById('pickup_location').value !== 'Other (Enter Below)'
+    );
+  } catch (e) { /* ignore corrupt saved data */ }
+}
+CHECKOUT_FIELD_IDS.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', persistCheckoutFields);
+});
+
+function clearSavedCheckoutFields() {
+  try { localStorage.removeItem(CHECKOUT_FIELDS_KEY); } catch (e) {}
+}
 
 function calcSubtotal() {
   let subtotal = 0;
@@ -1542,6 +1610,10 @@ document.getElementById('delivery_address').addEventListener('input', () => {
   clearTimeout(deliveryFeeDebounceTimer);
   deliveryFeeDebounceTimer = setTimeout(updateDeliveryFee, 900);
 });
+
+// Runs after currentDeliveryFee/updateDeliveryFee exist above, since
+// restoring a saved "delivery" selection can trigger that same code path.
+restoreCheckoutFields();
 
 function calcDiscountAmount(subtotal) {
   if (!appliedDiscount) return 0;
@@ -1708,6 +1780,20 @@ checkoutBtn.addEventListener('click', async () => {
   const total = totalItemCount();
   if (total === 0) { errorBox.textContent = 'Please pick at least one item 🍪'; errorBox.style.display = 'block'; return; }
 
+  // Contact info is collected up front on our own page now, rather than
+  // leaving it entirely to Stripe's checkout page — so a real name,
+  // email, and phone are always on the order record even if Stripe's
+  // own fields get skipped or filled in differently there.
+  const customerFullName = document.getElementById('customer_full_name').value.trim();
+  if (!customerFullName) { errorBox.textContent = 'Please enter your full name.'; errorBox.style.display = 'block'; return; }
+  const customerEmailValue = document.getElementById('customer_email').value.trim();
+  if (!customerEmailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmailValue)) {
+    errorBox.textContent = 'Please enter a valid email address.'; errorBox.style.display = 'block'; return;
+  }
+  if (!document.getElementById('contact_phone').value.trim()) {
+    errorBox.textContent = 'Please enter a phone number.'; errorBox.style.display = 'block'; return;
+  }
+
   // Block checkout on missing fulfillment details rather than silently
   // sending "TBD" to Stripe — a paid order with no real pickup/delivery
   // info is a real problem to sort out after the fact.
@@ -1796,7 +1882,7 @@ checkoutBtn.addEventListener('click', async () => {
   // exception) — the backend no longer decrements current stock for
   // website orders at all, so there's no flag needed here to signal that.
   const contactPhone = document.getElementById('contact_phone').value.trim();
-  if (contactPhone) noteLines.push(`Phone: ${contactPhone}`);
+  noteLines.push(`Phone: ${contactPhone}`);
   const instructions = document.getElementById('special_instructions').value.trim();
   if (instructions) noteLines.push(`Notes: ${instructions}`);
   const note = noteLines.join(' | ');
@@ -1806,11 +1892,15 @@ checkoutBtn.addEventListener('click', async () => {
   try {
     const supabase = await getSupabase();
     const { data, error } = await supabase.functions.invoke('create-stripe-checkout', {
-      body: { items, note, tipCents: Math.round(tipAmount * 100), discount: appliedDiscount }
+      body: {
+        items, note, tipCents: Math.round(tipAmount * 100), discount: appliedDiscount,
+        customerName: customerFullName, customerEmail: customerEmailValue, customerPhone: contactPhone
+      }
     });
     if (error) throw error;
     if (!data.success) throw new Error(data.message || 'Could not start checkout.');
     try { localStorage.removeItem('mels_cart'); } catch (e) {}
+    clearSavedCheckoutFields();
     window.location.href = data.url;
   } catch (err) {
     console.error(err);

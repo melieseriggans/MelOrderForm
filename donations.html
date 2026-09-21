@@ -291,7 +291,7 @@
       <span class="wordmark">Mel's Treat</span>
     </a>
     <div class="nav-links">
-      <a href="shop.html" class="nav-back-btn" aria-label="Back">←</a>
+      <a href="shop.html" class="nav-back-btn" id="back-link" onclick="return smartBack(event, 'shop.html')" aria-label="Back">←</a>
       <span id="nav-site-links">
         <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-label="Menu">☰</button>
       </span>
@@ -313,7 +313,7 @@
     <a href="testimonials.html">⭐ Reviews</a>
     <a href="faq.html">❓ FAQ</a>
     <a href="catering.html">🎉 Catering</a>
-    <a href="links.html">🔗 All Links</a>
+    <a href="shop-links.html">🔗 All Links</a>
   </div>
 </div>
 </nav>
@@ -398,6 +398,24 @@
     if (siteLinks) siteLinks.style.display = 'none';
   }
 })();
+
+// Back arrow returns to whatever page actually sent them here (shop-links,
+// bio, a recipe page, etc.) instead of always shop.html — it only falls
+// back to shop.html if there's no real browser history to go back to.
+function smartBack(e, fallbackUrl) {
+  e.preventDefault();
+  var navigatedAway = false;
+  var markNavigated = function(){ navigatedAway = true; };
+  window.addEventListener('pagehide', markNavigated, { once: true });
+  history.back();
+  setTimeout(function() {
+    window.removeEventListener('pagehide', markNavigated);
+    if (!navigatedAway) {
+      window.location.href = fallbackUrl;
+    }
+  }, 800);
+  return false;
+}
 
 const navMenuBtn = document.getElementById('nav-menu-btn');
 const navDropdown = document.getElementById('nav-dropdown');

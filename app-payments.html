@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>App Payments</title>
+<meta name="robots" content="noindex, nofollow">
+
+<!-- Add-to-Home-Screen / PWA setup -->
+<link rel="manifest" href="app-payments-manifest.json">
+<meta name="theme-color" content="#c8912f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="App Payments">
+<link rel="apple-touch-icon" href="assets/apppay-apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/apppay-icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<style>
+  :root {
+    --teal: #c8912f;
+    --teal-dark: #8a611c;
+    --teal-glow: #e0b45a;
+    --gold-light: #f8e8c8;
+    --cream: #fffaf0;
+    --card: #ffffff;
+    --text: #3a2430;
+    --muted: #8a6b78;
+    --border: #f0dfc0;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: max(20px, env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+  .hidden { display: none !important; }
+
+  #login-screen {
+    width: 100%;
+    max-width: 380px;
+    margin-top: 20vh;
+  }
+  #login-screen .card { text-align: center; }
+  #login-screen h1 { font-family: 'Baloo 2', cursive; font-weight: 800; color: var(--teal); font-size: 1.4rem; margin: 0 0 4px; }
+  #login-screen p { color: var(--muted); font-size: 0.9rem; margin: 0 0 18px; }
+  #login-error { color: #c0293c; font-size: 0.85rem; min-height: 18px; margin-top: 8px; }
+
+  .card {
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 6px 24px rgba(138, 97, 28, 0.16);
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    border: 1.5px solid var(--border);
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-glow));
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 20px rgba(200,145,47,0.3);
+  }
+  .header h1 { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.4rem; color: #fff; margin: 0 0 2px; }
+  .header p { margin: 0; color: rgba(255,255,255,0.92); font-family: 'Quicksand', sans-serif; font-weight: 600; font-size: 0.85rem; }
+  .section-label {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--teal-dark);
+    margin: 14px 0 8px;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .quick-tile {
+    font-family: inherit;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px 10px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .quick-tile:active, .quick-tile.selected {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+  .quick-tile:active .quick-tile-name, .quick-tile.selected .quick-tile-name,
+  .quick-tile:active .quick-tile-price, .quick-tile.selected .quick-tile-price {
+    color: #fff;
+  }
+  .quick-tile-name { display: block; font-size: 0.88rem; color: var(--text); margin-bottom: 2px; }
+  .quick-tile-price { display: block; font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem; color: var(--teal-dark); }
+  .edit-presets-link {
+    display: block;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .amount-display {
+    text-align: center;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 2.6rem;
+    color: var(--teal-dark);
+    padding: 10px 0 2px;
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+  .amount-sub { text-align: center; color: var(--muted); font-size: 0.78rem; margin-bottom: 10px; }
+
+  label { display: block; font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--teal-dark); margin-bottom: 6px; }
+  input[type="text"], input[type="email"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: var(--teal);
+  }
+  input[type="password"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .item-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 16px; }
+  .item-chip {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--teal-dark);
+    cursor: pointer;
+  }
+  .item-chip:active, .item-chip.selected { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+  .app-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .app-btn {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 12px 4px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+  }
+  .app-btn .app-emoji { display: block; font-size: 1.3rem; margin-bottom: 2px; }
+  .app-btn.selected { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 8px 0 16px;
+  }
+  .keypad button {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 1.3rem;
+    padding: 15px 0;
+    border: none;
+    border-radius: 14px;
+    background: var(--cream);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .keypad button:active { background: var(--border); }
+  .keypad button.wide-action { font-family: 'Fredoka', sans-serif; background: var(--gold-light, #f8e8c8); color: var(--teal-dark); font-size: 1rem; }
+
+  .log-btn {
+    width: 100%;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 16px 0;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-glow));
+    box-shadow: 0 8px 18px rgba(200,145,47,0.3);
+    color: #fff;
+    cursor: pointer;
+  }
+  .log-btn:disabled { background: #ecd8b0; box-shadow: none; cursor: not-allowed; }
+  .log-btn:not(:disabled):active { background: var(--teal-dark); }
+
+  .status { text-align: center; margin-top: 14px; font-size: 0.88rem; color: var(--muted); min-height: 20px; }
+  .status.error { color: #c0293c; }
+  .status.success { color: var(--teal-dark); font-weight: bold; }
+
+  .footer-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.72rem;
+    margin-top: 16px;
+    max-width: 340px;
+    line-height: 1.4;
+  }
+  .logout-link {
+    display: block;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 20px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  #preset-editor-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 60, 55, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 50;
+  }
+  #preset-editor-overlay .card {
+    max-height: 82vh;
+    overflow-y: auto;
+    border-radius: 20px 20px 0 0;
+    max-width: 460px;
+  }
+  .preset-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .preset-row input[type="text"] { margin-bottom: 0; }
+  .preset-row input.price-input { max-width: 90px; }
+  .preset-row button.remove-row {
+    background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; padding: 4px 8px;
+  }
+  .small-btn {
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--teal);
+    background: #fff;
+    color: var(--teal-dark);
+    cursor: pointer;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ LOGIN GATE ============ -->
+  <div id="login-screen">
+    <div class="card">
+      <h1>🔒 App Payments</h1>
+      <p>Enter your admin password to open the log.</p>
+      <input type="password" id="password-input" placeholder="Admin password" autocomplete="current-password">
+      <button class="log-btn" id="login-btn">Unlock</button>
+      <div id="login-error"></div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN APP ============ -->
+  <div id="app" class="hidden" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+
+    <div class="header">
+      <h1>📲 App Payments</h1>
+      <p>Log a Cash App, Zelle, PayPal or Venmo sale</p>
+    </div>
+
+    <div class="card">
+
+      <div class="section-label" style="margin-top:0;">Quick Launch</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin:0 0 10px;">
+        Jump straight to the app to actually take the payment, then come back down here to log it.
+      </p>
+      <div class="app-grid" id="launchGrid"></div>
+      <span class="edit-presets-link" id="editLinksBtn">✏️ Set up your app links</span>
+
+      <div class="section-label">Most Used</div>
+      <div class="quick-grid" id="quickGrid"></div>
+      <span class="edit-presets-link" id="editPresetsBtn">✏️ Edit prices &amp; labels — shared with Quick Pay</span>
+
+      <div class="section-label">What's it for?</div>
+      <div class="item-chip-row" id="itemChipRow"></div>
+      <input type="text" id="descInput" placeholder="Or type your own…" maxlength="120">
+
+      <div class="section-label">Paid With</div>
+      <div class="app-grid" id="appGrid">
+        <button class="app-btn" data-app="cashapp"><span class="app-emoji">💵</span>Cash App</button>
+        <button class="app-btn" data-app="zelle"><span class="app-emoji">🏦</span>Zelle</button>
+        <button class="app-btn" data-app="paypal"><span class="app-emoji">🅿️</span>PayPal</button>
+        <button class="app-btn" data-app="venmo"><span class="app-emoji">🔁</span>Venmo</button>
+        <button class="app-btn" data-app="cash"><span class="app-emoji">💰</span>Cash</button>
+        <button class="app-btn" data-app="other"><span class="app-emoji">✨</span>Other</button>
+      </div>
+
+      <div class="section-label">Customer (optional)</div>
+      <input type="text" id="nameInput" placeholder="Customer name" maxlength="100">
+      <input type="email" id="emailInput" placeholder="Email — adds them a receipt" maxlength="150">
+
+      <div class="section-label">Amount</div>
+      <div class="amount-display" id="amountDisplay">$0.00</div>
+      <div class="amount-sub" id="amountSub">Enter what you received</div>
+
+      <div class="keypad" id="keypad">
+        <button data-key="1">1</button>
+        <button data-key="2">2</button>
+        <button data-key="3">3</button>
+        <button data-key="4">4</button>
+        <button data-key="5">5</button>
+        <button data-key="6">6</button>
+        <button data-key="7">7</button>
+        <button data-key="8">8</button>
+        <button data-key="9">9</button>
+        <button class="wide-action" data-key="clear">Clear</button>
+        <button data-key="0">0</button>
+        <button class="wide-action" data-key="back">⌫</button>
+      </div>
+
+      <button class="log-btn" id="logBtn" disabled>Select amount + app</button>
+      <div class="status" id="statusMsg"></div>
+    </div>
+
+    <p class="footer-note">
+      This just records the sale in your dashboard — it doesn't move any money.
+      Make sure you've actually received the Cash App/Zelle/PayPal/Venmo payment first.
+      If you add an email, the customer gets a receipt with your contact info automatically.
+    </p>
+
+    <span class="logout-link" id="logoutLink">Lock this page</span>
+  </div>
+
+  <!-- ============ Preset editor modal (shared with Quick Pay) ============ -->
+  <div id="preset-editor-overlay" class="hidden">
+    <div class="card">
+      <div class="section-label" style="margin-top:0;">Edit Most-Used Prices</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin:0 0 10px;">
+        Shared with your Quick Pay tool — editing here updates both. The name you type is exactly what fills the description box.
+      </p>
+      <div id="presetRows"></div>
+      <button class="small-btn" id="addPresetRowBtn">+ Add another</button>
+
+      <div class="section-label">Edit "What's it for" Chips</div>
+      <div id="chipRows"></div>
+      <button class="small-btn" id="addChipRowBtn">+ Add another</button>
+
+      <div style="display:flex; gap:10px; margin-top:18px;">
+        <button class="small-btn" id="cancelPresetsBtn" style="flex:1;">Cancel</button>
+        <button class="log-btn" id="savePresetsBtn" style="flex:1; padding:12px 0;">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Quick Launch link editor modal ============ -->
+  <div id="link-editor-overlay" class="hidden">
+    <div class="card">
+      <div class="section-label" style="margin-top:0;">Set Up Your App Links</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin:0 0 14px;">
+        Paste your own payment link for each app so "Quick Launch" opens straight to your page (or just opens the app if you leave one blank). These stay on this device only.
+      </p>
+
+      <label for="link-cashapp">Cash App</label>
+      <input type="text" id="link-cashapp" placeholder="https://cash.app/$YourCashtag">
+
+      <label for="link-zelle">Zelle</label>
+      <input type="text" id="link-zelle" placeholder="Most people use Zelle inside their bank app — link to that, or leave as-is">
+
+      <label for="link-paypal">PayPal</label>
+      <input type="text" id="link-paypal" placeholder="https://paypal.me/YourUsername">
+
+      <label for="link-venmo">Venmo</label>
+      <input type="text" id="link-venmo" placeholder="https://venmo.com/u/YourUsername">
+
+      <div style="display:flex; gap:10px; margin-top:18px;">
+        <button class="small-btn" id="cancelLinksBtn" style="flex:1;">Cancel</button>
+        <button class="log-btn" id="saveLinksBtn" style="flex:1; padding:12px 0;">Save</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const SUPABASE_URL = "https://wgicnbaoqsekageoygea.supabase.co";
+  const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4";
+
+  let _supabaseClient = null;
+  function getSupabase() {
+    if (!_supabaseClient) {
+      _supabaseClient = window.supabase.createClient(SUPABASE_URL, ANON_KEY);
+    }
+    return _supabaseClient;
+  }
+
+  let adminPassword = localStorage.getItem('mels_admin_pw') || sessionStorage.getItem('mels_admin_pw') || null;
+
+  async function verifyPassword(pw) {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.functions.invoke('manage-dashboard', {
+      body: { password: pw, action: 'dashboard_data' }
+    });
+    if (error) throw new Error('Could not connect. Check your connection and try again.');
+    if (!data || !data.success) throw new Error((data && data.message) || 'Wrong password.');
+    return true;
+  }
+
+  function unlockApp() {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    initApp();
+  }
+
+  document.getElementById('login-btn').addEventListener('click', attemptLogin);
+  document.getElementById('password-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') attemptLogin();
+  });
+
+  async function attemptLogin() {
+    const pwInput = document.getElementById('password-input');
+    const errEl = document.getElementById('login-error');
+    const pw = pwInput.value.trim();
+    if (!pw) return;
+    errEl.textContent = '';
+    document.getElementById('login-btn').textContent = 'Checking…';
+    document.getElementById('login-btn').disabled = true;
+    try {
+      await verifyPassword(pw);
+      adminPassword = pw;
+      localStorage.setItem('mels_admin_pw', pw);
+      sessionStorage.removeItem('mels_admin_pw');
+      unlockApp();
+    } catch (err) {
+      errEl.textContent = err.message || 'Wrong password.';
+    } finally {
+      document.getElementById('login-btn').textContent = 'Unlock';
+      document.getElementById('login-btn').disabled = false;
+    }
+  }
+
+  document.getElementById('logoutLink').addEventListener('click', () => {
+    if (!confirm("Lock this page? You'll need your admin password again next time.")) return;
+    adminPassword = null;
+    localStorage.removeItem('mels_admin_pw');
+    sessionStorage.removeItem('mels_admin_pw');
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('password-input').value = '';
+  });
+
+  if (adminPassword) {
+    verifyPassword(adminPassword).then(unlockApp).catch(() => {
+      localStorage.removeItem('mels_admin_pw');
+      sessionStorage.removeItem('mels_admin_pw');
+      adminPassword = null;
+    });
+  }
+
+  // ---------- Editable presets (shared storage keys with quick-pay.html) ----------
+  const DEFAULT_PRICE_PRESETS = [
+    { name: "Half Dozen Cookies", amount: 12 },
+    { name: "Dozen Cookies", amount: 22 },
+    { name: "2 Dozen Cookies", amount: 40 },
+    { name: "Custom Order", amount: 25 },
+  ];
+  const DEFAULT_ITEM_CHIPS = [
+    "Half Dozen Cookies",
+    "Dozen Cookies",
+    "2 Dozen Cookies",
+    "Custom Cake",
+    "Cupcakes",
+    "Custom Order",
+  ];
+
+  function loadPricePresets() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('mels_qp_price_presets') || 'null');
+      if (Array.isArray(saved) && saved.length) return saved;
+    } catch (e) {}
+    return DEFAULT_PRICE_PRESETS;
+  }
+  function loadItemChips() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('mels_qp_item_chips') || 'null');
+      if (Array.isArray(saved) && saved.length) return saved;
+    } catch (e) {}
+    return DEFAULT_ITEM_CHIPS;
+  }
+  function savePricePresets(list) { localStorage.setItem('mels_qp_price_presets', JSON.stringify(list)); }
+  function saveItemChips(list) { localStorage.setItem('mels_qp_item_chips', JSON.stringify(list)); }
+
+  let pricePresets = loadPricePresets();
+  let itemChips = loadItemChips();
+
+  const APP_LABELS = {
+    cashapp: "Cash App",
+    zelle: "Zelle",
+    paypal: "PayPal",
+    venmo: "Venmo",
+    cash: "Cash",
+    other: "Other",
+  };
+
+  // ---------- Quick Launch (jump straight to the app) ----------
+  // These fall back to each app's own site/app-open link until she sets
+  // her own — universal links like cash.app, venmo.com and paypal.com
+  // open the native app directly on a phone if it's installed. Zelle has
+  // no equivalent of its own (it lives inside banking apps), so that one
+  // defaults to Zelle's site and is the one most worth her customizing to
+  // point at her actual bank app if she has a direct link for it.
+  const DEFAULT_APP_LINKS = {
+    cashapp: "https://cash.app/",
+    zelle: "https://www.zellepay.com/",
+    paypal: "https://www.paypal.com/",
+    venmo: "https://venmo.com/",
+  };
+  const LAUNCH_APPS = [
+    { key: "cashapp", label: "Cash App", emoji: "💵" },
+    { key: "zelle", label: "Zelle", emoji: "🏦" },
+    { key: "paypal", label: "PayPal", emoji: "🅿️" },
+    { key: "venmo", label: "Venmo", emoji: "🔁" },
+  ];
+
+  function loadAppLinks() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('mels_app_payment_links') || 'null');
+      if (saved && typeof saved === 'object') return { ...DEFAULT_APP_LINKS, ...saved };
+    } catch (e) {}
+    return { ...DEFAULT_APP_LINKS };
+  }
+  function saveAppLinks(links) {
+    localStorage.setItem('mels_app_payment_links', JSON.stringify(links));
+  }
+  let appLinks = loadAppLinks();
+
+  function renderLaunchGrid() {
+    const grid = document.getElementById('launchGrid');
+    grid.innerHTML = '';
+    LAUNCH_APPS.forEach((app) => {
+      const a = document.createElement('a');
+      a.className = 'app-btn';
+      a.href = appLinks[app.key] || DEFAULT_APP_LINKS[app.key];
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.innerHTML = `<span class="app-emoji">${app.emoji}</span>${app.label}`;
+      grid.appendChild(a);
+    });
+  }
+
+  let cents = 0;
+  let selectedApp = null;
+
+  function formatCents(c) { return "$" + (c / 100).toFixed(2); }
+
+  function initApp() {
+    renderLaunchGrid();
+    renderQuickGrid();
+    renderItemChips();
+    refreshDisplay();
+  }
+
+  function renderQuickGrid() {
+    const grid = document.getElementById('quickGrid');
+    grid.innerHTML = '';
+    pricePresets.forEach((p) => {
+      const btn = document.createElement('button');
+      btn.className = 'quick-tile';
+      btn.innerHTML = `<span class="quick-tile-name">${p.name}</span><span class="quick-tile-price">$${Number(p.amount).toFixed(2)}</span>`;
+      btn.addEventListener('click', () => {
+        cents = Math.round(Number(p.amount) * 100);
+        document.getElementById('descInput').value = p.name;
+        highlightSelectedChip(p.name);
+        refreshDisplay();
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderItemChips() {
+    const row = document.getElementById('itemChipRow');
+    row.innerHTML = '';
+    itemChips.forEach((label) => {
+      const chip = document.createElement('button');
+      chip.className = 'item-chip';
+      chip.textContent = label;
+      chip.dataset.label = label;
+      chip.addEventListener('click', () => {
+        document.getElementById('descInput').value = label;
+        highlightSelectedChip(label);
+      });
+      row.appendChild(chip);
+    });
+  }
+
+  function highlightSelectedChip(label) {
+    document.querySelectorAll('.item-chip').forEach((c) => {
+      c.classList.toggle('selected', c.dataset.label === label);
+    });
+    document.querySelectorAll('.quick-tile').forEach((t) => {
+      t.classList.toggle('selected', t.querySelector('.quick-tile-name')?.textContent === label);
+    });
+  }
+
+  document.getElementById('descInput').addEventListener('input', () => {
+    highlightSelectedChip(document.getElementById('descInput').value);
+  });
+
+  document.getElementById('appGrid').addEventListener('click', (e) => {
+    const btn = e.target.closest('.app-btn');
+    if (!btn) return;
+    selectedApp = btn.dataset.app;
+    document.querySelectorAll('.app-btn').forEach((b) => b.classList.toggle('selected', b === btn));
+    refreshDisplay();
+  });
+
+  function refreshDisplay() {
+    const amountDisplay = document.getElementById('amountDisplay');
+    const amountSub = document.getElementById('amountSub');
+    const logBtn = document.getElementById('logBtn');
+    amountDisplay.textContent = formatCents(cents);
+    if (cents <= 0) {
+      amountSub.textContent = "Enter what you received";
+      logBtn.disabled = true;
+      logBtn.textContent = "Enter an amount";
+    } else if (!selectedApp) {
+      amountSub.textContent = "Pick which app it came through";
+      logBtn.disabled = true;
+      logBtn.textContent = "Select which app was used";
+    } else {
+      amountSub.textContent = "Tap Log to save this sale";
+      logBtn.disabled = false;
+      logBtn.textContent = `Log ${formatCents(cents)} — ${APP_LABELS[selectedApp]}`;
+    }
+  }
+
+  document.getElementById('keypad').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const key = btn.dataset.key;
+    if (key === 'clear') {
+      cents = 0;
+    } else if (key === 'back') {
+      cents = Math.floor(cents / 10);
+    } else {
+      if (cents < 10000000) cents = cents * 10 + parseInt(key, 10);
+    }
+    refreshDisplay();
+  });
+
+  document.getElementById('logBtn').addEventListener('click', async () => {
+    if (cents <= 0 || !selectedApp) return;
+    const logBtn = document.getElementById('logBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    logBtn.disabled = true;
+    logBtn.textContent = "Saving…";
+    statusMsg.className = "status";
+    statusMsg.textContent = "";
+
+    const description = document.getElementById('descInput').value.trim() || "App Payment";
+    const customerName = document.getElementById('nameInput').value.trim() || "App Payment Customer";
+    const customerEmail = document.getElementById('emailInput').value.trim();
+
+    try {
+      const supabase = getSupabase();
+      const { data, error } = await supabase.functions.invoke('manage-dashboard', {
+        body: {
+          password: adminPassword,
+          action: 'add_manual_order',
+          full_name: customerName,
+          email: customerEmail || undefined,
+          cookies: { [description]: 1 },
+          total: cents / 100,
+          fulfillment_type: 'pickup',
+          pickup_location: 'In-Person Sale',
+          payment_method: selectedApp,
+          special_instructions: null,
+        }
+      });
+      if (error) throw new Error('Could not connect. Check your connection and try again.');
+      if (!data || !data.success) throw new Error((data && data.message) || 'Could not log this payment.');
+
+      statusMsg.className = "status success";
+      statusMsg.textContent = customerEmail
+        ? `Logged! Receipt sent to ${customerEmail}.`
+        : "Logged! (No email entered, so no receipt was sent.)";
+
+      // Reset for the next sale but keep the page open — no redirect, so
+      // she can log several app payments back-to-back at a market table.
+      cents = 0;
+      selectedApp = null;
+      document.getElementById('descInput').value = '';
+      document.getElementById('nameInput').value = '';
+      document.getElementById('emailInput').value = '';
+      document.querySelectorAll('.app-btn').forEach((b) => b.classList.remove('selected'));
+      document.querySelectorAll('.item-chip, .quick-tile').forEach((el) => el.classList.remove('selected'));
+      refreshDisplay();
+    } catch (err) {
+      statusMsg.className = "status error";
+      statusMsg.textContent = err.message || "Something went wrong. Try again.";
+      logBtn.disabled = false;
+      refreshDisplay();
+    }
+  });
+
+  // ---------- Preset editor (shared with Quick Pay) ----------
+  const overlay = document.getElementById('preset-editor-overlay');
+
+  document.getElementById('editPresetsBtn').addEventListener('click', openPresetEditor);
+  document.getElementById('cancelPresetsBtn').addEventListener('click', () => overlay.classList.add('hidden'));
+
+  function openPresetEditor() {
+    renderPresetRows();
+    renderChipRows();
+    overlay.classList.remove('hidden');
+  }
+
+  function renderPresetRows() {
+    const container = document.getElementById('presetRows');
+    container.innerHTML = '';
+    pricePresets.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'preset-row';
+      row.innerHTML = `
+        <input type="text" class="name-input" value="${p.name.replace(/"/g, '&quot;')}" placeholder="Item name">
+        <input type="text" class="price-input" inputmode="decimal" value="${p.amount}" placeholder="0.00">
+        <button class="remove-row" data-idx="${i}">✕</button>
+      `;
+      row.querySelector('.remove-row').addEventListener('click', () => {
+        pricePresets.splice(i, 1);
+        renderPresetRows();
+      });
+      container.appendChild(row);
+    });
+  }
+
+  function renderChipRows() {
+    const container = document.getElementById('chipRows');
+    container.innerHTML = '';
+    itemChips.forEach((label, i) => {
+      const row = document.createElement('div');
+      row.className = 'preset-row';
+      row.innerHTML = `
+        <input type="text" class="name-input" value="${label.replace(/"/g, '&quot;')}" placeholder="Item name">
+        <button class="remove-row" data-idx="${i}">✕</button>
+      `;
+      row.querySelector('.remove-row').addEventListener('click', () => {
+        itemChips.splice(i, 1);
+        renderChipRows();
+      });
+      container.appendChild(row);
+    });
+  }
+
+  document.getElementById('addPresetRowBtn').addEventListener('click', () => {
+    pricePresets.push({ name: "New Item", amount: 0 });
+    renderPresetRows();
+  });
+  document.getElementById('addChipRowBtn').addEventListener('click', () => {
+    itemChips.push("New Item");
+    renderChipRows();
+  });
+
+  document.getElementById('savePresetsBtn').addEventListener('click', () => {
+    const priceRows = document.querySelectorAll('#presetRows .preset-row');
+    const newPresets = [];
+    priceRows.forEach((row) => {
+      const name = row.querySelector('.name-input').value.trim();
+      const amt = parseFloat(row.querySelector('.price-input').value);
+      if (name && !isNaN(amt) && amt > 0) newPresets.push({ name, amount: amt });
+    });
+    const chipRows = document.querySelectorAll('#chipRows .preset-row');
+    const newChips = [];
+    chipRows.forEach((row) => {
+      const name = row.querySelector('.name-input').value.trim();
+      if (name) newChips.push(name);
+    });
+    pricePresets = newPresets.length ? newPresets : DEFAULT_PRICE_PRESETS;
+    itemChips = newChips.length ? newChips : DEFAULT_ITEM_CHIPS;
+    savePricePresets(pricePresets);
+    saveItemChips(itemChips);
+    renderQuickGrid();
+    renderItemChips();
+    overlay.classList.add('hidden');
+  });
+
+  // ---------- Quick Launch link editor ----------
+  const linkOverlay = document.getElementById('link-editor-overlay');
+
+  document.getElementById('editLinksBtn').addEventListener('click', () => {
+    LAUNCH_APPS.forEach((app) => {
+      const input = document.getElementById(`link-${app.key}`);
+      // Show a blank box (not the fallback URL) when she hasn't set her
+      // own yet, so the placeholder example stays visible as a hint.
+      input.value = appLinks[app.key] && appLinks[app.key] !== DEFAULT_APP_LINKS[app.key] ? appLinks[app.key] : '';
+    });
+    linkOverlay.classList.remove('hidden');
+  });
+  document.getElementById('cancelLinksBtn').addEventListener('click', () => linkOverlay.classList.add('hidden'));
+
+  document.getElementById('saveLinksBtn').addEventListener('click', () => {
+    const newLinks = { ...DEFAULT_APP_LINKS };
+    LAUNCH_APPS.forEach((app) => {
+      let val = document.getElementById(`link-${app.key}`).value.trim();
+      if (val) {
+        // Be forgiving if she pastes a link without "https://" on the front.
+        if (!/^https?:\/\//i.test(val)) val = 'https://' + val;
+        newLinks[app.key] = val;
+      }
+    });
+    appLinks = newLinks;
+    saveAppLinks(appLinks);
+    renderLaunchGrid();
+    linkOverlay.classList.add('hidden');
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('app-payments-sw.js').catch(() => {});
+  }
+</script>
+
+</body>
+</html>

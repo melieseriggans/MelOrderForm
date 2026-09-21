@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Quick Pay</title>
+<meta name="robots" content="noindex, nofollow">
+
+<!-- Add-to-Home-Screen / PWA setup -->
+<link rel="manifest" href="quick-pay-manifest.json">
+<meta name="theme-color" content="#e20376">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quick Pay">
+<link rel="apple-touch-icon" href="assets/quickpay-apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/quickpay-icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<style>
+  :root {
+    --pink: #e20376;
+    --pink-dark: #a8025f;
+    --pink-glow: #ff6fb0;
+    --gold: #c8912f;
+    --cream: #fff5f8;
+    --card: #ffffff;
+    --text: #3a2430;
+    --muted: #8a6b78;
+    --border: #f3d3e0;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: max(20px, env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+  .hidden { display: none !important; }
+
+  /* ---------- Login gate ---------- */
+  #login-screen {
+    width: 100%;
+    max-width: 380px;
+    margin-top: 20vh;
+  }
+  #login-screen .card {
+    text-align: center;
+  }
+  #login-screen h1 {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    color: var(--pink);
+    font-size: 1.4rem;
+    margin: 0 0 4px;
+  }
+  #login-screen p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 0 18px;
+  }
+  #login-error {
+    color: #c0293c;
+    font-size: 0.85rem;
+    min-height: 18px;
+    margin-top: 8px;
+  }
+
+  /* ---------- Shared card ---------- */
+  .card {
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 6px 24px rgba(162, 30, 90, 0.12);
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    border: 1.5px solid var(--border);
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--pink), var(--pink-glow));
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 20px rgba(226,3,118,0.25);
+  }
+  .header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: #fff;
+    margin: 0 0 2px;
+  }
+  .header p {
+    margin: 0;
+    color: rgba(255,255,255,0.9);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  .section-label {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--pink-dark);
+    margin: 14px 0 8px;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  /* ---------- Most-used price/item grid ---------- */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .quick-tile {
+    font-family: inherit;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px 10px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .quick-tile:active, .quick-tile.selected {
+    background: var(--pink);
+    border-color: var(--pink);
+  }
+  .quick-tile:active .quick-tile-name, .quick-tile.selected .quick-tile-name,
+  .quick-tile:active .quick-tile-price, .quick-tile.selected .quick-tile-price {
+    color: #fff;
+  }
+  .quick-tile-name {
+    display: block;
+    font-size: 0.88rem;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .quick-tile-price {
+    display: block;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .edit-presets-link {
+    display: block;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* ---------- Amount + description ---------- */
+  .amount-display {
+    text-align: center;
+    font-family: 'Baloo 2', cursive;
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: var(--pink-dark);
+    padding: 10px 0 2px;
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+  .amount-sub {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-bottom: 10px;
+  }
+  label {
+    display: block;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--pink-dark);
+    margin-bottom: 6px;
+  }
+  input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  input[type="text"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: var(--pink);
+  }
+  input[type="password"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  /* Quick "what it's for" chips — tap to fill the box without typing */
+  .item-chip-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 10px 0 16px;
+  }
+  .item-chip {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--pink-dark);
+    cursor: pointer;
+  }
+  .item-chip:active, .item-chip.selected {
+    background: var(--pink);
+    border-color: var(--pink);
+    color: #fff;
+  }
+
+  /* ---------- Keypad (moved to bottom) ---------- */
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 8px 0 16px;
+  }
+  .keypad button {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 1.3rem;
+    padding: 15px 0;
+    border: none;
+    border-radius: 14px;
+    background: var(--cream);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .keypad button:active {
+    background: var(--border);
+  }
+  .keypad button.wide-action {
+    background: #fdeef3;
+    color: var(--pink-dark);
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.9rem;
+  }
+
+  .charge-btn {
+    width: 100%;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 16px 0;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--pink), var(--pink-glow));
+    box-shadow: 0 8px 18px rgba(226,3,118,0.28);
+    color: #fff;
+    cursor: pointer;
+  }
+  .charge-btn:disabled {
+    background: #f0c3d8;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .charge-btn:not(:disabled):active {
+    background: var(--pink-dark);
+  }
+  .status {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.88rem;
+    color: var(--muted);
+    min-height: 20px;
+  }
+  .status.error { color: #c0293c; }
+
+  .footer-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.72rem;
+    margin-top: 16px;
+    max-width: 340px;
+    line-height: 1.4;
+  }
+  .logout-link {
+    display: block;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 20px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* Simple modal for editing presets */
+  #preset-editor-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 36, 48, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 50;
+  }
+  #preset-editor-overlay .card {
+    max-height: 82vh;
+    overflow-y: auto;
+    border-radius: 20px 20px 0 0;
+    max-width: 460px;
+  }
+  .preset-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .preset-row input[type="text"] { margin-bottom: 0; }
+  .preset-row input.price-input { max-width: 90px; }
+  .preset-row button.remove-row {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .small-btn {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--pink);
+    background: #fff;
+    color: var(--pink-dark);
+    cursor: pointer;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ LOGIN GATE ============ -->
+  <div id="login-screen">
+    <div class="card">
+      <h1>🔒 Quick Pay</h1>
+      <p>Enter your admin password to open the register.</p>
+      <input type="password" id="password-input" placeholder="Admin password" autocomplete="current-password">
+      <button class="charge-btn" id="login-btn">Unlock</button>
+      <div id="login-error"></div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN APP (hidden until unlocked) ============ -->
+  <div id="app" class="hidden" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+
+    <div class="header">
+      <h1>🍪 Quick Pay</h1>
+      <p>Charge a customer's card on the spot</p>
+    </div>
+
+    <div class="card">
+
+      <div class="section-label">Most Used</div>
+      <div class="quick-grid" id="quickGrid"></div>
+      <span class="edit-presets-link" id="editPresetsBtn">✏️ Edit prices &amp; labels — these are all yours to change</span>
+
+      <div class="section-label">What's it for?</div>
+      <div class="item-chip-row" id="itemChipRow"></div>
+      <label for="descInput" style="display:none;">Description</label>
+      <input type="text" id="descInput" placeholder="Or type your own…" maxlength="120">
+
+      <div class="section-label">Amount</div>
+      <div class="amount-display" id="amountDisplay">$0.00</div>
+      <div class="amount-sub" id="amountSub">Minimum charge is $0.50</div>
+
+      <div class="keypad" id="keypad">
+        <button data-key="1">1</button>
+        <button data-key="2">2</button>
+        <button data-key="3">3</button>
+        <button data-key="4">4</button>
+        <button data-key="5">5</button>
+        <button data-key="6">6</button>
+        <button data-key="7">7</button>
+        <button data-key="8">8</button>
+        <button data-key="9">9</button>
+        <button class="wide-action" data-key="clear">Clear</button>
+        <button data-key="0">0</button>
+        <button class="wide-action" data-key="back">⌫</button>
+      </div>
+
+      <button class="charge-btn" id="chargeBtn" disabled>Enter an amount</button>
+      <div class="status" id="statusMsg"></div>
+    </div>
+
+    <p class="footer-note">
+      This opens a secure Stripe payment page for the customer to tap Apple&nbsp;Pay/Google&nbsp;Pay
+      or enter their card. Hand them your phone, or enter the card yourself if that's easier for them.
+      They'll get an emailed receipt with your contact info automatically.
+    </p>
+
+    <span class="logout-link" id="logoutLink">Lock this page</span>
+  </div>
+
+  <!-- ============ Preset editor modal ============ -->
+  <div id="preset-editor-overlay" class="hidden">
+    <div class="card">
+      <div class="section-label" style="margin-top:0;">Edit Most-Used Prices</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin:0 0 10px;">
+        The name you type here is exactly what fills the description box when you tap that tile — so name it the way you want it to show up on the receipt.
+      </p>
+      <div id="presetRows"></div>
+      <button class="small-btn" id="addPresetRowBtn">+ Add another</button>
+
+      <div class="section-label">Edit "What's it for" Chips</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin:0 0 10px;">
+        These are just quick description-fillers with no set price — good for one-off or custom items.
+      </p>
+      <div id="chipRows"></div>
+      <button class="small-btn" id="addChipRowBtn">+ Add another</button>
+
+      <div style="display:flex; gap:10px; margin-top:18px;">
+        <button class="small-btn" id="cancelPresetsBtn" style="flex:1;">Cancel</button>
+        <button class="charge-btn" id="savePresetsBtn" style="flex:1; padding:12px 0;">Save</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const SUPABASE_URL = "https://wgicnbaoqsekageoygea.supabase.co";
+  const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4";
+
+  // ---------- Auth (shares the same password + "remembered device" as admin-dashboard.html) ----------
+  let _supabaseClient = null;
+  function getSupabase() {
+    if (!_supabaseClient) {
+      _supabaseClient = window.supabase.createClient(SUPABASE_URL, ANON_KEY);
+    }
+    return _supabaseClient;
+  }
+
+  let adminPassword = localStorage.getItem('mels_admin_pw') || sessionStorage.getItem('mels_admin_pw') || null;
+
+  async function verifyPassword(pw) {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.functions.invoke('manage-dashboard', {
+      body: { password: pw, action: 'dashboard_data' }
+    });
+    if (error) throw new Error('Could not connect. Check your connection and try again.');
+    if (!data || !data.success) throw new Error((data && data.message) || 'Wrong password.');
+    return true;
+  }
+
+  function unlockApp() {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    initApp();
+  }
+
+  document.getElementById('login-btn').addEventListener('click', attemptLogin);
+  document.getElementById('password-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') attemptLogin();
+  });
+
+  async function attemptLogin() {
+    const pwInput = document.getElementById('password-input');
+    const errEl = document.getElementById('login-error');
+    const pw = pwInput.value.trim();
+    if (!pw) return;
+    errEl.textContent = '';
+    document.getElementById('login-btn').textContent = 'Checking…';
+    document.getElementById('login-btn').disabled = true;
+    try {
+      await verifyPassword(pw);
+      adminPassword = pw;
+      // Same "remember this device" behavior as the admin dashboard —
+      // once unlocked here, it stays unlocked on this phone.
+      localStorage.setItem('mels_admin_pw', pw);
+      sessionStorage.removeItem('mels_admin_pw');
+      unlockApp();
+    } catch (err) {
+      errEl.textContent = err.message || 'Wrong password.';
+    } finally {
+      document.getElementById('login-btn').textContent = 'Unlock';
+      document.getElementById('login-btn').disabled = false;
+    }
+  }
+
+  document.getElementById('logoutLink').addEventListener('click', () => {
+    if (!confirm("Lock this page? You'll need your admin password again next time.")) return;
+    adminPassword = null;
+    localStorage.removeItem('mels_admin_pw');
+    sessionStorage.removeItem('mels_admin_pw');
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('password-input').value = '';
+  });
+
+  // Auto-unlock if this device already remembers the admin password
+  // (e.g. she's already logged into admin-dashboard.html here).
+  if (adminPassword) {
+    verifyPassword(adminPassword).then(unlockApp).catch(() => {
+      localStorage.removeItem('mels_admin_pw');
+      sessionStorage.removeItem('mels_admin_pw');
+      adminPassword = null;
+    });
+  }
+
+  // ---------- Editable presets ----------
+  // These are just a starting point — tap "Edit these" on the page (or
+  // edit the arrays below directly) to match your real prices & items.
+  // Saved to this device's localStorage so edits stick between visits.
+  const DEFAULT_PRICE_PRESETS = [
+    { name: "Half Dozen Cookies", amount: 12 },
+    { name: "Dozen Cookies", amount: 22 },
+    { name: "2 Dozen Cookies", amount: 40 },
+    { name: "Custom Order", amount: 25 },
+  ];
+  const DEFAULT_ITEM_CHIPS = [
+    "Half Dozen Cookies",
+    "Dozen Cookies",
+    "2 Dozen Cookies",
+    "Custom Cake",
+    "Cupcakes",
+    "Custom Order",
+  ];
+
+  function loadPricePresets() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('mels_qp_price_presets') || 'null');
+      if (Array.isArray(saved) && saved.length) return saved;
+    } catch (e) {}
+    return DEFAULT_PRICE_PRESETS;
+  }
+  function loadItemChips() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('mels_qp_item_chips') || 'null');
+      if (Array.isArray(saved) && saved.length) return saved;
+    } catch (e) {}
+    return DEFAULT_ITEM_CHIPS;
+  }
+  function savePricePresets(list) {
+    localStorage.setItem('mels_qp_price_presets', JSON.stringify(list));
+  }
+  function saveItemChips(list) {
+    localStorage.setItem('mels_qp_item_chips', JSON.stringify(list));
+  }
+
+  let pricePresets = loadPricePresets();
+  let itemChips = loadItemChips();
+
+  // ---------- Main app logic ----------
+  let cents = 0;
+
+  function formatCents(c) {
+    return "$" + (c / 100).toFixed(2);
+  }
+
+  function initApp() {
+    renderQuickGrid();
+    renderItemChips();
+    refreshDisplay();
+  }
+
+  function renderQuickGrid() {
+    const grid = document.getElementById('quickGrid');
+    grid.innerHTML = '';
+    pricePresets.forEach((p) => {
+      const btn = document.createElement('button');
+      btn.className = 'quick-tile';
+      btn.innerHTML = `<span class="quick-tile-name">${p.name}</span><span class="quick-tile-price">$${Number(p.amount).toFixed(2)}</span>`;
+      btn.addEventListener('click', () => {
+        cents = Math.round(Number(p.amount) * 100);
+        document.getElementById('descInput').value = p.name;
+        highlightSelectedChip(p.name);
+        refreshDisplay();
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderItemChips() {
+    const row = document.getElementById('itemChipRow');
+    row.innerHTML = '';
+    itemChips.forEach((label) => {
+      const chip = document.createElement('button');
+      chip.className = 'item-chip';
+      chip.textContent = label;
+      chip.dataset.label = label;
+      chip.addEventListener('click', () => {
+        document.getElementById('descInput').value = label;
+        highlightSelectedChip(label);
+      });
+      row.appendChild(chip);
+    });
+  }
+
+  function highlightSelectedChip(label) {
+    document.querySelectorAll('.item-chip').forEach((c) => {
+      c.classList.toggle('selected', c.dataset.label === label);
+    });
+    document.querySelectorAll('.quick-tile').forEach((t) => {
+      t.classList.toggle('selected', t.querySelector('.quick-tile-name')?.textContent === label);
+    });
+  }
+
+  document.getElementById('descInput').addEventListener('input', () => {
+    highlightSelectedChip(document.getElementById('descInput').value);
+  });
+
+  function refreshDisplay() {
+    const amountDisplay = document.getElementById('amountDisplay');
+    const amountSub = document.getElementById('amountSub');
+    const chargeBtn = document.getElementById('chargeBtn');
+    amountDisplay.textContent = formatCents(cents);
+    if (cents < 50) {
+      amountSub.textContent = "Minimum charge is $0.50";
+      chargeBtn.disabled = true;
+      chargeBtn.textContent = cents === 0 ? "Enter an amount" : "Amount too low";
+    } else {
+      amountSub.textContent = "Tap Charge to send to Stripe";
+      chargeBtn.disabled = false;
+      chargeBtn.textContent = "Charge " + formatCents(cents);
+    }
+  }
+
+  document.getElementById('keypad').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const key = btn.dataset.key;
+    if (key === 'clear') {
+      cents = 0;
+    } else if (key === 'back') {
+      cents = Math.floor(cents / 10);
+    } else {
+      if (cents < 10000000) {
+        cents = cents * 10 + parseInt(key, 10);
+      }
+    }
+    refreshDisplay();
+  });
+
+  document.getElementById('chargeBtn').addEventListener('click', async () => {
+    if (cents < 50) return;
+    const chargeBtn = document.getElementById('chargeBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    chargeBtn.disabled = true;
+    chargeBtn.textContent = "Opening secure checkout…";
+    statusMsg.className = "status";
+    statusMsg.textContent = "";
+
+    const description = document.getElementById('descInput').value.trim() || "In-Person Order";
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-stripe-checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${ANON_KEY}`,
+          "apikey": ANON_KEY,
+        },
+        body: JSON.stringify({
+          items: [
+            {
+              name: description,
+              unitAmountCents: cents,
+              quantity: 1,
+            },
+          ],
+          note: "Fulfillment: pickup — In-Person Payment | Preferred Time: In-person",
+          customerName: "In-Person Customer",
+          inPerson: true,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success || !data.url) {
+        throw new Error(data.message || "Could not start checkout.");
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      statusMsg.className = "status error";
+      statusMsg.textContent = err.message || "Something went wrong. Try again.";
+      refreshDisplay();
+    }
+  });
+
+  // ---------- Preset editor ----------
+  const overlay = document.getElementById('preset-editor-overlay');
+
+  document.getElementById('editPresetsBtn').addEventListener('click', openPresetEditor);
+  document.getElementById('cancelPresetsBtn').addEventListener('click', () => overlay.classList.add('hidden'));
+
+  function openPresetEditor() {
+    renderPresetRows();
+    renderChipRows();
+    overlay.classList.remove('hidden');
+  }
+
+  function renderPresetRows() {
+    const container = document.getElementById('presetRows');
+    container.innerHTML = '';
+    pricePresets.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'preset-row';
+      row.innerHTML = `
+        <input type="text" class="name-input" value="${p.name.replace(/"/g, '&quot;')}" placeholder="Item name">
+        <input type="text" class="price-input" inputmode="decimal" value="${p.amount}" placeholder="0.00">
+        <button class="remove-row" data-idx="${i}">✕</button>
+      `;
+      row.querySelector('.remove-row').addEventListener('click', () => {
+        pricePresets.splice(i, 1);
+        renderPresetRows();
+      });
+      container.appendChild(row);
+    });
+  }
+
+  function renderChipRows() {
+    const container = document.getElementById('chipRows');
+    container.innerHTML = '';
+    itemChips.forEach((label, i) => {
+      const row = document.createElement('div');
+      row.className = 'preset-row';
+      row.innerHTML = `
+        <input type="text" class="name-input" value="${label.replace(/"/g, '&quot;')}" placeholder="Item name">
+        <button class="remove-row" data-idx="${i}">✕</button>
+      `;
+      row.querySelector('.remove-row').addEventListener('click', () => {
+        itemChips.splice(i, 1);
+        renderChipRows();
+      });
+      container.appendChild(row);
+    });
+  }
+
+  document.getElementById('addPresetRowBtn').addEventListener('click', () => {
+    pricePresets.push({ name: "New Item", amount: 0 });
+    renderPresetRows();
+  });
+  document.getElementById('addChipRowBtn').addEventListener('click', () => {
+    itemChips.push("New Item");
+    renderChipRows();
+  });
+
+  document.getElementById('savePresetsBtn').addEventListener('click', () => {
+    const priceRows = document.querySelectorAll('#presetRows .preset-row');
+    const newPresets = [];
+    priceRows.forEach((row) => {
+      const name = row.querySelector('.name-input').value.trim();
+      const amt = parseFloat(row.querySelector('.price-input').value);
+      if (name && !isNaN(amt) && amt > 0) newPresets.push({ name, amount: amt });
+    });
+    const chipRows = document.querySelectorAll('#chipRows .preset-row');
+    const newChips = [];
+    chipRows.forEach((row) => {
+      const name = row.querySelector('.name-input').value.trim();
+      if (name) newChips.push(name);
+    });
+    pricePresets = newPresets.length ? newPresets : DEFAULT_PRICE_PRESETS;
+    itemChips = newChips.length ? newChips : DEFAULT_ITEM_CHIPS;
+    savePricePresets(pricePresets);
+    saveItemChips(itemChips);
+    renderQuickGrid();
+    renderItemChips();
+    overlay.classList.add('hidden');
+  });
+
+  // Registers a tiny service worker so "Add to Home Screen" behaves like a
+  // real installed app (standalone window, reopens instantly). See
+  // quick-pay-sw.js — it just caches this page's own shell.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('quick-pay-sw.js').catch(() => {});
+  }
+</script>
+
+</body>
+</html>

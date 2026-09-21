@@ -1,0 +1,25 @@
+{
+  "name": "Mel's Treat App Payments",
+  "short_name": "App Payments",
+  "description": "Log Cash App, Zelle, PayPal, and Venmo payments.",
+  "start_url": "/app-payments.html",
+  "scope": "/app-payments.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fffaf0",
+  "theme_color": "#c8912f",
+  "icons": [
+    {
+      "src": "assets/apppay-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/apppay-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
