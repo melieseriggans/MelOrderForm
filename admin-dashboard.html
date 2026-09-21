@@ -710,8 +710,8 @@
         </select>
         <label style="margin-top:12px;">Group By</label>
         <div class="tabs">
-          <button class="order-group-btn active" data-group="pickup">Pickup Date</button>
-          <button class="order-group-btn" data-group="placed">Date Placed</button>
+          <button class="order-group-btn" data-group="pickup">Pickup Date</button>
+          <button class="order-group-btn active" data-group="placed">Date Placed</button>
         </div>
       </div>
 
@@ -2232,7 +2232,7 @@ document.getElementById('business-note-input').addEventListener('keypress', (e) 
   if (e.key === 'Enter') document.getElementById('add-business-note-btn').click();
 });
 
-let orderGroupBy = 'pickup';
+let orderGroupBy = 'placed'; // default to newest-entered-first — "Pickup Date" grouping sorts by pickup day instead, which buried recently-placed orders
 
 function buildCustomerFrequency(orders) {
   const counts = {};
