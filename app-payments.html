@@ -20,6 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
 <style>
   :root {
@@ -339,6 +340,69 @@
     cursor: pointer;
     margin-top: 6px;
   }
+
+  .action-row-btn {
+    width: 100%;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.86rem;
+    padding: 12px 10px;
+    border-radius: 12px;
+    border: 1.5px solid var(--teal);
+    background: var(--gold-light);
+    color: var(--teal-dark);
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+  }
+  .action-row-hint {
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* ---------- Send-a-payment-request share screen ---------- */
+  #share-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 20, 40, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 70;
+    padding: 16px;
+  }
+  #share-overlay .card { max-width: 400px; text-align: center; }
+  .share-amount { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.6rem; color: var(--teal-dark); margin: 0 0 2px; }
+  .share-desc { color: var(--muted); font-size: 0.82rem; margin: 0 0 12px; }
+  #qrCanvasWrap {
+    background: #fff;
+    border-radius: 14px;
+    padding: 10px;
+    display: inline-block;
+    border: 1.5px solid var(--border);
+    margin-bottom: 6px;
+  }
+  .share-hint { font-size: 0.72rem; color: var(--muted); margin: 4px 0 14px; }
+  .share-btn-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .share-btn {
+    flex: 1;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 11px 4px;
+    border-radius: 12px;
+    border: 1.5px solid var(--teal);
+    background: #fff;
+    color: var(--teal-dark);
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+  .share-btn.copied { background: var(--teal); color: #fff; }
+  .share-done-btn { width: 100%; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -393,6 +457,7 @@
       <div class="section-label">Amount</div>
       <div class="amount-display" id="amountDisplay">$0.00</div>
       <div class="amount-sub" id="amountSub">Enter what you received</div>
+      <div id="appActionRow" class="hidden" style="margin-bottom:10px;"></div>
 
       <div class="keypad" id="keypad">
         <button data-key="1">1</button>
@@ -418,6 +483,25 @@
     </p>
 
     <span class="logout-link" id="logoutLink">Lock this page</span>
+  </div>
+
+  <!-- ============ Send a payment request (Cash App / PayPal, amount prefilled) ============ -->
+  <div id="share-overlay" class="hidden">
+    <div class="card">
+      <div class="share-amount" id="shareAmount">$0.00</div>
+      <div class="share-desc" id="shareDesc">Item</div>
+      <div id="qrCanvasWrap"><canvas id="qrCanvas"></canvas></div>
+      <div class="share-hint" id="shareHint">Have them scan this with their phone's camera to pay — the amount is already filled in.</div>
+      <div class="share-btn-row">
+        <a class="share-btn" id="shareTextBtn" href="#">📱 Text Link</a>
+        <a class="share-btn" id="shareEmailBtn" href="#">✉️ Email Link</a>
+      </div>
+      <div class="share-btn-row">
+        <button class="share-btn" id="shareCopyBtn">🔗 Copy Link</button>
+        <button class="share-btn" id="shareOpenHereBtn">📲 Open On This Device</button>
+      </div>
+      <button class="log-btn share-done-btn" id="shareDoneBtn">Close</button>
+    </div>
   </div>
 
   <!-- ============ Preset editor modal (shared with Quick Pay) ============ -->
@@ -701,6 +785,36 @@
     refreshDisplay();
   });
 
+  // ---------- Send a payment request (Cash App / PayPal only) ----------
+  // Cash App and PayPal.me both support a dollar amount baked right into
+  // the link (cash.app/$Cashtag/25.00, paypal.me/Username/25.00), so those
+  // two get the same QR/text/email hand-off Quick Pay has — the customer
+  // pays from their own account with nothing to type. Venmo has no
+  // reliable equivalent (its amount-prefill only works through its
+  // app-only link scheme, which doesn't survive being scanned as a QR),
+  // and Zelle has no payment-link system at all — both just get a quick
+  // "Open" button to jump into the app/site she already uses for them.
+  function extractCashtag(link) {
+    const m = (link || '').match(/cash\.app\/\$([A-Za-z0-9_-]+)/i);
+    return m ? m[1] : null;
+  }
+  function extractPaypalUsername(link) {
+    const m = (link || '').match(/paypal\.me\/([A-Za-z0-9_.-]+)/i);
+    return m ? m[1] : null;
+  }
+  function buildRequestLink(appKey, amountCents) {
+    const dollars = (amountCents / 100).toFixed(2);
+    if (appKey === 'cashapp') {
+      const tag = extractCashtag(appLinks.cashapp);
+      return tag ? `https://cash.app/$${tag}/${dollars}` : null;
+    }
+    if (appKey === 'paypal') {
+      const user = extractPaypalUsername(appLinks.paypal);
+      return user ? `https://paypal.me/${user}/${dollars}` : null;
+    }
+    return null;
+  }
+
   function refreshDisplay() {
     const amountDisplay = document.getElementById('amountDisplay');
     const amountSub = document.getElementById('amountSub');
@@ -719,6 +833,83 @@
       logBtn.disabled = false;
       logBtn.textContent = `Log ${formatCents(cents)} — ${APP_LABELS[selectedApp]}`;
     }
+    refreshAppActionRow();
+  }
+
+  function refreshAppActionRow() {
+    const row = document.getElementById('appActionRow');
+    row.innerHTML = '';
+
+    if (cents > 0 && (selectedApp === 'cashapp' || selectedApp === 'paypal')) {
+      const link = buildRequestLink(selectedApp, cents);
+      if (link) {
+        const btn = document.createElement('button');
+        btn.className = 'action-row-btn';
+        btn.textContent = `📤 Send ${formatCents(cents)} Request via ${APP_LABELS[selectedApp]}`;
+        btn.addEventListener('click', () => openShareScreen(link, document.getElementById('descInput').value.trim() || 'Mel\'s Treat order', cents, "Have them scan this to pay — the amount's already filled in."));
+        row.appendChild(btn);
+        row.classList.remove('hidden');
+      } else {
+        const hint = document.createElement('div');
+        hint.className = 'action-row-hint';
+        hint.textContent = `Set up your ${APP_LABELS[selectedApp]} link under "✏️ Set up your app links" above to unlock QR payment requests.`;
+        row.appendChild(hint);
+        row.classList.remove('hidden');
+      }
+      return;
+    }
+
+    if (selectedApp === 'venmo' || selectedApp === 'zelle') {
+      const a = document.createElement('a');
+      a.className = 'action-row-btn';
+      a.href = appLinks[selectedApp] || DEFAULT_APP_LINKS[selectedApp];
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = `↗️ Open ${APP_LABELS[selectedApp]}`;
+      row.appendChild(a);
+      row.classList.remove('hidden');
+      return;
+    }
+
+    row.classList.add('hidden');
+  }
+
+  function openShareScreen(url, description, amountCents, hintText) {
+    document.getElementById('shareAmount').textContent = formatCents(amountCents);
+    document.getElementById('shareDesc').textContent = description;
+    document.getElementById('shareHint').textContent = hintText || "Have them scan this with their phone's camera to pay.";
+
+    const canvas = document.getElementById('qrCanvas');
+    if (window.QRCode) {
+      QRCode.toCanvas(canvas, url, { width: 220, margin: 1, color: { dark: '#3a2430', light: '#ffffff' } }, () => {});
+    }
+
+    const smsBody = encodeURIComponent(`Here's your payment request from Mel's Treat: ${url}`);
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    document.getElementById('shareTextBtn').href = isIOS ? `sms:&body=${smsBody}` : `sms:?body=${smsBody}`;
+    document.getElementById('shareEmailBtn').href = `mailto:?subject=${encodeURIComponent("Your Mel's Treat Payment Request")}&body=${smsBody}`;
+
+    const copyBtn = document.getElementById('shareCopyBtn');
+    copyBtn.textContent = '🔗 Copy Link';
+    copyBtn.classList.remove('copied');
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(url).then(() => {
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.classList.add('copied');
+      }).catch(() => {
+        copyBtn.textContent = 'Could not copy';
+      });
+    };
+
+    document.getElementById('shareOpenHereBtn').onclick = () => {
+      window.open(url, '_blank', 'noopener');
+    };
+
+    document.getElementById('shareDoneBtn').onclick = () => {
+      document.getElementById('share-overlay').classList.add('hidden');
+    };
+
+    document.getElementById('share-overlay').classList.remove('hidden');
   }
 
   document.getElementById('keypad').addEventListener('click', (e) => {
@@ -898,6 +1089,7 @@
     appLinks = newLinks;
     saveAppLinks(appLinks);
     renderLaunchGrid();
+    refreshDisplay();
     linkOverlay.classList.add('hidden');
   });
 

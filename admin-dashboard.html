@@ -290,6 +290,13 @@
     border-radius:14px; padding:8px 16px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.82rem; cursor:pointer;
   }
   .review-filter-btn.active{background:var(--pink-hot); color:var(--white); border-color:var(--pink-hot);}
+  .log-filter-btn{
+    background:var(--white); border:1.5px solid var(--border); color:var(--ink-soft);
+    border-radius:14px; padding:8px 16px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.82rem; cursor:pointer;
+  }
+  .log-filter-btn.active{background:var(--pink-hot); color:var(--white); border-color:var(--pink-hot);}
+  .email-log-row{border:1.5px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px;}
+  .email-log-row-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;}
   .review-mgmt-row{border:1.5px solid var(--border); border-radius:16px; padding:16px; margin-bottom:12px;}
   .review-mgmt-row.pending{border-color:var(--pink-hot); background:#fff5f8;}
   .review-mgmt-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;}
@@ -493,6 +500,7 @@
       <button class="tab-btn" data-tab="reviews">Reviews</button>
       <button class="tab-btn" data-tab="emails">Emails</button>
       <button class="tab-btn" data-tab="scripts">Messages</button>
+      <button class="tab-btn" data-tab="emaillog">Email Log</button>
       <button class="tab-btn" data-tab="links">Links</button>
       <button class="tab-btn" data-tab="earnings">Earnings & Tax</button>
     </div>
@@ -915,6 +923,19 @@
         <h2>📱 Copy/Paste Messages</h2>
         <div class="order-detail" style="margin:0 0 14px;">Tap "Copy" to grab any message, then paste it into a text, email, or DM. Swap out the bracketed bits like [Name] before you send. These are just for you to use one-on-one with a customer — separate from the "Emails" tab, which sends to your whole list at once.</div>
         <div id="scripts-list"></div>
+      </div>
+    </div>
+
+    <!-- EMAIL LOG TAB (delivery tracking — separate from the "Emails" campaign tab above) -->
+    <div class="tab-panel" id="tab-emaillog">
+      <div class="card">
+        <h2>📬 Email Delivery Log</h2>
+        <div class="order-detail" style="margin:0 0 14px;">Every confirmation, receipt, reminder, and review-request email that's gone out, with whether it was actually delivered. This is different from the "Emails" tab above — that one sends to your list, this one shows what already went out.</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;" id="emaillog-filter-row">
+          <button type="button" class="log-filter-btn active" data-emaillog-filter="all">All</button>
+          <button type="button" class="log-filter-btn" data-emaillog-filter="issues">Not Delivered</button>
+        </div>
+        <div id="emaillog-list"></div>
       </div>
     </div>
 
@@ -1981,6 +2002,7 @@ function renderAll() {
   renderIngredientProductTypeBreakdown();
   renderBusinessInfo();
   renderScriptsTab();
+  renderEmailLogTab();
 }
 
 let cpcPeriod = 'month';
@@ -2361,7 +2383,7 @@ const EMAIL_STATUS_BADGES = {
 // renders a small status badge. No matching row means either the order
 // predates this tracking system or no email address was on file.
 function emailStatusHtml(orderId) {
-  const CUSTOMER_TYPES = ['order_confirmation_customer', 'in_person_sale_customer', 'manual_sale_customer'];
+  const CUSTOMER_TYPES = ['order_confirmation_customer', 'in_person_sale_customer', 'manual_sale_customer', 'terminal_sale_customer'];
   const rows = (dashboardData.emailLog || []).filter(e => e.order_id === orderId && CUSTOMER_TYPES.includes(e.email_type));
   if (rows.length === 0) return '';
   const latest = rows.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
@@ -4785,6 +4807,68 @@ function scriptsRowEditFormHtml(tpl) {
     </div>
   `;
 }
+
+// --- Email Delivery Log (separate from the "Emails" campaign-blast tab) ---
+let emailLogFilter = 'all';
+
+const EMAIL_TYPE_LABELS = {
+  order_confirmation_customer: '🍪 Order Confirmation',
+  order_confirmation_owner: '🍪 Order Confirmation (to you)',
+  in_person_sale_customer: '💳 In-Person Receipt',
+  in_person_sale_owner: '💳 In-Person Sale (to you)',
+  manual_sale_customer: '💵 App Payment Receipt',
+  manual_sale_owner: '💵 App Payment Sale (to you)',
+  terminal_sale_customer: '📶 Tap to Pay Receipt',
+  terminal_sale_owner: '📶 Tap to Pay Sale (to you)',
+  catering_payment_customer: '🎂 Catering Payment Receipt',
+  catering_payment_owner: '🎂 Catering Payment (to you)',
+  pickup_reminder: '⏰ Pickup Reminder',
+  review_request: '⭐ Review Request',
+  loyalty_reward: '🎁 Loyalty Reward',
+  restock_notice: '🔔 Restock Notice',
+};
+
+function renderEmailLogTab() {
+  const list = document.getElementById('emaillog-list');
+  if (!list) return;
+  let rows = dashboardData.emailLog || [];
+  if (emailLogFilter === 'issues') {
+    rows = rows.filter(r => r.status !== 'sent' && r.status !== 'delivered');
+  }
+  if (rows.length === 0) {
+    list.innerHTML = `<div class="empty-note">${emailLogFilter === 'issues' ? 'No delivery problems — everything on file is sent or delivered.' : 'No emails logged yet.'}</div>`;
+    return;
+  }
+  list.innerHTML = rows.map(r => {
+    const badge = EMAIL_STATUS_BADGES[r.status] || EMAIL_STATUS_BADGES.sent;
+    const typeLabel = EMAIL_TYPE_LABELS[r.email_type] || r.email_type;
+    const when = r.created_at ? new Date(r.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+    const title = r.error ? ` title="${escapeHtml(r.error)}"` : '';
+    return `
+      <div class="email-log-row">
+        <div class="email-log-row-top">
+          <div>
+            <div style="font-weight:600; font-size:0.9rem;">${escapeHtml(typeLabel)}</div>
+            <div class="order-detail" style="margin:2px 0 0;">To: ${escapeHtml(r.to_email || '—')}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="color:${badge.color}; font-weight:600; font-size:0.82rem;"${title}>${badge.icon} ${badge.label}</div>
+            <div class="order-detail" style="margin:2px 0 0;">${when}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.log-filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.log-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  emailLogFilter = btn.dataset.emaillogFilter;
+  renderEmailLogTab();
+});
 
 function renderScriptsTab() {
   const list = document.getElementById('scripts-list');

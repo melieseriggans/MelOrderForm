@@ -21,6 +21,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://js.stripe.com/terminal/v1/"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
 <style>
   :root {
@@ -477,6 +478,71 @@
     font-size: 0.7rem;
     color: var(--muted);
   }
+
+  /* ---------- Send-to-customer checkout share screen ---------- */
+  #share-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 36, 48, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 70;
+    padding: 16px;
+  }
+  #share-overlay .card {
+    max-width: 400px;
+    text-align: center;
+  }
+  .share-amount {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--pink-dark);
+    margin: 0 0 2px;
+  }
+  .share-desc {
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin: 0 0 12px;
+  }
+  #qrCanvasWrap {
+    background: #fff;
+    border-radius: 14px;
+    padding: 10px;
+    display: inline-block;
+    border: 1.5px solid var(--border);
+    margin-bottom: 6px;
+  }
+  .share-hint {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin: 4px 0 14px;
+  }
+  .share-btn-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .share-btn {
+    flex: 1;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 11px 4px;
+    border-radius: 12px;
+    border: 1.5px solid var(--pink);
+    background: #fff;
+    color: var(--pink-dark);
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+  .share-btn.copied { background: var(--pink); color: #fff; }
+  .share-done-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
@@ -539,7 +605,7 @@
     </div>
 
     <p class="footer-note">
-      💳 Connect your card reader above for Tap to Pay, or leave it disconnected to send a secure Stripe checkout link instead. Receipt sent automatically either way.
+      💳 Connect a card reader above for Tap to Pay, or leave it disconnected to get a QR code / text / email link the customer can pay on their own phone. Receipt sent automatically either way.
     </p>
 
     <span class="logout-link" id="logoutLink">Lock this page</span>
@@ -575,6 +641,25 @@
         <button class="small-btn" id="locationCancelBtn" style="flex:1;">Cancel</button>
         <button class="charge-btn" id="locationSaveBtn" style="flex:1; padding:12px 0;">Save &amp; Continue</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ============ Send checkout link to customer's own phone ============ -->
+  <div id="share-overlay" class="hidden">
+    <div class="card">
+      <div class="share-amount" id="shareAmount">$0.00</div>
+      <div class="share-desc" id="shareDesc">Item</div>
+      <div id="qrCanvasWrap"><canvas id="qrCanvas"></canvas></div>
+      <div class="share-hint">Have them scan this with their phone's camera to pay — Apple Pay/Google Pay shows up automatically if they have it set up.</div>
+      <div class="share-btn-row">
+        <a class="share-btn" id="shareTextBtn" href="#">📱 Text Link</a>
+        <a class="share-btn" id="shareEmailBtn" href="#">✉️ Email Link</a>
+      </div>
+      <div class="share-btn-row">
+        <button class="share-btn" id="shareCopyBtn">🔗 Copy Link</button>
+        <button class="share-btn" id="shareOpenHereBtn">📲 Open On This Device</button>
+      </div>
+      <button class="charge-btn share-done-btn" id="shareDoneBtn">Done — Start Next Sale</button>
     </div>
   </div>
 
@@ -1060,7 +1145,8 @@
     }
 
     chargeBtn.disabled = true;
-    chargeBtn.textContent = "Opening secure checkout…";
+    chargeBtn.textContent = "Creating checkout link…";
+    const chargeAmount = cents;
 
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-stripe-checkout`, {
@@ -1074,7 +1160,7 @@
           items: [
             {
               name: description,
-              unitAmountCents: cents,
+              unitAmountCents: chargeAmount,
               quantity: 1,
             },
           ],
@@ -1087,13 +1173,62 @@
       if (!res.ok || !data.success || !data.url) {
         throw new Error(data.message || "Could not start checkout.");
       }
-      window.location.href = data.url;
+      openShareScreen(data.url, description, chargeAmount);
+      statusMsg.textContent = "";
+      refreshDisplay();
     } catch (err) {
       statusMsg.className = "status error";
       statusMsg.textContent = err.message || "Something went wrong. Try again.";
       refreshDisplay();
     }
   });
+
+  // ---------- Send checkout link to customer's own phone ----------
+  // Instead of always opening Stripe Checkout on Mel's own device, this
+  // shows a QR code + text/email/copy options so the customer can finish
+  // paying on their own phone — where their own Apple Pay/Google Pay and
+  // saved cards are. "Open On This Device" keeps the old one-tap redirect
+  // for when she's holding the customer's card herself.
+  function openShareScreen(url, description, amountCents) {
+    document.getElementById('shareAmount').textContent = formatCents(amountCents);
+    document.getElementById('shareDesc').textContent = description;
+
+    const canvas = document.getElementById('qrCanvas');
+    if (window.QRCode) {
+      QRCode.toCanvas(canvas, url, { width: 220, margin: 1, color: { dark: '#3a2430', light: '#ffffff' } }, () => {});
+    }
+
+    const smsBody = encodeURIComponent(`Here's your Mel's Treat checkout link: ${url}`);
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    document.getElementById('shareTextBtn').href = isIOS ? `sms:&body=${smsBody}` : `sms:?body=${smsBody}`;
+    document.getElementById('shareEmailBtn').href = `mailto:?subject=${encodeURIComponent("Your Mel's Treat Checkout Link")}&body=${smsBody}`;
+
+    const copyBtn = document.getElementById('shareCopyBtn');
+    copyBtn.textContent = '🔗 Copy Link';
+    copyBtn.classList.remove('copied');
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(url).then(() => {
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.classList.add('copied');
+      }).catch(() => {
+        copyBtn.textContent = 'Could not copy';
+      });
+    };
+
+    document.getElementById('shareOpenHereBtn').onclick = () => {
+      window.location.href = url;
+    };
+
+    document.getElementById('shareDoneBtn').onclick = () => {
+      document.getElementById('share-overlay').classList.add('hidden');
+      cents = 0;
+      document.getElementById('descInput').value = '';
+      highlightSelectedChip('');
+      refreshDisplay();
+    };
+
+    document.getElementById('share-overlay').classList.remove('hidden');
+  }
 
   // ---------- Preset editor ----------
   const overlay = document.getElementById('preset-editor-overlay');
