@@ -248,6 +248,21 @@
   .link-row-copy-btn:hover{background:var(--pink-deep);}
   .link-row-copy-btn.copied{background:var(--gold);}
 
+  .msg-row{
+    border:1.5px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:12px;
+  }
+  .msg-row-label{font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.92rem; margin-bottom:6px;}
+  .msg-row-text{
+    font-size:0.85rem; color:var(--ink-soft); white-space:pre-wrap; line-height:1.5;
+    background:var(--cream); border-radius:10px; padding:10px 12px; margin-bottom:10px;
+  }
+  .msg-row-copy-btn{
+    font-size:0.78rem; font-weight:700; color:var(--white); background:var(--pink-hot);
+    border:none; border-radius:10px; padding:8px 14px; cursor:pointer; white-space:nowrap;
+  }
+  .msg-row-copy-btn:hover{background:var(--pink-deep);}
+  .msg-row-copy-btn.copied{background:var(--gold);}
+
   /* Fixes a pre-existing bug: field-row was used in HTML but never styled */
   .field-row{display:flex; gap:10px;}
   .field-row > div{flex:1;}
@@ -477,6 +492,7 @@
       <button class="tab-btn" data-tab="discounts">Discounts</button>
       <button class="tab-btn" data-tab="reviews">Reviews</button>
       <button class="tab-btn" data-tab="emails">Emails</button>
+      <button class="tab-btn" data-tab="scripts">Messages</button>
       <button class="tab-btn" data-tab="links">Links</button>
       <button class="tab-btn" data-tab="earnings">Earnings & Tax</button>
     </div>
@@ -890,6 +906,15 @@
           <button class="btn btn-small" id="send-test-email-btn" style="background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot); flex:1;">Send Test To Me</button>
           <button class="btn" id="send-campaign-btn" style="flex:2;">Send To List</button>
         </div>
+      </div>
+    </div>
+
+    <!-- MESSAGE SCRIPTS TAB -->
+    <div class="tab-panel" id="tab-scripts">
+      <div class="card">
+        <h2>📱 Copy/Paste Messages</h2>
+        <div class="order-detail" style="margin:0 0 14px;">Tap "Copy" to grab any message, then paste it into a text, email, or DM. Swap out the bracketed bits like [Name] before you send. These are just for you to use one-on-one with a customer — separate from the "Emails" tab, which sends to your whole list at once.</div>
+        <div id="scripts-list"></div>
       </div>
     </div>
 
@@ -1955,6 +1980,7 @@ function renderAll() {
   renderQuickAddItems();
   renderIngredientProductTypeBreakdown();
   renderBusinessInfo();
+  renderScriptsTab();
 }
 
 let cpcPeriod = 'month';
@@ -2318,6 +2344,32 @@ function contactLinksHtml(phone, email) {
   return links.length ? `<div style="display:flex; gap:8px; margin:4px 0 0; flex-wrap:wrap;">${links.join('')}</div>` : '';
 }
 
+// Maps a raw email_log status to a short badge the way a busy person
+// wants to see it at a glance — "did they actually get this?"
+const EMAIL_STATUS_BADGES = {
+  sent: { icon: '📤', label: 'Sent — awaiting delivery', color: 'var(--ink-soft)' },
+  delivered: { icon: '✅', label: 'Delivered', color: '#1a8a4a' },
+  delayed: { icon: '⏳', label: 'Delayed', color: '#8a5a00' },
+  bounced: { icon: '⚠️', label: 'Bounced — undeliverable', color: '#c0025e' },
+  complained: { icon: '🚫', label: 'Marked as spam', color: '#c0025e' },
+  failed: { icon: '❌', label: 'Failed to send', color: '#c0025e' },
+};
+
+// Finds the most recent customer-facing confirmation/receipt email logged
+// for this order (order_confirmation_customer, in_person_sale_customer, or
+// manual_sale_customer — whichever type this order actually got) and
+// renders a small status badge. No matching row means either the order
+// predates this tracking system or no email address was on file.
+function emailStatusHtml(orderId) {
+  const CUSTOMER_TYPES = ['order_confirmation_customer', 'in_person_sale_customer', 'manual_sale_customer'];
+  const rows = (dashboardData.emailLog || []).filter(e => e.order_id === orderId && CUSTOMER_TYPES.includes(e.email_type));
+  if (rows.length === 0) return '';
+  const latest = rows.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+  const badge = EMAIL_STATUS_BADGES[latest.status] || EMAIL_STATUS_BADGES.sent;
+  const title = latest.error ? ` title="${escapeHtml(latest.error)}"` : '';
+  return `<div class="order-detail" style="color:${badge.color}; font-weight:600;"${title}>${badge.icon} Confirmation email: ${badge.label}</div>`;
+}
+
 function orderRowHtml(o, customerCounts) {
   const typeByName = {};
   (dashboardData.inventory || []).forEach(item => { typeByName[item.cookie_name] = item.product_type || 'cookie'; });
@@ -2338,6 +2390,7 @@ function orderRowHtml(o, customerCounts) {
       ${contactLinksHtml(o.phone, o.email)}
       <div class="order-detail">${cookieText || 'No items listed'}</div>
       ${extras.length ? `<div class="order-detail" style="color:var(--pink-hot); font-weight:600;">${extras.join(' · ')}</div>` : ''}
+      ${emailStatusHtml(o.id)}
       <div class="order-detail">${o.fulfillment_type === 'pickup' ? 'Pickup — ' + escapeHtml(o.pickup_location || 'TBD') : 'Delivery — ' + escapeHtml(o.delivery_address || 'TBD')}</div>
       ${(() => {
         const isDelivery = o.fulfillment_type === 'delivery';
@@ -4708,6 +4761,130 @@ const SITE_LINKS = [
   { name: 'Out Of Stock Page', url: 'https://melstreat.com/out-of-stock.html' },
   { name: 'Site Root (index.html — double check this is the one live at melstreat.com)', url: 'https://melstreat.com/index.html' },
 ];
+
+// Message templates now live in the message_templates table (fetched as
+// part of dashboardData) instead of being hardcoded here, so Meliese can
+// add, edit, and delete her own canned texts from the Messages tab.
+let scriptsEditingId = null; // id of the template currently being edited, or 'new' for the add-form, or null
+let scriptsBusy = false;
+
+function scriptsRowEditFormHtml(tpl) {
+  const isNew = !tpl;
+  const label = tpl ? tpl.label : '';
+  const bodyText = tpl ? tpl.body : '';
+  return `
+    <div class="msg-row" data-editing="${isNew ? 'new' : tpl.id}">
+      <label style="margin:0 0 4px;">Label</label>
+      <input type="text" class="scripts-edit-label" value="${escapeHtml(label)}" placeholder="e.g. 📦 Order Ready" style="margin-bottom:8px;">
+      <label style="margin:0 0 4px;">Message</label>
+      <textarea class="scripts-edit-body" style="min-height:100px; margin-bottom:10px;" placeholder="Write the message...">${escapeHtml(bodyText)}</textarea>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn btn-small scripts-save-btn" data-id="${isNew ? '' : tpl.id}">${isNew ? 'Add Message' : 'Save Changes'}</button>
+        <button type="button" class="btn btn-small scripts-cancel-btn" style="background:var(--white); color:var(--ink-soft); border:1.5px solid var(--border);">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderScriptsTab() {
+  const list = document.getElementById('scripts-list');
+  if (!list) return;
+  if (!dashboardData) { list.innerHTML = ''; return; }
+  const templates = dashboardData.messageTemplates || [];
+
+  const addButtonOrForm = scriptsEditingId === 'new'
+    ? scriptsRowEditFormHtml(null)
+    : `<button type="button" class="btn btn-small" id="scripts-add-btn" style="margin-bottom:14px;">+ Add New Message</button>`;
+
+  const rowsHtml = templates.map(tpl => {
+    if (scriptsEditingId === tpl.id) return scriptsRowEditFormHtml(tpl);
+    return `
+      <div class="msg-row">
+        <div class="msg-row-label">${escapeHtml(tpl.label)}</div>
+        <div class="msg-row-text">${escapeHtml(tpl.body)}</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="msg-row-copy-btn" data-text="${escapeHtml(tpl.body)}">Copy</button>
+          <button type="button" class="btn btn-small scripts-edit-btn" data-id="${tpl.id}" style="background:var(--white); color:var(--ink-soft); border:1.5px solid var(--border);">Edit</button>
+          <button type="button" class="btn btn-small scripts-delete-btn" data-id="${tpl.id}" style="background:var(--white); color:#c0025e; border:1.5px solid #c0025e;">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.innerHTML = addButtonOrForm + rowsHtml + (templates.length === 0 && scriptsEditingId !== 'new' ? '<div class="empty-note">No saved messages yet — add your first one above.</div>' : '');
+
+  const addBtn = document.getElementById('scripts-add-btn');
+  if (addBtn) addBtn.addEventListener('click', () => { scriptsEditingId = 'new'; renderScriptsTab(); });
+
+  list.querySelectorAll('.msg-row-copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.text;
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'Copied! ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1800);
+      } catch (err) {
+        alert('Could not copy automatically — long-press or select the message text manually.');
+      }
+    });
+  });
+
+  list.querySelectorAll('.scripts-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => { scriptsEditingId = btn.dataset.id; renderScriptsTab(); });
+  });
+
+  list.querySelectorAll('.scripts-cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => { scriptsEditingId = null; renderScriptsTab(); });
+  });
+
+  list.querySelectorAll('.scripts-delete-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Delete this message template? This can\'t be undone.')) return;
+      if (scriptsBusy) return;
+      scriptsBusy = true;
+      try {
+        await callAdmin('delete_message_template', { id: btn.dataset.id });
+        const refreshed = await callAdmin('dashboard_data');
+        if (refreshed.success) { dashboardData = refreshed; renderAll(); }
+      } catch (err) {
+        alert(err.message || 'Could not delete that message.');
+      } finally {
+        scriptsBusy = false;
+      }
+    });
+  });
+
+  list.querySelectorAll('.scripts-save-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (scriptsBusy) return;
+      const row = btn.closest('.msg-row');
+      const label = row.querySelector('.scripts-edit-label').value.trim();
+      const bodyText = row.querySelector('.scripts-edit-body').value.trim();
+      if (!label || !bodyText) { alert('Please fill in both the label and the message text.'); return; }
+      scriptsBusy = true;
+      btn.disabled = true;
+      try {
+        if (btn.dataset.id) {
+          await callAdmin('update_message_template', { id: btn.dataset.id, label, body: bodyText });
+        } else {
+          await callAdmin('add_message_template', { label, body: bodyText });
+        }
+        scriptsEditingId = null;
+        const refreshed = await callAdmin('dashboard_data');
+        if (refreshed.success) { dashboardData = refreshed; renderAll(); }
+      } catch (err) {
+        alert(err.message || 'Could not save that message.');
+        btn.disabled = false;
+      } finally {
+        scriptsBusy = false;
+      }
+    });
+  });
+}
 
 function renderLinksTab() {
   const list = document.getElementById('links-list');
