@@ -8,7 +8,7 @@
 
 <!-- Add-to-Home-Screen / PWA setup -->
 <link rel="manifest" href="quick-pay-manifest.json">
-<meta name="theme-color" content="#e20376">
+<meta name="theme-color" content="#b8005a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -20,18 +20,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://js.stripe.com/terminal/v1/"></script>
 
 <style>
   :root {
-    --pink: #e20376;
-    --pink-dark: #a8025f;
-    --pink-glow: #ff6fb0;
-    --gold: #c8912f;
-    --cream: #fff5f8;
+    /* DARK pink theme — App Payments is the light counterpart, so the two
+       tools are tellable apart at a glance. */
+    --pink: #b8005a;
+    --pink-dark: #7a0038;
+    --pink-glow: #e0006f;
+    --cream: #fff0f5;
     --card: #ffffff;
     --text: #3a2430;
     --muted: #8a6b78;
-    --border: #f3d3e0;
+    --border: #f0c7dc;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -84,57 +86,75 @@
   .card {
     background: var(--card);
     border-radius: 22px;
-    box-shadow: 0 6px 24px rgba(162, 30, 90, 0.12);
-    padding: 20px;
+    box-shadow: 0 6px 24px rgba(122, 0, 56, 0.16);
+    padding: 16px;
     width: 100%;
     max-width: 400px;
     border: 1.5px solid var(--border);
   }
   .header {
     text-align: center;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     background: linear-gradient(135deg, var(--pink), var(--pink-glow));
     border-radius: 18px;
-    padding: 14px 16px;
-    box-shadow: 0 8px 20px rgba(226,3,118,0.25);
+    padding: 12px 16px;
+    box-shadow: 0 8px 20px rgba(184,0,90,0.32);
+    position: relative;
+    overflow: hidden;
+  }
+  /* Glossy Y2K sticker sheen across the header banner */
+  .header::after {
+    content: "";
+    position: absolute;
+    top: -60%; left: -15%;
+    width: 45%; height: 220%;
+    background: rgba(255,255,255,0.28);
+    transform: rotate(20deg);
+    pointer-events: none;
   }
   .header h1 {
     font-family: 'Baloo 2', cursive;
     font-weight: 800;
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     color: #fff;
     margin: 0 0 2px;
+    letter-spacing: 0.02em;
   }
   .header p {
     margin: 0;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.92);
     font-family: 'Quicksand', sans-serif;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
   .section-label {
     font-family: 'Fredoka', sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--pink-dark);
-    margin: 14px 0 8px;
+    margin: 10px 0 6px;
   }
   .section-label:first-of-type { margin-top: 0; }
+  .hint-text {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin: 6px 0;
+  }
 
   /* ---------- Most-used price/item grid ---------- */
   .quick-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
   .quick-tile {
     font-family: inherit;
     border: 1.5px solid var(--border);
     background: #fff;
     border-radius: 14px;
-    padding: 12px 10px;
+    padding: 10px;
     text-align: left;
     cursor: pointer;
   }
@@ -148,25 +168,25 @@
   }
   .quick-tile-name {
     display: block;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     color: var(--text);
-    margin-bottom: 2px;
+    margin-bottom: 1px;
   }
   .quick-tile-price {
     display: block;
     font-family: 'Baloo 2', cursive;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    color: var(--gold);
+    color: var(--pink-dark);
   }
   .edit-presets-link {
     display: block;
     text-align: center;
     font-family: 'Fredoka', sans-serif;
     font-weight: 600;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: var(--muted);
-    margin-top: 10px;
+    margin-top: 6px;
     text-decoration: underline;
     cursor: pointer;
   }
@@ -175,18 +195,18 @@
   .amount-display {
     text-align: center;
     font-family: 'Baloo 2', cursive;
-    font-size: 2.6rem;
+    font-size: 2.4rem;
     font-weight: 800;
     color: var(--pink-dark);
-    padding: 10px 0 2px;
+    padding: 6px 0 2px;
     letter-spacing: 1px;
     word-break: break-all;
   }
   .amount-sub {
     text-align: center;
     color: var(--muted);
-    font-size: 0.78rem;
-    margin-bottom: 10px;
+    font-size: 0.76rem;
+    margin-bottom: 6px;
   }
   label {
     display: block;
@@ -194,13 +214,13 @@
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--pink-dark);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   input[type="text"] {
     width: 100%;
     font-family: inherit;
     font-size: 1rem;
-    padding: 12px 14px;
+    padding: 11px 14px;
     border: 1.5px solid var(--border);
     border-radius: 12px;
     margin-bottom: 4px;
@@ -214,7 +234,7 @@
     width: 100%;
     font-family: inherit;
     font-size: 1rem;
-    padding: 12px 14px;
+    padding: 11px 14px;
     border: 1.5px solid var(--border);
     border-radius: 12px;
     margin-bottom: 12px;
@@ -224,15 +244,15 @@
   /* Quick "what it's for" chips — tap to fill the box without typing */
   .item-chip-row {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
-    margin: 10px 0 16px;
+    margin: 6px 0 10px;
   }
   .item-chip {
     font-family: 'Fredoka', sans-serif;
     font-weight: 600;
-    font-size: 0.82rem;
-    padding: 8px 12px;
+    font-size: 0.78rem;
+    padding: 6px 11px;
     border-radius: 20px;
     border: 1.5px solid var(--border);
     background: #fff;
@@ -249,14 +269,14 @@
   .keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 8px 0 16px;
+    gap: 8px;
+    margin: 6px 0 12px;
   }
   .keypad button {
     font-family: 'Baloo 2', cursive;
     font-weight: 700;
-    font-size: 1.3rem;
-    padding: 15px 0;
+    font-size: 1.25rem;
+    padding: 13px 0;
     border: none;
     border-radius: 14px;
     background: var(--cream);
@@ -267,10 +287,10 @@
     background: var(--border);
   }
   .keypad button.wide-action {
-    background: #fdeef3;
+    background: #ffe3f0;
     color: var(--pink-dark);
     font-family: 'Fredoka', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
   }
 
   .charge-btn {
@@ -278,26 +298,38 @@
     font-family: 'Fredoka', sans-serif;
     font-size: 1.1rem;
     font-weight: 700;
-    padding: 16px 0;
+    padding: 15px 0;
     border: none;
     border-radius: 16px;
     background: linear-gradient(135deg, var(--pink), var(--pink-glow));
-    box-shadow: 0 8px 18px rgba(226,3,118,0.28);
+    box-shadow: 0 8px 18px rgba(184,0,90,0.34);
     color: #fff;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .charge-btn::after {
+    content: "";
+    position: absolute;
+    top: -60%; left: -15%;
+    width: 30%; height: 220%;
+    background: rgba(255,255,255,0.3);
+    transform: rotate(20deg);
+    pointer-events: none;
   }
   .charge-btn:disabled {
-    background: #f0c3d8;
+    background: #f9c9e2;
     box-shadow: none;
     cursor: not-allowed;
   }
+  .charge-btn:disabled::after { display: none; }
   .charge-btn:not(:disabled):active {
     background: var(--pink-dark);
   }
   .status {
     text-align: center;
-    margin-top: 14px;
-    font-size: 0.88rem;
+    margin-top: 10px;
+    font-size: 0.86rem;
     color: var(--muted);
     min-height: 20px;
   }
@@ -306,10 +338,10 @@
   .footer-note {
     text-align: center;
     color: var(--muted);
-    font-size: 0.72rem;
-    margin-top: 16px;
+    font-size: 0.68rem;
+    margin-top: 10px;
     max-width: 340px;
-    line-height: 1.4;
+    line-height: 1.35;
   }
   .logout-link {
     display: block;
@@ -318,7 +350,7 @@
     font-weight: 600;
     font-size: 0.75rem;
     color: var(--muted);
-    margin-top: 20px;
+    margin-top: 14px;
     text-decoration: underline;
     cursor: pointer;
   }
@@ -367,6 +399,84 @@
     cursor: pointer;
     margin-top: 6px;
   }
+
+  /* ---------- Card reader (Tap to Pay) ---------- */
+  .reader-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin: 0 0 10px;
+  }
+  .reader-status-text {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .reader-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #c7c7c7;
+    flex-shrink: 0;
+  }
+  .reader-dot.connected { background: #1a8a4a; }
+  .reader-dot.connecting { background: #d99a00; }
+  .reader-link-btn {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.74rem;
+    color: var(--pink-dark);
+    background: #fff;
+    border: 1.5px solid var(--pink);
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .reader-link-btn.muted {
+    color: var(--muted);
+    border-color: var(--border);
+  }
+  #reader-overlay, #location-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 36, 48, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 60;
+  }
+  #reader-overlay .card, #location-overlay .card {
+    border-radius: 20px 20px 0 0;
+    max-width: 460px;
+  }
+  .reader-found-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .reader-found-name {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+  .reader-found-sub {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
 </style>
 </head>
 <body>
@@ -386,17 +496,21 @@
   <div id="app" class="hidden" style="width:100%; display:flex; flex-direction:column; align-items:center;">
 
     <div class="header">
-      <h1>🍪 Quick Pay</h1>
+      <h1>✨ Quick Pay ✨</h1>
       <p>Charge a customer's card on the spot</p>
     </div>
 
     <div class="card">
 
-      <div class="section-label">Most Used</div>
-      <div class="quick-grid" id="quickGrid"></div>
-      <span class="edit-presets-link" id="editPresetsBtn">✏️ Edit prices &amp; labels — these are all yours to change</span>
+      <div class="section-label" style="margin-top:0;">Card Reader</div>
+      <div class="reader-box">
+        <span class="reader-status-text" id="readerStatusText"><span class="reader-dot" id="readerDot"></span>Not connected</span>
+        <button class="reader-link-btn" id="readerActionBtn">Connect Reader</button>
+      </div>
 
-      <div class="section-label">What's it for?</div>
+      <div class="section-label">Item</div>
+      <div class="quick-grid" id="quickGrid"></div>
+      <span class="edit-presets-link" id="editPresetsBtn">✏️ Edit these</span>
       <div class="item-chip-row" id="itemChipRow"></div>
       <label for="descInput" style="display:none;">Description</label>
       <input type="text" id="descInput" placeholder="Or type your own…" maxlength="120">
@@ -425,12 +539,43 @@
     </div>
 
     <p class="footer-note">
-      This opens a secure Stripe payment page for the customer to tap Apple&nbsp;Pay/Google&nbsp;Pay
-      or enter their card. Hand them your phone, or enter the card yourself if that's easier for them.
-      They'll get an emailed receipt with your contact info automatically.
+      💳 Connect your card reader above for Tap to Pay, or leave it disconnected to send a secure Stripe checkout link instead. Receipt sent automatically either way.
     </p>
 
     <span class="logout-link" id="logoutLink">Lock this page</span>
+  </div>
+
+  <!-- ============ Card reader modal (discovered devices) ============ -->
+  <div id="reader-overlay" class="hidden">
+    <div class="card">
+      <div class="section-label" style="margin-top:0;">Looking For Your Reader</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin:0 0 10px;" id="readerModalSub">
+        Turn on your BBPOS WisePad 3 (or other Bluetooth reader) and make sure it's near this device.
+      </p>
+      <div id="readerFoundList"></div>
+      <div style="display:flex; gap:10px; margin-top:14px;">
+        <button class="small-btn" id="readerCancelBtn" style="flex:1;">Cancel</button>
+        <button class="small-btn" id="readerRescanBtn" style="flex:1;">Scan Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ One-time Stripe Terminal Location setup ============ -->
+  <div id="location-overlay" class="hidden">
+    <div class="card">
+      <div class="section-label" style="margin-top:0;">One-Time Reader Setup</div>
+      <p style="font-size:0.78rem; color:var(--muted); margin:0 0 10px;">
+        Before your reader can connect, Stripe needs a "Terminal Location" for it. In your Stripe Dashboard, go to
+        <strong>Settings → Terminal → Locations</strong>, create one (or use an existing one), then paste its Location ID below.
+        It looks like <strong>tml_xxxxxxxxxxxx</strong>. You'll only need to do this once — this device will remember it.
+      </p>
+      <label for="locationIdInput">Stripe Terminal Location ID</label>
+      <input type="text" id="locationIdInput" placeholder="tml_xxxxxxxxxxxx">
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="small-btn" id="locationCancelBtn" style="flex:1;">Cancel</button>
+        <button class="charge-btn" id="locationSaveBtn" style="flex:1; padding:12px 0;">Save &amp; Continue</button>
+      </div>
+    </div>
   </div>
 
   <!-- ============ Preset editor modal ============ -->
@@ -591,6 +736,222 @@
     renderQuickGrid();
     renderItemChips();
     refreshDisplay();
+    refreshReaderUI();
+  }
+
+  // ---------- Card reader (Stripe Terminal / Tap to Pay) ----------
+  // This talks to a physical Bluetooth reader (BBPOS WisePad 3, Stripe
+  // Reader S700, etc.) paired to this device. It's an alternative to the
+  // existing "send to Stripe Checkout" flow below — when a reader is
+  // connected, the Charge button collects the card right here instead of
+  // opening a checkout page.
+  let stripeTerminal = null;
+  let connectedReader = null;
+  let readerBusy = false;
+
+  function getTerminalLocationId() {
+    return localStorage.getItem('mels_qp_terminal_location_id') || '';
+  }
+
+  async function callTerminalFn(action, extra) {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/stripe-terminal`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${ANON_KEY}`,
+        "apikey": ANON_KEY,
+      },
+      body: JSON.stringify({ action, ...extra }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message || "Something went wrong talking to Stripe.");
+    return data;
+  }
+
+  function getStripeTerminal() {
+    if (!stripeTerminal) {
+      if (!window.StripeTerminal) throw new Error("The card reader library didn't load. Check your connection and reload.");
+      stripeTerminal = window.StripeTerminal.create({
+        onFetchConnectionToken: async () => {
+          const data = await callTerminalFn('connection_token');
+          return data.secret;
+        },
+        onUnexpectedReaderDisconnect: () => {
+          connectedReader = null;
+          refreshReaderUI();
+          const statusMsg = document.getElementById('statusMsg');
+          statusMsg.className = "status error";
+          statusMsg.textContent = "The card reader disconnected. Reconnect it to keep taking Tap to Pay charges.";
+        },
+      });
+    }
+    return stripeTerminal;
+  }
+
+  function refreshReaderUI() {
+    const btn = document.getElementById('readerActionBtn');
+    if (readerBusy) {
+      setReaderStatusLabel('Connecting…', 'connecting');
+      btn.textContent = 'Connecting…';
+      btn.disabled = true;
+      btn.classList.add('muted');
+    } else if (connectedReader) {
+      setReaderStatusLabel(`Connected — ${connectedReader.label || connectedReader.device_type || 'Reader'}`, 'connected');
+      btn.textContent = 'Disconnect';
+      btn.disabled = false;
+      btn.classList.remove('muted');
+    } else {
+      setReaderStatusLabel('Not connected', '');
+      btn.textContent = 'Connect Reader';
+      btn.disabled = false;
+      btn.classList.remove('muted');
+    }
+    refreshDisplay();
+  }
+
+  function setReaderStatusLabel(label, dotClass) {
+    const text = document.getElementById('readerStatusText');
+    text.innerHTML = '';
+    const dot = document.createElement('span');
+    dot.className = 'reader-dot' + (dotClass ? ' ' + dotClass : '');
+    dot.id = 'readerDot';
+    text.appendChild(dot);
+    text.appendChild(document.createTextNode(label));
+  }
+
+  document.getElementById('readerActionBtn').addEventListener('click', async () => {
+    if (connectedReader) {
+      readerBusy = true;
+      refreshReaderUI();
+      try {
+        await getStripeTerminal().disconnectReader();
+      } catch (e) {}
+      connectedReader = null;
+      readerBusy = false;
+      refreshReaderUI();
+      return;
+    }
+    if (!getTerminalLocationId()) {
+      document.getElementById('location-overlay').classList.remove('hidden');
+      return;
+    }
+    startReaderDiscovery();
+  });
+
+  document.getElementById('locationCancelBtn').addEventListener('click', () => {
+    document.getElementById('location-overlay').classList.add('hidden');
+  });
+  document.getElementById('locationSaveBtn').addEventListener('click', () => {
+    const val = document.getElementById('locationIdInput').value.trim();
+    if (!val) return;
+    localStorage.setItem('mels_qp_terminal_location_id', val);
+    document.getElementById('location-overlay').classList.add('hidden');
+    document.getElementById('locationIdInput').value = '';
+    startReaderDiscovery();
+  });
+
+  async function startReaderDiscovery() {
+    const overlay = document.getElementById('reader-overlay');
+    const list = document.getElementById('readerFoundList');
+    const sub = document.getElementById('readerModalSub');
+    overlay.classList.remove('hidden');
+    list.innerHTML = '<p style="font-size:0.8rem; color:var(--muted);">Scanning for nearby readers…</p>';
+    sub.textContent = "Turn on your BBPOS WisePad 3 (or other Bluetooth reader) and make sure it's near this device.";
+    try {
+      const terminal = getStripeTerminal();
+      const result = await terminal.discoverReaders({ discoveryMethod: 'bluetoothScan' });
+      if (result.error) throw new Error(result.error.message || 'Could not scan for readers.');
+      const readers = result.discoveredReaders || [];
+      if (readers.length === 0) {
+        list.innerHTML = '<p style="font-size:0.8rem; color:var(--muted);">No readers found yet. Make sure it\'s powered on and in pairing range, then tap "Scan Again".</p>';
+        return;
+      }
+      list.innerHTML = '';
+      readers.forEach((r) => {
+        const row = document.createElement('div');
+        row.className = 'reader-found-row';
+        const battery = (r.battery_level !== undefined && r.battery_level !== null) ? Math.round(r.battery_level * 100) + '% battery' : '';
+        row.innerHTML = `
+          <div>
+            <div class="reader-found-name">${r.label || r.device_type || 'Card Reader'}</div>
+            <div class="reader-found-sub">${battery}</div>
+          </div>
+          <button class="reader-link-btn">Connect</button>
+        `;
+        row.querySelector('button').addEventListener('click', () => connectToReader(r));
+        list.appendChild(row);
+      });
+    } catch (err) {
+      list.innerHTML = `<p style="font-size:0.8rem; color:#c0293c;">${(err.message || 'Could not scan for readers.').replace(/</g, '&lt;')}</p>`;
+    }
+  }
+
+  async function connectToReader(reader) {
+    const overlay = document.getElementById('reader-overlay');
+    readerBusy = true;
+    refreshReaderUI();
+    try {
+      const terminal = getStripeTerminal();
+      const result = await terminal.connectBluetoothReader(reader, { locationId: getTerminalLocationId() });
+      if (result.error) throw new Error(result.error.message || 'Could not connect to that reader.');
+      connectedReader = result.reader || reader;
+      overlay.classList.add('hidden');
+    } catch (err) {
+      const statusMsg = document.getElementById('statusMsg');
+      statusMsg.className = "status error";
+      statusMsg.textContent = err.message || "Could not connect to that reader.";
+    } finally {
+      readerBusy = false;
+      refreshReaderUI();
+    }
+  }
+
+  document.getElementById('readerCancelBtn').addEventListener('click', () => {
+    document.getElementById('reader-overlay').classList.add('hidden');
+  });
+  document.getElementById('readerRescanBtn').addEventListener('click', () => {
+    startReaderDiscovery();
+  });
+
+  // Runs a charge straight through the connected Bluetooth reader instead
+  // of opening a Stripe Checkout page. Mirrors the order-logging + receipt
+  // emails that the Checkout-link flow gets from stripe-webhook, via the
+  // manage-dashboard "log_terminal_sale" action.
+  async function chargeViaReader(description, amountCents) {
+    const chargeBtn = document.getElementById('chargeBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const terminal = getStripeTerminal();
+
+    chargeBtn.textContent = "Creating charge…";
+    const intentData = await callTerminalFn('create_intent', { amountCents, description });
+
+    chargeBtn.textContent = "Tap or insert card on reader…";
+    statusMsg.textContent = "Have the customer tap, insert, or swipe their card on the reader now.";
+    const collectResult = await terminal.collectPaymentMethod(intentData.clientSecret);
+    if (collectResult.error) throw new Error(collectResult.error.message || "Could not read the card.");
+
+    chargeBtn.textContent = "Processing payment…";
+    statusMsg.textContent = "Processing…";
+    const processResult = await terminal.processPayment(collectResult.paymentIntent);
+    if (processResult.error) throw new Error(processResult.error.message || "The payment did not go through.");
+
+    chargeBtn.textContent = "Saving order…";
+    await fetch(`${SUPABASE_URL}/functions/v1/manage-dashboard`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        password: adminPassword,
+        action: 'log_terminal_sale',
+        description,
+        amount: amountCents / 100,
+        payment_intent_id: processResult.paymentIntent.id,
+      }),
+    }).then((r) => r.json()).then((data) => {
+      if (!data.success) console.error('log_terminal_sale failed:', data.message);
+    }).catch((e) => console.error('log_terminal_sale failed:', e));
+
+    statusMsg.className = "status";
+    statusMsg.textContent = "✅ Charged " + formatCents(amountCents) + " — receipt sent!";
   }
 
   function renderQuickGrid() {
@@ -649,9 +1010,9 @@
       chargeBtn.disabled = true;
       chargeBtn.textContent = cents === 0 ? "Enter an amount" : "Amount too low";
     } else {
-      amountSub.textContent = "Tap Charge to send to Stripe";
+      amountSub.textContent = connectedReader ? "Tap Charge, then have them tap/insert their card" : "Tap Charge to send to Stripe";
       chargeBtn.disabled = false;
-      chargeBtn.textContent = "Charge " + formatCents(cents);
+      chargeBtn.textContent = "Charge " + formatCents(cents) + (connectedReader ? " via Reader" : "");
     }
   }
 
@@ -675,12 +1036,31 @@
     if (cents < 50) return;
     const chargeBtn = document.getElementById('chargeBtn');
     const statusMsg = document.getElementById('statusMsg');
-    chargeBtn.disabled = true;
-    chargeBtn.textContent = "Opening secure checkout…";
     statusMsg.className = "status";
     statusMsg.textContent = "";
 
     const description = document.getElementById('descInput').value.trim() || "In-Person Order";
+
+    // Reader connected → charge right here via Stripe Terminal.
+    if (connectedReader) {
+      chargeBtn.disabled = true;
+      const chargeAmount = cents;
+      try {
+        await chargeViaReader(description, chargeAmount);
+        cents = 0;
+        document.getElementById('descInput').value = '';
+        highlightSelectedChip('');
+        setTimeout(() => { refreshDisplay(); }, 3500);
+      } catch (err) {
+        statusMsg.className = "status error";
+        statusMsg.textContent = err.message || "Something went wrong. Try again.";
+        refreshDisplay();
+      }
+      return;
+    }
+
+    chargeBtn.disabled = true;
+    chargeBtn.textContent = "Opening secure checkout…";
 
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-stripe-checkout`, {
