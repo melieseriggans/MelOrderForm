@@ -407,6 +407,55 @@
   .checkout-btn:disabled{opacity:0.6; cursor:not-allowed;}
   .checkout-btn:hover:not(:disabled){transform:translateY(-2px);}
   .checkout-note{font-size:0.74rem; color:var(--ink-soft); text-align:center; margin-top:10px; line-height:1.5;}
+  .loyalty-banner{
+    margin:8px 0 14px; padding:9px 12px; background:var(--blush, #fedde4); border:1.5px dashed #e20376;
+    border-radius:10px; font-size:0.8rem; font-weight:600; color:#a8025f; text-align:center; line-height:1.4;
+  }
+  .remember-me-row{
+    display:flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:600; color:var(--ink-soft, #8a6b78);
+    margin:10px 0 0; cursor:pointer;
+  }
+  .remember-me-row input{width:auto; margin:0;}
+
+  /* Sticky-note style welcome popup — same widget as shop.html, ported
+     here since this is the page people actually check out from. Small,
+     non-blocking, dismissible, and (unlike shop.html's version) a close
+     or a claim sticks permanently for that browser, not just the tab
+     session — a customer who closes it once shouldn't see it pop up
+     again on their next visit. */
+  .sticky-note{
+    position:fixed; bottom:20px; left:20px; z-index:65;
+    width:250px; max-width:calc(100vw - 40px);
+    background:#fff9c4;
+    box-shadow:3px 5px 14px rgba(0,0,0,0.22);
+    padding:16px 16px 14px;
+    transform:rotate(-2deg) scale(0.9) translateY(20px);
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s ease, transform 0.3s ease;
+    font-family:'Quicksand', sans-serif;
+  }
+  .sticky-note.show{opacity:1; pointer-events:auto; transform:rotate(-2deg) scale(1) translateY(0);}
+  .sticky-note-pin{position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:1.4rem; filter:drop-shadow(0 2px 2px rgba(0,0,0,0.25));}
+  .sticky-note-close{
+    position:absolute; top:6px; right:8px; background:none; border:none;
+    color:#8a7a1a; font-size:0.9rem; cursor:pointer; padding:4px; line-height:1;
+  }
+  .sticky-note-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep, #a8025f); font-size:0.95rem; margin:6px 0 4px;}
+  .sticky-note-text{font-size:0.83rem; color:#5c5320; margin-bottom:10px; line-height:1.4;}
+  .sticky-note-text strong{color:var(--pink-hot, #e20376);}
+  .sticky-note-form{display:flex; flex-direction:column; gap:6px;}
+  .sticky-note-form input{
+    padding:9px 10px; border-radius:8px; border:1.5px solid rgba(0,0,0,0.15);
+    font-family:'Quicksand', sans-serif; font-size:0.82rem; background:rgba(255,255,255,0.6);
+  }
+  .sticky-note-form input:focus{outline:none; border-color:var(--pink-hot, #e20376);}
+  .sticky-note-submit{
+    background:var(--pink-hot, #e20376); color:#fff; border:none; border-radius:8px;
+    padding:9px 10px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.8rem; cursor:pointer;
+  }
+  .sticky-note-submit:hover{background:var(--pink-deep, #a8025f);}
+  .sticky-note-submit:disabled{opacity:0.6; cursor:not-allowed;}
+  @media (max-width: 480px){ .sticky-note{left:16px; bottom:80px; width:230px;} }
   .error{color:#c0025e; font-size:0.8rem; margin-top:8px; display:none; font-weight:600;}
 
   .sticker-star{
@@ -774,9 +823,37 @@
 
         <label for="customer_email">Email *</label>
         <input type="email" id="customer_email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+        <div class="loyalty-banner" id="loyalty-banner">🎁 Every 3rd order unlocks a surprise treat on me!</div>
 
-        <label for="contact_phone">Phone Number *</label>
-        <input type="tel" id="contact_phone" placeholder="For day-of updates, e.g. running late" autocomplete="tel" inputmode="tel">
+        <label for="preferred_contact">Best Way To Reach You? *</label>
+        <select id="preferred_contact">
+          <option value="Text">Text</option>
+          <option value="Phone Call">Phone Call</option>
+          <option value="Email">Email</option>
+          <option value="Social Media">Social Media (no phone number)</option>
+        </select>
+
+        <div id="contact_phone_wrap">
+          <label for="contact_phone" id="contact_phone_label">Phone Number *</label>
+          <input type="tel" id="contact_phone" placeholder="For day-of updates, e.g. running late" autocomplete="tel" inputmode="tel">
+        </div>
+
+        <div id="contact_social_wrap" class="hidden">
+          <label for="social_platform">Which Platform?</label>
+          <select id="social_platform">
+            <option value="">Select…</option>
+            <option>Instagram</option>
+            <option>Facebook</option>
+            <option>TikTok</option>
+          </select>
+          <label for="social_handle">Your Handle *</label>
+          <input type="text" id="social_handle" placeholder="@yourhandle">
+        </div>
+
+        <label class="remember-me-row" for="remember_me_checkbox">
+          <input type="checkbox" id="remember_me_checkbox" checked>
+          Remember my info for next time
+        </label>
 
         <div class="drawer-subdivider"></div>
         <div class="drawer-section-title">🚚 Fulfillment Details</div>
@@ -786,6 +863,13 @@
           <div class="choice-card selected" data-fulfillment="pickup">Pickup</div>
           <div class="choice-card" data-fulfillment="delivery">Delivery</div>
         </div>
+
+        <label>Payment Method</label>
+        <div class="choice-group">
+          <div class="choice-card selected" data-payment="card">💳 Card</div>
+          <div class="choice-card" data-payment="cash" id="cash-payment-card">💵 Cash On Pickup</div>
+        </div>
+        <div id="cash-pickup-note" class="hidden" style="font-size:0.78rem; color:var(--ink-soft); margin-top:6px; line-height:1.4;">You'll pay Meliese in cash when you pick up — your order still gets submitted and confirmed by email.</div>
 
         <label for="pickup_location">Pickup Location</label>
         <select id="pickup_location">
@@ -798,7 +882,9 @@
 
         <div id="delivery_fields" class="hidden">
           <label for="delivery_address">Delivery Address</label>
-          <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" autocomplete="street-address" />
+          <div style="position:relative;">
+            <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" autocomplete="street-address" />
+          </div>
           <div id="delivery-fee-note" style="display:none; font-size:0.8rem; color:var(--pink-hot); font-weight:600; margin-top:4px;"></div>
         </div>
 
@@ -817,6 +903,20 @@
       <button type="button" class="checkout-btn" id="checkout-btn">Checkout With Stripe 🔒</button>
       <div class="checkout-note">You'll confirm your info and pay securely on Stripe's checkout page.</div>
     </div>
+  </div>
+</div>
+
+<div class="sticky-note" id="sticky-note">
+  <button type="button" class="sticky-note-close" id="sticky-note-close" aria-label="Close">✕</button>
+  <div class="sticky-note-pin">📌</div>
+  <div class="sticky-note-body">
+    <div class="sticky-note-title">New here? 💌</div>
+    <div class="sticky-note-text">Get <strong>$2 off</strong> your first order!</div>
+    <div class="sticky-note-form">
+      <input type="email" id="welcome-email-input" placeholder="you@example.com" aria-label="Email address for $2 off discount" inputmode="email">
+      <button type="button" id="welcome-submit-btn" class="sticky-note-submit">Send Me $2 Off</button>
+    </div>
+    <div id="welcome-message" class="drawer-msg"></div>
   </div>
 </div>
 
@@ -1509,6 +1609,7 @@ document.querySelectorAll('[data-fulfillment]').forEach(card => {
       }
       updateDeliveryFee();
     }
+    updatePaymentMethodUI();
     updateTotal();
     persistCheckoutFields();
   });
@@ -1516,6 +1617,45 @@ document.querySelectorAll('[data-fulfillment]').forEach(card => {
 document.getElementById('pickup_location').addEventListener('change', (e) => {
   document.getElementById('pickup_location_other').classList.toggle('hidden', e.target.value !== 'Other (Enter Below)');
 });
+
+// Payment method — Card (Stripe) or Cash. Cash works for both Pickup and
+// Delivery, but what it actually means (and the exact backend value it's
+// saved as — cash_on_pickup vs cash_on_delivery) depends on which
+// fulfillment is currently selected, so the card's label/note and the
+// value used at submit time both track `fulfillment` live.
+let paymentMethod = 'card';
+function cashPaymentMethodValue() {
+  return fulfillment === 'delivery' ? 'cash_on_delivery' : 'cash_on_pickup';
+}
+function setPaymentMethod(method) {
+  paymentMethod = method;
+  document.querySelectorAll('[data-payment]').forEach(c => c.classList.toggle('selected', c.dataset.payment === method));
+  document.getElementById('cash-pickup-note').classList.toggle('hidden', method !== 'cash');
+  updatePaymentMethodLabels();
+}
+function updatePaymentMethodLabels() {
+  const isDelivery = fulfillment === 'delivery';
+  const cashCard = document.getElementById('cash-payment-card');
+  cashCard.textContent = isDelivery ? '💵 Cash On Delivery' : '💵 Cash On Pickup';
+  const note = document.getElementById('cash-pickup-note');
+  note.textContent = isDelivery
+    ? `You'll pay Meliese in cash when your order is delivered (total includes the $${currentDeliveryFee.toFixed(2)} delivery fee) — your order still gets submitted and confirmed by email.`
+    : `You'll pay Meliese in cash when you pick up — your order still gets submitted and confirmed by email.`;
+  const btn = document.getElementById('checkout-btn');
+  if (btn) btn.textContent = paymentMethod === 'cash'
+    ? (isDelivery ? 'Place Order — Pay Cash On Delivery 💵' : 'Place Order — Pay Cash On Pickup 💵')
+    : 'Checkout With Stripe 🔒';
+}
+function updatePaymentMethodUI() {
+  updatePaymentMethodLabels();
+}
+document.querySelectorAll('[data-payment]').forEach(card => {
+  card.addEventListener('click', () => {
+    setPaymentMethod(card.dataset.payment);
+    persistCheckoutFields();
+  });
+});
+updatePaymentMethodUI();
 
 let tipAmount = 0;
 let appliedDiscount = null;
@@ -1547,7 +1687,7 @@ const CHECKOUT_FIELD_IDS = [
 ];
 function persistCheckoutFields() {
   try {
-    const data = { fulfillment };
+    const data = { fulfillment, paymentMethod };
     CHECKOUT_FIELD_IDS.forEach(id => {
       const el = document.getElementById(id);
       if (el) data[id] = el.value;
@@ -1568,6 +1708,7 @@ function restoreCheckoutFields() {
       const deliveryCard = document.querySelector('[data-fulfillment="delivery"]');
       if (deliveryCard) deliveryCard.click();
     }
+    if (data.paymentMethod === 'cash') setPaymentMethod('cash');
     // Re-run the field-dependent visibility toggles now that values are
     // restored, same as if the customer had just interacted with them.
     document.getElementById('pickup_location_other').classList.toggle(
@@ -1583,6 +1724,47 @@ CHECKOUT_FIELD_IDS.forEach(id => {
 function clearSavedCheckoutFields() {
   try { localStorage.removeItem(CHECKOUT_FIELDS_KEY); } catch (e) {}
 }
+
+// "Remember my info" — separate from the draft-in-progress autosave above,
+// which gets wiped the moment checkout succeeds. This one is opt-in (via
+// the checkbox) and sticks around across orders, so a returning customer's
+// name/email/phone are already filled in next time, instead of typing them
+// from scratch every order.
+const REMEMBERED_CONTACT_KEY = 'mels_remembered_contact';
+const REMEMBERED_CONTACT_FIELD_IDS = ['customer_full_name', 'customer_email', 'contact_phone', 'preferred_contact', 'social_platform', 'social_handle'];
+function saveRememberedContact() {
+  try {
+    const data = {};
+    REMEMBERED_CONTACT_FIELD_IDS.forEach(id => { data[id] = document.getElementById(id).value; });
+    localStorage.setItem(REMEMBERED_CONTACT_KEY, JSON.stringify(data));
+  } catch (e) { /* storage unavailable */ }
+}
+function clearRememberedContact() {
+  try { localStorage.removeItem(REMEMBERED_CONTACT_KEY); } catch (e) {}
+}
+function prefillRememberedContact() {
+  try {
+    const raw = localStorage.getItem(REMEMBERED_CONTACT_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    REMEMBERED_CONTACT_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && data[id]) el.value = data[id];
+    });
+  } catch (e) { /* ignore corrupt saved data */ }
+}
+
+// Someone without a phone (or who just prefers not to give one out) can
+// pick "Social Media" instead and leave us a handle to reach them on —
+// swaps which fields are shown/required rather than forcing a phone
+// number on everyone.
+function updateContactMethodUI() {
+  const method = document.getElementById('preferred_contact').value;
+  const isSocial = method === 'Social Media';
+  document.getElementById('contact_social_wrap').classList.toggle('hidden', !isSocial);
+  document.getElementById('contact_phone_label').textContent = isSocial ? 'Phone Number (optional)' : 'Phone Number *';
+}
+document.getElementById('preferred_contact').addEventListener('change', updateContactMethodUI);
 
 function calcSubtotal() {
   let subtotal = 0;
@@ -1621,9 +1803,173 @@ document.getElementById('delivery_address').addEventListener('input', () => {
   deliveryFeeDebounceTimer = setTimeout(updateDeliveryFee, 900);
 });
 
-// Runs after currentDeliveryFee/updateDeliveryFee exist above, since
+// Address autocomplete — as you type, real matching addresses (from
+// OpenStreetMap's free Nominatim search, the same service that already
+// prices delivery distance) show up in a dropdown to click, so it's rare
+// to accidentally submit a typo'd or made-up address. Purely a
+// convenience — typing your own address and ignoring the list still
+// works exactly like before.
+function addrEscapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+function attachAddressAutocomplete(input) {
+  const wrapper = input.parentElement;
+  if (getComputedStyle(wrapper).position === 'static') wrapper.style.position = 'relative';
+  const list = document.createElement('div');
+  list.className = 'addr-suggest-list';
+  list.style.cssText = 'display:none; position:absolute; top:100%; left:0; right:0; z-index:50; background:#fff; border:1.5px solid var(--border,#f7c3d6); border-radius:12px; margin-top:4px; max-height:220px; overflow-y:auto; box-shadow:0 6px 20px rgba(0,0,0,0.12);';
+  wrapper.appendChild(list);
+
+  let debounceTimer = null;
+  function hideList() { list.style.display = 'none'; list.innerHTML = ''; }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const q = input.value.trim();
+    if (q.length < 5) { hideList(); return; }
+    debounceTimer = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({ format: 'json', addressdetails: '1', limit: '5', countrycodes: 'us', q });
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data || data.length === 0) { hideList(); return; }
+        list.innerHTML = data.map((r, i) => `<div class="addr-suggest-item" data-idx="${i}" style="padding:10px 12px; cursor:pointer; font-size:0.9rem; border-bottom:1px solid #f4e3ea;">${addrEscapeHtml(r.display_name)}</div>`).join('');
+        list.style.display = 'block';
+        list.querySelectorAll('.addr-suggest-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // fires before the input's blur, so the click still registers
+            const chosen = data[parseInt(el.dataset.idx, 10)];
+            input.value = chosen.display_name;
+            hideList();
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          });
+          el.addEventListener('mouseenter', () => { el.style.background = '#fff5f8'; });
+          el.addEventListener('mouseleave', () => { el.style.background = ''; });
+        });
+      } catch (e) { /* suggestions are a nice-to-have, never block typing */ }
+    }, 400);
+  });
+  input.addEventListener('blur', () => { setTimeout(hideList, 150); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideList(); });
+}
+attachAddressAutocomplete(document.getElementById('delivery_address'));
+
+// Fill in remembered name/email/phone first (baseline for a returning
+// customer), then layer the in-progress draft on top if there is one —
+// runs after currentDeliveryFee/updateDeliveryFee exist above, since
 // restoring a saved "delivery" selection can trigger that same code path.
+prefillRememberedContact();
+updateContactMethodUI();
 restoreCheckoutFields();
+
+// Welcome-offer sticky note — only for genuinely first-time visitors.
+// Stays hidden for anyone who's already claimed the offer, already
+// closed the note before (permanently, not just this tab), or who
+// already has remembered contact info saved (meaning they've ordered
+// here before and aren't "new" regardless of the other two flags).
+try {
+  const alreadyClaimed = localStorage.getItem('mels_welcome_claimed');
+  const alreadyDismissed = localStorage.getItem('mels_welcome_dismissed');
+  const isReturningCustomer = !!localStorage.getItem(REMEMBERED_CONTACT_KEY);
+  if (!alreadyClaimed && !alreadyDismissed && !isReturningCustomer) {
+    setTimeout(() => {
+      document.getElementById('sticky-note')?.classList.add('show');
+    }, 2200);
+  }
+} catch (e) {
+  // Storage unavailable — err on the side of not showing an unpromptable
+  // popup rather than risk it showing repeatedly with no way to persist a dismiss.
+}
+
+document.getElementById('sticky-note-close')?.addEventListener('click', () => {
+  document.getElementById('sticky-note').classList.remove('show');
+  try { localStorage.setItem('mels_welcome_dismissed', '1'); } catch (e) {}
+});
+
+async function submitWelcomeSignup() {
+  const input = document.getElementById('welcome-email-input');
+  const msg = document.getElementById('welcome-message');
+  const btn = document.getElementById('welcome-submit-btn');
+  const email = input.value.trim();
+
+  msg.style.display = 'none';
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailPattern.test(email)) {
+    msg.textContent = 'Please enter a valid email.';
+    msg.style.color = '#c0025e';
+    msg.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('signup-welcome-discount', { body: { email } });
+    if (error) throw error;
+    if (!data.success) throw new Error(data.message || 'Could not sign up right now.');
+
+    msg.textContent = `Sent! Check your email for code ${data.code} 💕`;
+    msg.style.color = 'var(--pink-deep)';
+    msg.style.display = 'block';
+    input.value = '';
+    btn.textContent = 'Sent! 🎉';
+    try { localStorage.setItem('mels_welcome_claimed', '1'); } catch (e) {}
+    setTimeout(() => { document.getElementById('sticky-note').classList.remove('show'); }, 2500);
+  } catch (err) {
+    console.error(err);
+    msg.textContent = err.message || 'Something went wrong. Please try again.';
+    msg.style.color = '#c0025e';
+    msg.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Send Me $2 Off';
+  }
+}
+document.getElementById('welcome-submit-btn')?.addEventListener('click', submitWelcomeSignup);
+document.getElementById('welcome-email-input')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitWelcomeSignup();
+});
+
+// Shows progress toward the surprise 3rd-order reward (the actual reward
+// itself is decided and sent server-side in stripe-webhook — this is just
+// a friendly, coarse read of where a given email stands, via a public
+// lookup endpoint that returns nothing but a count).
+const loyaltyBannerEl = document.getElementById('loyalty-banner');
+const LOYALTY_DEFAULT_TEXT = "🎁 Every 3rd order unlocks a surprise treat on me!";
+let loyaltyDebounceTimer = null;
+async function checkLoyaltyStatus() {
+  const email = document.getElementById('customer_email').value.trim();
+  if (!loyaltyBannerEl) return;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { loyaltyBannerEl.textContent = LOYALTY_DEFAULT_TEXT; return; }
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('loyalty-status', { body: { email } });
+    if (error || !data?.success) { loyaltyBannerEl.textContent = LOYALTY_DEFAULT_TEXT; return; }
+    if (data.rewardUnlocked) {
+      loyaltyBannerEl.textContent = "🎉 You've unlocked a surprise reward — check your email!";
+    } else if (data.ordersUntilReward === 1) {
+      loyaltyBannerEl.textContent = "🎁 Just 1 more order until your surprise reward!";
+    } else if (data.ordersUntilReward === 2) {
+      loyaltyBannerEl.textContent = "🎁 2 more orders until your surprise reward!";
+    } else {
+      loyaltyBannerEl.textContent = LOYALTY_DEFAULT_TEXT;
+    }
+  } catch (e) {
+    loyaltyBannerEl.textContent = LOYALTY_DEFAULT_TEXT;
+  }
+}
+document.getElementById('customer_email')?.addEventListener('input', () => {
+  clearTimeout(loyaltyDebounceTimer);
+  loyaltyDebounceTimer = setTimeout(checkLoyaltyStatus, 700);
+});
+// Runs once on load too (moved down here from up near the other
+// checkout-restore calls, since it needs loyaltyBannerEl/checkLoyaltyStatus
+// to exist first) so a remembered email already shows real loyalty
+// progress immediately, not just after the next keystroke.
+checkLoyaltyStatus();
 
 function calcDiscountAmount(subtotal) {
   if (!appliedDiscount) return 0;
@@ -1679,6 +2025,18 @@ function calcBoxSavings() {
 function formatDateInput(d) {
   return d.toISOString().split('T')[0];
 }
+
+// Mel's prep day effectively ends when her last pickup slot does (6pm
+// Central) — an order placed after that has zero real prep time left
+// today, so it shouldn't be allowed to land as "tomorrow" with no notice.
+// Checked in America/Chicago regardless of the customer's own device
+// timezone, since it's Mel's business hours that matter here.
+const BUSINESS_CLOSE_HOUR = 18; // 6pm
+function isAfterBusinessHoursChicago() {
+  const hourStr = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', hour: 'numeric', hour12: false }).format(new Date());
+  return parseInt(hourStr, 10) >= BUSINESS_CLOSE_HOUR;
+}
+
 function updateDateConstraints() {
   const dateInput = document.getElementById('preferred_date');
   const hasCinnamonRolls = categoryCount('cinnamon_rolls') > 0;
@@ -1693,14 +2051,18 @@ function updateDateConstraints() {
     cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
     categoryCount('cookies') > 0;
 
-  const leadDays = cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1);
+  const afterHours = isAfterBusinessHoursChicago();
+  const leadDays = (cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1)) + (afterHours ? 1 : 0);
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + leadDays);
   const minDateStr = formatDateInput(minDate);
   dateInput.min = minDateStr;
 
   const noteEl = document.getElementById('date-lead-time-note');
-  if (cartCoveredByOnHand) {
+  if (afterHours) {
+    noteEl.textContent = "🌙 It's after hours for today, so the earliest available date has moved out a day to give enough time to prep.";
+    noteEl.style.display = 'block';
+  } else if (cartCoveredByOnHand) {
     noteEl.textContent = '🎉 Everything in your cart is baked and ready — same-day pickup or delivery available!';
     noteEl.style.display = 'block';
   } else if (hasCinnamonRolls) {
@@ -1800,8 +2162,18 @@ checkoutBtn.addEventListener('click', async () => {
   if (!customerEmailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmailValue)) {
     errorBox.textContent = 'Please enter a valid email address.'; errorBox.style.display = 'block'; return;
   }
-  if (!document.getElementById('contact_phone').value.trim()) {
-    errorBox.textContent = 'Please enter a phone number.'; errorBox.style.display = 'block'; return;
+  const preferredContactValue = document.getElementById('preferred_contact').value;
+  const isSocialContact = preferredContactValue === 'Social Media';
+  if (!isSocialContact && !document.getElementById('contact_phone').value.trim()) {
+    errorBox.textContent = 'Please enter a phone number, or switch "Best Way To Reach You" to Social Media.'; errorBox.style.display = 'block'; return;
+  }
+  if (isSocialContact) {
+    if (!document.getElementById('social_platform').value) {
+      errorBox.textContent = 'Please select which social platform to reach you on.'; errorBox.style.display = 'block'; return;
+    }
+    if (!document.getElementById('social_handle').value.trim()) {
+      errorBox.textContent = 'Please enter your social media handle.'; errorBox.style.display = 'block'; return;
+    }
   }
 
   // Block checkout on missing fulfillment details rather than silently
@@ -1828,13 +2200,16 @@ checkoutBtn.addEventListener('click', async () => {
     const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && cookieCategory &&
       cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
       categoryCount('cookies') > 0;
-    const requiredLeadDays = cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1);
+    const afterHours = isAfterBusinessHoursChicago();
+    const requiredLeadDays = (cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1)) + (afterHours ? 1 : 0);
     const requiredMinDate = new Date();
     requiredMinDate.setDate(requiredMinDate.getDate() + requiredLeadDays);
     if (document.getElementById('preferred_date').value < formatDateInput(requiredMinDate)) {
-      errorBox.textContent = hasCinnamonRolls
-        ? 'Cinnamon rolls need at least 2 days notice — please pick a later date.'
-        : 'Please pick a date at least 1 day out.';
+      errorBox.textContent = afterHours
+        ? "It's after hours for today, so the earliest available date has moved out a day — please pick a later date."
+        : hasCinnamonRolls
+          ? 'Cinnamon rolls need at least 2 days notice — please pick a later date.'
+          : 'Please pick a date at least 1 day out.';
       errorBox.style.display = 'block';
       return;
     }
@@ -1843,6 +2218,11 @@ checkoutBtn.addEventListener('click', async () => {
   const items = [];
   const flavorLines = [];
   const themeBoxLines = [];
+  // Plain { "Flavor Name": qty } map — the shape the orders table's
+  // `cookies` jsonb column expects (same shape submit-order and the admin
+  // dashboard already read elsewhere), built alongside the Stripe line
+  // items and note text below rather than re-deriving it from either.
+  const cookiesOrdered = {};
   ACTIVE_CATEGORIES.forEach(cat => {
     const count = categoryCount(cat.key);
     if (count === 0) return;
@@ -1890,10 +2270,12 @@ checkoutBtn.addEventListener('click', async () => {
         // by matching flavor names — an annotated name wouldn't match.
         Object.entries(p.contents).forEach(([flavorName, flavorQty]) => {
           flavorLines.push(`${flavorQty * qty[p.key]} × ${flavorName}`);
+          cookiesOrdered[flavorName] = (cookiesOrdered[flavorName] || 0) + flavorQty * qty[p.key];
         });
         themeBoxLines.push(`${qty[p.key]} × ${p.name}`);
       } else {
         flavorLines.push(`${qty[p.key]} × ${p.name}`);
+        cookiesOrdered[p.name] = (cookiesOrdered[p.name] || 0) + qty[p.key];
       }
     });
   });
@@ -1914,12 +2296,89 @@ checkoutBtn.addEventListener('click', async () => {
   // exception) — the backend no longer decrements current stock for
   // website orders at all, so there's no flag needed here to signal that.
   const contactPhone = document.getElementById('contact_phone').value.trim();
-  noteLines.push(`Phone: ${contactPhone}`);
+  if (contactPhone) noteLines.push(`Phone: ${contactPhone}`);
+  noteLines.push(`Preferred Contact: ${preferredContactValue}`);
+  const socialPlatformValue = document.getElementById('social_platform').value;
+  const socialHandleValue = document.getElementById('social_handle').value.trim();
+  if (isSocialContact && socialPlatformValue && socialHandleValue) {
+    noteLines.push(`Social: ${socialHandleValue} (${socialPlatformValue})`);
+  }
   const instructions = document.getElementById('special_instructions').value.trim();
   if (instructions) noteLines.push(`Notes: ${instructions}`);
   const note = noteLines.join(' | ');
 
   checkoutBtn.disabled = true;
+
+  // Cash (pickup or delivery) skips Stripe entirely — the order is
+  // inserted straight away (via submit-order, same backend the legacy
+  // order form uses for its own "pay later" option) so it shows up on
+  // the dashboard right away, unpaid, for Meliese to collect cash on
+  // when she hands it over.
+  if (paymentMethod === 'cash') {
+    checkoutBtn.textContent = 'Placing your order...';
+    try {
+      const { price: orderTotal } = updateTotal();
+      const supabase = await getSupabase();
+      const orderRow = {
+        full_name: customerFullName,
+        email: customerEmailValue,
+        phone: contactPhone || null,
+        contact_via_social: isSocialContact,
+        social_platform: isSocialContact ? socialPlatformValue : null,
+        social_handle: isSocialContact ? socialHandleValue : null,
+        cookies: cookiesOrdered,
+        fulfillment_type: fulfillment,
+        pickup_location: fulfillment === 'pickup' ? pickupLocationValue : null,
+        delivery_address: fulfillment === 'delivery' ? document.getElementById('delivery_address').value.trim() : null,
+        preferred_date: document.getElementById('preferred_date').value || null,
+        pickup_time: document.getElementById('pickup_time').value || null,
+        preferred_contact: preferredContactValue,
+        special_instructions: instructions || null,
+        payment_method: cashPaymentMethodValue(),
+        total: orderTotal,
+        discount_code: appliedDiscount ? appliedDiscount.code : null,
+        discount_amount: appliedDiscount ? calcDiscountAmount(calcSubtotal()) : 0,
+        tip_amount: tipAmount,
+        is_preorder: isPreorderMode,
+        // Not a column on the orders table (submit-order just ignores it) —
+        // carried through to send-order-emails below so a cash-on-delivery
+        // confirmation can spell out the delivery fee instead of just a
+        // lump total.
+        delivery_fee: fulfillment === 'delivery' ? currentDeliveryFee : 0,
+      };
+
+      const { data: submitData, error: insertError } = await supabase.functions.invoke('submit-order', { body: orderRow });
+      if (insertError) throw insertError;
+      if (!submitData || submitData.success === false) {
+        throw new Error((submitData && submitData.message) || 'Order could not be submitted.');
+      }
+
+      if (appliedDiscount) {
+        try {
+          await supabase.functions.invoke('redeem-discount-code', { body: { code: appliedDiscount.code } });
+        } catch (redeemErr) { console.error('Discount redemption tracking failed (order was still saved):', redeemErr); }
+      }
+      try {
+        await supabase.functions.invoke('send-order-emails', { body: orderRow });
+      } catch (emailErr) { console.error('Email notification failed (order was still saved):', emailErr); }
+
+      if (document.getElementById('remember_me_checkbox')?.checked) { saveRememberedContact(); } else { clearRememberedContact(); }
+      // A cash order is confirmed the moment it's submitted (no payment
+      // page to redirect through), so clear the cart/draft right here —
+      // same moment shop-thankyou.html does it for a Stripe payment.
+      try { localStorage.removeItem('mels_cart'); } catch (e) {}
+      clearSavedCheckoutFields();
+      window.location.href = `shop-thankyou.html?method=cash&fulfillment=${fulfillment}`;
+    } catch (err) {
+      console.error(err);
+      errorBox.textContent = 'Something went wrong placing your order. Please try again: ' + (err.message || '');
+      errorBox.style.display = 'block';
+      checkoutBtn.disabled = false;
+      checkoutBtn.textContent = 'Place Order — Pay Cash On Pickup 💵';
+    }
+    return;
+  }
+
   checkoutBtn.textContent = 'Redirecting to checkout...';
   try {
     const supabase = await getSupabase();
@@ -1931,8 +2390,15 @@ checkoutBtn.addEventListener('click', async () => {
     });
     if (error) throw error;
     if (!data.success) throw new Error(data.message || 'Could not start checkout.');
-    try { localStorage.removeItem('mels_cart'); } catch (e) {}
-    clearSavedCheckoutFields();
+    // Deliberately NOT clearing the cart or the saved draft fields here —
+    // this only means Stripe's checkout page is about to open, not that
+    // payment actually went through. If a customer backs out of Stripe
+    // (Stripe's cancel button sends them right back to this page), they'd
+    // otherwise land back on an empty cart having to start over, which is
+    // exactly the kind of friction that makes someone give up on ordering.
+    // The cart/draft only get cleared on shop-thankyou.html, which only
+    // loads after a real successful payment.
+    if (document.getElementById('remember_me_checkbox')?.checked) { saveRememberedContact(); } else { clearRememberedContact(); }
     window.location.href = data.url;
   } catch (err) {
     console.error(err);

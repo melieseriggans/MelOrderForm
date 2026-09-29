@@ -13,7 +13,7 @@
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&family=Pacifico&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --pink-light:#fedde4;
@@ -28,190 +28,193 @@
     --shadow: 0 6px 20px rgba(226,3,118,0.10);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html{-webkit-text-size-adjust:100%;}
+  html{-webkit-text-size-adjust:100%; font-size:17px;}
   body{
     position:relative;
     margin:0;
     min-height:100vh;
     background-color:var(--blush);
-    background-image: linear-gradient(rgba(254,221,228,0.6), rgba(254,221,228,0.6)), url('assets/about-leopard-recolor.jpg');
-    background-size: cover, 200px auto;
-    background-attachment: fixed, fixed;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cg fill='%23ffcfe0' fill-opacity='1'%3E%3Cpath d='M32.1,17.4 L23.3,28.9 L15.4,31.4 L5.0,25.1 L9.4,17.9 L17.3,8.5 L24.2,14.0 Z M24.0,20.0 L19.5,24.1 L17.9,25.9 L13.3,21.9 L13.2,19.4 L15.9,17.0 L20.8,16.8 Z M82.2,16.8 L76.0,18.8 L65.7,24.5 L61.7,17.2 L60.7,8.9 L68.5,6.0 L75.6,6.4 Z M74.9,16.4 L73.0,18.3 L70.7,18.6 L67.3,17.2 L65.9,13.5 L69.8,11.2 L72.3,12.8 Z M63.2,53.3 L59.3,65.2 L47.2,64.4 L38.1,64.9 L39.5,51.4 L50.3,42.2 L59.6,46.5 Z M57.2,54.1 L54.4,58.6 L49.3,57.6 L45.1,55.5 L46.7,52.2 L50.3,48.2 L55.2,48.9 Z M98.5,73.9 L95.9,81.6 L89.9,85.4 L77.5,78.1 L82.2,69.9 L88.0,65.6 L94.2,67.5 Z M94.3,77.3 L90.9,79.6 L88.4,81.2 L84.0,78.2 L86.3,74.3 L88.2,71.6 L91.4,73.5 Z M25.8,80.7 L20.9,90.3 L11.0,91.1 L7.8,85.9 L6.9,73.6 L14.8,72.6 L20.0,73.5 Z M18.4,79.4 L18.6,83.7 L14.0,83.2 L12.1,81.2 L12.4,78.7 L12.9,75.9 L16.8,77.3 Z' fill-rule='evenodd'/%3E%3Cpath d='M45.2,89.9 L41.7,94.6 L37.3,94.6 L35.0,90.6 L37.3,84.6 L41.5,86.0 Z M89.4,40.0 L86.3,42.7 L83.8,43.5 L80.2,40.4 L83.1,36.1 L87.3,36.2 Z M63.9,14.6 L61.9,18.9 L58.9,17.6 L57.2,15.4 L58.9,12.6 L61.4,12.6 Z M105.1,99.2 L102.6,105.3 L98.4,103.4 L95.0,99.5 L97.1,95.8 L102.5,95.2 Z M6.9,50.4 L5.9,52.1 L3.7,51.5 L1.7,49.5 L3.5,46.2 L6.1,47.6 Z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 110px 110px;
+    background-attachment: fixed;
     font-family:'Quicksand', sans-serif;
     color:var(--ink);
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
     padding:
-      calc(env(safe-area-inset-top, 0px) + 28px)
-      calc(env(safe-area-inset-right, 0px) + 16px)
-      calc(env(safe-area-inset-bottom, 0px) + 28px)
-      calc(env(safe-area-inset-left, 0px) + 16px);
+      calc(env(safe-area-inset-top, 0px) + 18px)
+      calc(env(safe-area-inset-right, 0px) + 14px)
+      calc(env(safe-area-inset-bottom, 0px) + 18px)
+      calc(env(safe-area-inset-left, 0px) + 14px);
   }
 
   .page{
-    width:100%;
-    max-width:400px;
+    max-width:460px;
     margin:0 auto;
-    text-align:center;
-    background:rgba(255,255,255,0.55);
-    border-radius:28px;
-    padding:28px 20px 32px;
-    backdrop-filter:blur(2px);
+    background:
+      radial-gradient(circle, rgba(226,3,118,0.09) 1px, transparent 1.2px) 0 0/16px 16px,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cg fill='%23ffcfe0' fill-opacity='1'%3E%3Cpath d='M32.1,17.4 L23.3,28.9 L15.4,31.4 L5.0,25.1 L9.4,17.9 L17.3,8.5 L24.2,14.0 Z M24.0,20.0 L19.5,24.1 L17.9,25.9 L13.3,21.9 L13.2,19.4 L15.9,17.0 L20.8,16.8 Z M82.2,16.8 L76.0,18.8 L65.7,24.5 L61.7,17.2 L60.7,8.9 L68.5,6.0 L75.6,6.4 Z M74.9,16.4 L73.0,18.3 L70.7,18.6 L67.3,17.2 L65.9,13.5 L69.8,11.2 L72.3,12.8 Z M63.2,53.3 L59.3,65.2 L47.2,64.4 L38.1,64.9 L39.5,51.4 L50.3,42.2 L59.6,46.5 Z M57.2,54.1 L54.4,58.6 L49.3,57.6 L45.1,55.5 L46.7,52.2 L50.3,48.2 L55.2,48.9 Z M98.5,73.9 L95.9,81.6 L89.9,85.4 L77.5,78.1 L82.2,69.9 L88.0,65.6 L94.2,67.5 Z M94.3,77.3 L90.9,79.6 L88.4,81.2 L84.0,78.2 L86.3,74.3 L88.2,71.6 L91.4,73.5 Z M25.8,80.7 L20.9,90.3 L11.0,91.1 L7.8,85.9 L6.9,73.6 L14.8,72.6 L20.0,73.5 Z M18.4,79.4 L18.6,83.7 L14.0,83.2 L12.1,81.2 L12.4,78.7 L12.9,75.9 L16.8,77.3 Z' fill-rule='evenodd'/%3E%3Cpath d='M45.2,89.9 L41.7,94.6 L37.3,94.6 L35.0,90.6 L37.3,84.6 L41.5,86.0 Z M89.4,40.0 L86.3,42.7 L83.8,43.5 L80.2,40.4 L83.1,36.1 L87.3,36.2 Z M63.9,14.6 L61.9,18.9 L58.9,17.6 L57.2,15.4 L58.9,12.6 L61.4,12.6 Z M105.1,99.2 L102.6,105.3 L98.4,103.4 L95.0,99.5 L97.1,95.8 L102.5,95.2 Z M6.9,50.4 L5.9,52.1 L3.7,51.5 L1.7,49.5 L3.5,46.2 L6.1,47.6 Z'/%3E%3C/g%3E%3C/svg%3E") 0 0/110px 110px,
+      rgba(255,255,255,0.85);
+    border-radius:10px;
+    padding:0 0 18px;
     position:relative;
     overflow:hidden;
+    border:3px outset #ffb6d9;
+    box-shadow:var(--shadow);
   }
-  .logo{
-    width:clamp(100px, 26vw, 140px);
-    height:clamp(100px, 26vw, 140px);
-    border-radius:50%;
-    object-fit:cover;
-    box-shadow:0 6px 20px rgba(226,3,118,0.2);
-    margin-bottom:14px;
-    background:var(--white);
-    padding:8px;
+
+  /* ---- Retro browser-window top bar ---- */
+  .browser-topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:9px 14px; background:linear-gradient(180deg,#ffe5f1,#ffc2dd);
+    border-bottom:2px solid var(--pink-hot);
   }
-  h1{
-    font-family:'Baloo 2', cursive;
-    font-weight:800;
-    color:#e20376;
-    font-size:clamp(1.8rem, 7.5vw, 2.4rem);
-    margin:0 0 12px;
-    line-height:1.15;
-    word-break:break-word;
+  .browser-topbar .url-text{
+    font-family:'Baloo 2', cursive; font-weight:800; font-size:0.86rem; color:var(--pink-deep);
+    display:flex; align-items:center; gap:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    text-shadow:1px 1px 0 rgba(255,255,255,0.75);
   }
-  .bio{
-    font-size:clamp(0.88rem, 3.4vw, 0.98rem);
-    color:#e20376;
-    font-weight:700;
-    line-height:1.5;
-    margin:0 auto 22px;
-    max-width:340px;
+  .browser-topbar .win-dots{display:flex; gap:6px; flex-shrink:0;}
+  .browser-topbar .win-dots span{width:9px; height:9px; border-radius:50%; background:var(--pink-hot); display:block;}
+  .browser-topbar .win-dots span:nth-child(2){background:#ffbd2e;}
+  .browser-topbar .win-dots span:nth-child(3){background:#28c840;}
+
+  /* ---- Header: avatar + glitter name + tagline ---- */
+  .profile-header{
+    display:flex; align-items:center; gap:16px; text-align:left; padding:22px 16px;
+    background:linear-gradient(135deg, #fff0f7, #ffe0ee);
+    border-bottom:1px solid var(--pink-mid);
+    position:relative;
   }
-  h2{
-    font-family:'Baloo 2', cursive;
-    font-weight:800;
-    color:#e20376;
-    font-size:clamp(1.25rem, 5vw, 1.45rem);
-    margin:0 0 12px;
+  .profile-avatar{
+    width:84px; height:84px; border-radius:50%; object-fit:cover; flex-shrink:0;
+    border:4px solid var(--pink-hot); box-shadow:0 4px 14px rgba(226,3,118,0.25);
+    background:var(--white); padding:4px;
   }
-  .order-row{
-    display:flex;
-    gap:12px;
-    margin-bottom:22px;
+  .profile-header-text{min-width:0;}
+  .ms-glitter-name{
+    font-family:'Pacifico', cursive; font-size:clamp(1.3rem, 6.5vw, 1.7rem);
+    background:linear-gradient(90deg,#ff8fc4,#e20376,#ffd700,#e20376,#ff8fc4);
+    background-size:300% auto; -webkit-background-clip:text; background-clip:text;
+    color:transparent; animation:ms-shine 5s linear infinite; display:inline-block;
   }
-  .order-btn{
-    flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:var(--pink-mid);
-    color:var(--pink-hot);
-    border:1.5px solid var(--pink-hot);
-    font-family:'Baloo 2', cursive;
-    font-weight:800;
-    font-size:clamp(1rem, 4.5vw, 1.15rem);
-    text-decoration:none;
-    padding:16px 8px;
-    min-height:52px;
-    border-radius:16px;
-    transition:0.15s;
-    box-shadow:0 4px 12px rgba(226,3,118,0.15);
+  @keyframes ms-shine{ to{background-position:300% center;} }
+  @media (prefers-reduced-motion: reduce){ .ms-glitter-name{animation:none; color:var(--pink-hot); background:none;} }
+  .ms-tagline{font-family:'Comic Neue', cursive; font-weight:700; font-size:0.92rem; color:var(--ink-soft); margin-top:3px;}
+
+  /* ---- Status bubble: About Me as a speech-bubble "status update" ---- */
+  .status-bubble{
+    position:relative; background:var(--white); border:2px solid var(--pink-hot); border-radius:16px;
+    padding:13px 15px; margin:16px 16px 0; font-size:0.92rem; line-height:1.5; color:var(--ink);
+    text-align:left; box-shadow:3px 3px 0 rgba(226,3,118,0.25);
   }
-  .order-btn:active, .order-btn:hover{background:var(--pink-hot); color:var(--white); transform:translateY(-2px);}
-  .social-row{
-    display:flex;
-    justify-content:center;
-    gap:16px;
-    margin-bottom:22px;
+  .status-bubble::before{
+    content:''; position:absolute; top:-9px; left:34px; width:16px; height:16px;
+    background:var(--white); border-left:2px solid var(--pink-hot); border-top:2px solid var(--pink-hot);
+    transform:rotate(45deg);
   }
+
+  /* ---- Action row: chunky "sticker" buttons with a hard offset shadow,
+         like the message / call-here buttons on a Y2K fan-site profile ---- */
+  .profile-actions{display:flex; gap:10px; padding:16px 16px 6px;}
+  .profile-actions a{
+    flex:1; text-align:center; text-decoration:none; color:var(--pink-deep);
+    border:2px solid var(--pink-hot); border-radius:12px; padding:10px 4px;
+    background:var(--pink-light); box-shadow:3px 3px 0 var(--pink-hot);
+    transition:transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .profile-actions a:active{transform:translate(3px, 3px); box-shadow:0 0 0 var(--pink-hot);}
+  .profile-actions a.primary{
+    color:#fff; background:var(--pink-hot); box-shadow:3px 3px 0 var(--pink-deep);
+  }
+  .profile-actions a.primary:active{box-shadow:0 0 0 var(--pink-deep);}
+  .pa-icon{display:block; font-size:1.15rem; margin-bottom:1px;}
+  .pa-label{display:block; font-family:'Comic Neue', cursive; font-weight:700; font-size:0.74rem;}
+
+  .section-title{
+    font-family:'Baloo 2', cursive; font-weight:800; color:var(--pink-deep); font-size:1.08rem;
+    padding:0 16px; margin:18px 0 8px; display:flex; align-items:center; gap:6px;
+    text-shadow:1px 1px 0 rgba(255,255,255,0.8);
+  }
+
+  /* ---- Top Flavors: a self-spinning "wheel" carousel ---- */
+  .flavor-strip{
+    overflow:hidden; padding:6px 0 8px; position:relative;
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+    mask-image:linear-gradient(90deg, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+  }
+  .flavor-track{display:flex; gap:20px; width:max-content; animation:flavorWheel 15s linear infinite;}
+  .flavor-strip:hover .flavor-track, .flavor-strip:active .flavor-track{animation-play-state:paused;}
+  @keyframes flavorWheel{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @media (prefers-reduced-motion: reduce){ .flavor-track{animation:none;} }
+  .flavor-item{flex:0 0 auto; width:78px; display:flex; flex-direction:column; align-items:center; text-decoration:none;}
+  .flavor-ring{position:relative; display:inline-block; width:70px; height:70px;}
+  .flavor-ring::before{
+    content:''; position:absolute; inset:-6px; border-radius:50%;
+    border:2px dashed var(--pink-hot); opacity:0.6; animation:wheelSpin 5s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .flavor-ring::before{animation:none;} }
+  @keyframes wheelSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .flavor-ring img{
+    width:70px; height:70px; border-radius:50%; object-fit:cover; border:3px solid var(--pink-hot);
+    background:var(--white); box-shadow:0 3px 8px rgba(226,3,118,0.25), inset 0 2px 3px rgba(255,255,255,0.5);
+    display:block; position:relative; transition:transform 0.15s ease;
+  }
+  .flavor-item:active .flavor-ring img{transform:scale(0.94);}
+  .flavor-item span{margin-top:6px; font-size:0.78rem; font-weight:700; color:var(--ink); text-align:center; font-family:'Comic Neue', cursive; line-height:1.2;}
+
+  /* ---- Reviews popping up, like comments during a live video —
+         styled as a cute retro chat window instead of a black box ---- */
+  .live-chat-box{
+    margin:0 16px; background:linear-gradient(165deg, #fff7fb, #ffdcec);
+    border:2px dashed var(--pink-hot); border-radius:16px; padding:10px 12px 12px;
+    min-height:188px; max-height:188px; overflow:hidden; position:relative;
+    box-shadow:0 4px 14px rgba(226,3,118,0.16);
+  }
+  .live-chat-feed{display:flex; flex-direction:column; gap:8px; justify-content:flex-end; min-height:100%;}
+  .live-comment{
+    background:var(--white); border:1.5px solid var(--pink-mid); border-radius:13px 13px 13px 3px; padding:8px 12px;
+    box-shadow:0 2px 6px rgba(226,3,118,0.1);
+    opacity:0; transform:translateY(18px); animation:liveCommentIn 0.5s ease forwards;
+  }
+  @keyframes liveCommentIn{ from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
+  @media (prefers-reduced-motion: reduce){ .live-comment{animation:none; opacity:1; transform:none;} }
+  .live-comment .lc-name{font-weight:700; color:var(--pink-deep); font-size:0.82rem; font-family:'Comic Neue', cursive;}
+  .live-comment .lc-stars{color:#e8a400; font-size:0.75rem; margin:1px 0 2px; letter-spacing:1px;}
+  .live-comment .lc-text{font-size:0.86rem; color:var(--ink); line-height:1.4;}
+  .live-comments-loading{font-size:0.86rem; color:var(--ink-soft); font-family:'Comic Neue', cursive; padding:6px 2px;}
+
+  /* ---- Follow / social row: a cute sticker-style card so it doesn't feel bare ---- */
+  .socials-card{
+    margin:0 16px; padding:16px 10px 14px; border-radius:18px; border:2px dashed var(--pink-hot);
+    background:linear-gradient(160deg, #fff0f7, #ffd9ea); position:relative; overflow:hidden;
+  }
+  .corner-star{position:absolute; width:22px; height:22px; color:#ffd700; opacity:0.85; pointer-events:none; z-index:1;}
+  .find-online{display:flex; justify-content:center; gap:10px; position:relative; z-index:1;}
+  .social-item{flex:1; max-width:130px; display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none;}
   .social-icon{
-    width:54px;
-    height:54px;
-    border-radius:50%;
-    background:var(--pink-hot);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-decoration:none;
-    transition:0.15s;
-    flex-shrink:0;
+    width:100%; height:52px; border-radius:26px; display:flex; align-items:center; justify-content:center;
+    text-decoration:none; flex-shrink:0; border:2px solid #fff;
+    background:linear-gradient(135deg, #fff0f7, #ff8fc4, #e20376, #a8025f, #ff5fa8, #fff0f7);
+    background-size:400% 400%; animation:holoShift 5s ease infinite;
+    box-shadow:3px 3px 0 rgba(226,3,118,0.35), inset 0 1px 0 rgba(255,255,255,0.5);
+    transition:transform 0.15s ease;
   }
-  .social-icon:active, .social-icon:hover{background:#b8025f;}
+  @keyframes holoShift{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+  @media (prefers-reduced-motion: reduce){ .social-icon{animation:none; background:linear-gradient(180deg,#ff5fa8,var(--pink-hot));} }
+  .social-item:active .social-icon{transform:scale(0.92);}
   .social-icon svg{width:26px; height:26px; fill:var(--white);}
-  .contact-list{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    margin-bottom:20px;
-  }
-  .contact-row{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    text-decoration:none;
-    color:#e20376;
-    font-weight:700;
-    font-size:clamp(0.85rem, 3.6vw, 0.98rem);
-    background:none;
-    border:none;
-    border-radius:14px;
-    padding:4px 14px;
-    min-height:44px;
-    word-break:break-word;
-    transition:0.15s;
-    box-shadow:none;
-  }
-  .contact-row:active, .contact-row:hover{background:var(--pink-hot); color:var(--white); transform:translateY(-1px);}
-  .contact-row:hover .contact-icon, .contact-row:active .contact-icon{background:var(--white);}
-  .contact-row:hover .contact-icon svg, .contact-row:active .contact-icon svg{fill:var(--pink-hot);}
-  .contact-icon{
-    width:34px;
-    height:34px;
-    border-radius:50%;
-    background:var(--pink-hot);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-shrink:0;
-  }
-  .contact-icon svg{width:16px; height:16px; fill:var(--white);}
-  .bottom-btns{
-    display:flex;
-    gap:12px;
-  }
+  .social-handle{font-family:'Courier New', monospace; font-weight:700; font-size:0.8rem; color:var(--pink-deep); text-align:center; word-break:break-word;}
+
+  .bottom-btns{display:flex; gap:10px; padding:18px 16px 0;}
   .bottom-btn{
-    flex:1;
-    background:var(--pink-mid);
-    color:var(--pink-hot);
-    border:1.5px solid var(--pink-hot);
-    font-family:'Baloo 2', cursive;
-    font-weight:800;
-    font-size:clamp(0.8rem, 3.6vw, 0.95rem);
-    text-decoration:none;
-    padding:14px 6px;
-    min-height:50px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:14px;
-    transition:0.15s;
-    box-shadow:0 3px 10px rgba(226,3,118,0.12);
+    flex:1; color:var(--pink-deep); border:2px solid var(--pink-hot);
+    font-family:'Comic Neue', cursive; font-weight:700; font-size:0.8rem;
+    text-decoration:none; padding:10px 4px; min-height:42px; display:flex; align-items:center;
+    justify-content:center; border-radius:10px; background:var(--pink-mid);
+    box-shadow:3px 3px 0 var(--pink-hot); transition:transform 0.08s ease, box-shadow 0.08s ease;
   }
-  .bottom-btn:active, .bottom-btn:hover{background:var(--pink-hot); color:var(--white); transform:translateY(-1px);}
+  .bottom-btn:active{transform:translate(3px, 3px); box-shadow:0 0 0 var(--pink-hot);}
 
-  @media (max-width: 340px){
-    .social-row{ gap:12px; }
-    .social-icon{ width:50px; height:50px; }
-  }
-
-  .hero-star-accent{
-    position:absolute; width:26px; height:26px;
-    animation:starSpin 7s linear infinite;
-  }
-  @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
-  @media (prefers-reduced-motion: reduce){ .hero-star-accent{animation:none;} }
+  .ms-footer-note{text-align:center; font-family:'Comic Neue', cursive; font-size:0.75rem; color:var(--ink-soft); padding:14px 16px 0;}
 
   .sticker-star{
     position:absolute; pointer-events:none; z-index:2;
@@ -240,6 +243,7 @@
   .sparkle.sway{ animation:sparkle-sway 4.5s ease-in-out infinite; }
   @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
   @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
+  @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 </style>
 </head>
 <body>
@@ -256,51 +260,76 @@
 
 <div class="page">
 
-  <img src="assets/logo.png" alt="Mel's Treat" class="logo">
-
-  <h1 style="position:relative; display:inline-block;">Meliese Riggans
-    <svg class="hero-star-accent" viewBox="0 0 100 100" style="top:-16px; right:-24px;" aria-hidden="true">
-      <defs>
-        <linearGradient id="starGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ff8fc4"/>
-          <stop offset="55%" stop-color="#e20376"/>
-          <stop offset="100%" stop-color="#a8025f"/>
-        </linearGradient>
-      </defs>
-      <path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="url(#starGrad1)" stroke="#fff" stroke-width="2"/>
-      <ellipse cx="40" cy="30" rx="9" ry="5" fill="#ffffff" opacity="0.55" transform="rotate(-30 40 30)"/>
-    </svg></h1>
-  <p class="bio">I am a 23-year-old baker looking to build a space to share love through your favorite treats. I would love to share my sweetness with you — check me out below</p>
-
-  <h2>🍪 Visit My Site To Order</h2>
-  <div class="order-row">
-    <a href="https://melstreat.com/menu.html" target="_blank" rel="noopener" class="order-btn">Menu</a>
-    <a href="https://melstreat.com/" target="_blank" rel="noopener" class="order-btn">Order Here</a>
+  <div class="browser-topbar">
+    <span class="url-text">melstreat.com ★</span>
+    <span class="win-dots"><span></span><span></span><span></span></span>
   </div>
 
-  <h2>✨ Follow Me On Social Media</h2>
-  <div class="social-row">
-    <a href="https://www.instagram.com/melstreat23" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
-      <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.6-.6 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.6-1.5-1-.4-.4-.7-.9-1-1.5-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.6-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-2 .4-.5.2-.8.4-1.2.8-.4.4-.6.7-.8 1.2-.1.4-.3 1-.4 2-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1 .2 1.6.4 2 .2.5.4.8.8 1.2.4.4.7.6 1.2.8.4.1 1 .3 2 .4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.2 2-.4.5-.2.8-.4 1.2-.8.4-.4.6-.7.8-1.2.1-.4.3-1 .4-2 .1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1-.2-1.6-.4-2-.2-.5-.4-.8-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.1-1-.3-2-.4-1.2-.1-1.6-.1-4.7-.1zm0 4.3a4.7 4.7 0 110 9.4 4.7 4.7 0 010-9.4zm0 1.8a2.9 2.9 0 100 5.8 2.9 2.9 0 000-5.8zm5.9-2a1.1 1.1 0 11-2.2 0 1.1 1.1 0 012.2 0z"/></svg>
-    </a>
-    <a href="https://www.facebook.com/share/19NqoV7RQ6/?mibextid=wwXIfr" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook">
-      <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
-    </a>
-    <a href="https://www.tiktok.com/@meltreat23" target="_blank" rel="noopener" class="social-icon" aria-label="TikTok">
-      <svg viewBox="0 0 24 24"><path d="M16.6 2h-3.2v13.7c0 1.5-1.2 2.7-2.7 2.7a2.7 2.7 0 01-2.7-2.7 2.7 2.7 0 012.7-2.7c.3 0 .6 0 .8.1V9.8a6 6 0 00-.8 0A6 6 0 004.8 15.7a6 6 0 006 6 6 6 0 006-6V8.5a8 8 0 004.6 1.4V6.7a4.6 4.6 0 01-4.6-4.6z"/></svg>
-    </a>
+  <div class="profile-header">
+    <svg class="corner-star" style="top:10px; left:14px; transform:rotate(-14deg);" viewBox="0 0 100 100" aria-hidden="true"><use href="#stickerStarShape"/></svg>
+    <svg class="corner-star" style="top:14px; right:16px; transform:rotate(16deg);" viewBox="0 0 100 100" aria-hidden="true"><use href="#stickerStarShape"/></svg>
+    <img src="assets/logo.png" alt="Mel's Treat" class="profile-avatar">
+    <div class="profile-header-text">
+      <div class="ms-glitter-name">Meliese Riggans</div>
+      <div class="ms-tagline">🍪 Home Bakery · Alabama</div>
+    </div>
   </div>
 
-  <h2>💌 Contact Me</h2>
-  <div class="contact-list">
-    <a href="mailto:Meliese-riggans@melstreat.com" class="contact-row">
-      <span class="contact-icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3V6zm2 2.2V16h14V8.2l-7 4.9-7-4.9zM5 6l7 5 7-5H5z"/></svg></span>
-      Meliese-riggans@melstreat.com
-    </a>
-    <a href="tel:+12564059471" class="contact-row">
-      <span class="contact-icon"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.7 5.1 6.5 6.5l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.4.6 3.7.6.6 0 1 .4 1 1v3.6c0 .6-.4 1-1 1C10.6 21.1 2.9 13.4 2.9 4.1c0-.6.4-1 1-1H7.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.7.1.4 0 .8-.2 1.1L6.6 10.8z"/></svg></span>
-      256-405-9471
-    </a>
+  <p class="status-bubble">I'm a 23-year-old baker building a space to share love through your favorite treats.</p>
+
+  <div class="section-title">🍪 Top Flavors</div>
+  <div class="flavor-strip">
+    <svg class="sticker-gem" style="top:3px; right:6px; width:20px; height:18px; color:#ff5fa8; z-index:1;" viewBox="0 0 100 90" aria-hidden="true"><use href="#gemHeartShape"/></svg>
+    <div class="flavor-track">
+      <a href="menu.html" class="flavor-item"><span class="flavor-ring"><img src="assets/cookie-chocolate-chip.png" alt="Chocolate Chip"></span><span>Chocolate Chip</span></a>
+      <a href="menu.html" class="flavor-item"><span class="flavor-ring"><img src="assets/cookie-red-velvet.png" alt="Red Velvet"></span><span>Red Velvet</span></a>
+      <a href="menu.html" class="flavor-item"><span class="flavor-ring"><img src="assets/cookie-smores.png" alt="S'mores"></span><span>S'mores</span></a>
+      <a href="menu.html" class="flavor-item"><span class="flavor-ring"><img src="assets/cookie-mm.png" alt="M&amp;M"></span><span>M&amp;M</span></a>
+      <a href="menu.html" class="flavor-item" aria-hidden="true" tabindex="-1"><span class="flavor-ring"><img src="assets/cookie-chocolate-chip.png" alt=""></span><span>Chocolate Chip</span></a>
+      <a href="menu.html" class="flavor-item" aria-hidden="true" tabindex="-1"><span class="flavor-ring"><img src="assets/cookie-red-velvet.png" alt=""></span><span>Red Velvet</span></a>
+      <a href="menu.html" class="flavor-item" aria-hidden="true" tabindex="-1"><span class="flavor-ring"><img src="assets/cookie-smores.png" alt=""></span><span>S'mores</span></a>
+      <a href="menu.html" class="flavor-item" aria-hidden="true" tabindex="-1"><span class="flavor-ring"><img src="assets/cookie-mm.png" alt=""></span><span>M&amp;M</span></a>
+    </div>
+  </div>
+
+  <div class="profile-actions">
+    <a href="mailto:Meliese-riggans@melstreat.com"><span class="pa-icon">✉️</span><span class="pa-label">Email</span></a>
+    <a href="https://melstreat.com/menu.html" target="_blank" rel="noopener" class="primary"><span class="pa-icon">🛒</span><span class="pa-label">Order Now</span></a>
+    <a href="tel:+12564059471"><span class="pa-icon">📱</span><span class="pa-label">Call/Text</span></a>
+  </div>
+
+  <div class="section-title">✨ My Socials</div>
+  <div class="socials-card">
+    <svg class="corner-star" style="top:8px; left:10px; transform:rotate(-12deg);" viewBox="0 0 100 100" aria-hidden="true"><use href="#stickerStarShape"/></svg>
+    <svg class="corner-star" style="bottom:8px; right:10px; transform:rotate(18deg);" viewBox="0 0 100 100" aria-hidden="true"><use href="#stickerStarShape"/></svg>
+    <div class="find-online">
+      <a href="https://www.instagram.com/melstreat23" target="_blank" rel="noopener" class="social-item">
+        <span class="social-icon" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.6-.6 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.6-1.5-1-.4-.4-.7-.9-1-1.5-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.6-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-2 .4-.5.2-.8.4-1.2.8-.4.4-.6.7-.8 1.2-.1.4-.3 1-.4 2-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1 .2 1.6.4 2 .2.5.4.8.8 1.2.4.4.7.6 1.2.8.4.1 1 .3 2 .4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.2 2-.4.5-.2.8-.4 1.2-.8.4-.4.6-.7.8-1.2.1-.4.3-1 .4-2 .1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1-.2-1.6-.4-2-.2-.5-.4-.8-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.1-1-.3-2-.4-1.2-.1-1.6-.1-4.7-.1zm0 4.3a4.7 4.7 0 110 9.4 4.7 4.7 0 010-9.4zm0 1.8a2.9 2.9 0 100 5.8 2.9 2.9 0 000-5.8zm5.9-2a1.1 1.1 0 11-2.2 0 1.1 1.1 0 012.2 0z"/></svg>
+        </span>
+        <span class="social-handle">@melstreat23</span>
+      </a>
+      <a href="https://www.facebook.com/share/19NqoV7RQ6/?mibextid=wwXIfr" target="_blank" rel="noopener" class="social-item">
+        <span class="social-icon" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+        </span>
+        <span class="social-handle">Mel's Treat</span>
+      </a>
+      <a href="https://www.tiktok.com/@meltreat23" target="_blank" rel="noopener" class="social-item">
+        <span class="social-icon" aria-label="TikTok">
+          <svg viewBox="0 0 24 24"><path d="M16.6 2h-3.2v13.7c0 1.5-1.2 2.7-2.7 2.7a2.7 2.7 0 01-2.7-2.7 2.7 2.7 0 012.7-2.7c.3 0 .6 0 .8.1V9.8a6 6 0 00-.8 0A6 6 0 004.8 15.7a6 6 0 006 6 6 6 0 006-6V8.5a8 8 0 004.6 1.4V6.7a4.6 4.6 0 01-4.6-4.6z"/></svg>
+        </span>
+        <span class="social-handle">@meltreat23</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="section-title">⭐ Reviews</div>
+  <div class="live-chat-box">
+    <svg class="corner-star" style="bottom:6px; left:8px; width:18px; height:18px; transform:rotate(-10deg); z-index:1;" viewBox="0 0 100 100" aria-hidden="true"><use href="#stickerStarShape"/></svg>
+    <div class="live-chat-feed" id="live-chat-feed">
+      <div class="live-comments-loading">Loading reviews…</div>
+    </div>
   </div>
 
   <div class="bottom-btns">
@@ -308,9 +337,70 @@
     <a href="faq.html" class="bottom-btn">FAQ</a>
     <a href="testimonials.html" class="bottom-btn">Reviews</a>
   </div>
+
+  <div class="ms-footer-note">made with sugar &amp; spice ✧･ﾟ: *✧･ﾟ:*</div>
 </div>
 
 <script>
+// Streams real approved reviews into the "Live Reviews" box one at a time,
+// like comments scrolling up during a live video — a genuine guestbook
+// feed instead of invented engagement.
+(function loadLiveReviews() {
+  const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  const feed = document.getElementById('live-chat-feed');
+  if (!feed) return;
+
+  fetch(`${SUPABASE_URL}/rest/v1/reviews?select=customer_name,rating,review_text&approved=eq.true&order=created_at.desc&limit=8`, {
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+  }).then(res => res.json()).then(rows => {
+    if (!Array.isArray(rows) || rows.length === 0) {
+      feed.innerHTML = '<div class="live-comments-loading">No reviews yet — be the first to leave one after your order!</div>';
+      return;
+    }
+
+    feed.innerHTML = '';
+    let i = 0;
+    const MAX_VISIBLE = 3;
+    // A little rotation of pink/berry shades so each reviewer's name reads
+    // like a distinct "user" in a classic guestbook/chat feed.
+    const NAME_COLORS = ['#e20376', '#a8025f', '#c2185b', '#ff5fa8'];
+
+    function addNext() {
+      const idx = i % rows.length;
+      const r = rows[idx];
+      i++;
+      const rating = Math.max(0, Math.min(5, Number(r.rating) || 0));
+      const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+      const name = escapeHtml(r.customer_name || 'A Happy Customer');
+      const text = escapeHtml(r.review_text || '');
+      const nameColor = NAME_COLORS[idx % NAME_COLORS.length];
+
+      const bubble = document.createElement('div');
+      bubble.className = 'live-comment';
+      bubble.innerHTML = `
+        <div class="lc-name" style="color:${nameColor}">${name}</div>
+        <div class="lc-stars">${stars}</div>
+        <div class="lc-text">${text}</div>`;
+      feed.appendChild(bubble);
+
+      while (feed.children.length > MAX_VISIBLE) {
+        feed.removeChild(feed.firstChild);
+      }
+    }
+
+    addNext();
+    setInterval(addNext, 3400);
+  }).catch(() => {
+    feed.innerHTML = '<div class="live-comments-loading">Couldn\'t load reviews right now — see them all on the Reviews page.</div>';
+  });
+})();
+
 function scatterPageAccents() {
   const sectionSelectors = ['.page'];
   const sections = sectionSelectors
@@ -431,9 +521,9 @@ function scatterPageAccents() {
     const share = heights[i] / totalH;
     buildFor(
       section,
-      Math.round(20 * share),
+      Math.round(10 * share),
       i === 0 ? 2 : 0,
-      i === sections.length - 1 ? 2 : 0
+      i === sections.length - 1 ? 1 : 0
     );
   });
 }

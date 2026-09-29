@@ -6,6 +6,16 @@
 <meta name="theme-color" content="#fedde4" />
 <title>Catering Request – Mel's Treat</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
+<!-- Add-to-Home-Screen / PWA setup — lets the whole site install as one
+     app (see manifest.json) so it opens full-screen without the browser's
+     address bar, same as Quick Pay / App Payments. -->
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mel's Treat">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Fredoka:wght@500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <style>
@@ -380,8 +390,12 @@
     </select>
     <input type="text" id="event_type_other" class="hidden" placeholder="Tell us the occasion" style="margin-top:8px;" />
 
-    <label for="guest_count">About How Many Guests?</label>
-    <input type="number" id="guest_count" min="1" placeholder="e.g. 30" inputmode="numeric">
+    <label>What Size Cookie Would You Like? *</label>
+    <div class="section-note">2-inch cookies are great for favors or a big spread of variety; 4-inch is our classic everyday size.</div>
+    <div class="choice-group">
+      <div class="choice-card selected" data-size="regular">4-Inch<br><span style="font-weight:500; font-size:0.82em;">(Regular Size)</span></div>
+      <div class="choice-card" data-size="small">2-Inch<br><span style="font-weight:500; font-size:0.82em;">(Small)</span></div>
+    </div>
 
     <label for="event_date">Event Date</label>
     <div class="section-note">Please choose a date at least a week out — catering orders need advance notice.</div>
@@ -405,7 +419,20 @@
       <option value="Email">Email</option>
       <option value="Phone Call">Phone Call</option>
       <option value="Text">Text</option>
+      <option value="Social Media">Social Media (no phone number)</option>
     </select>
+
+    <div id="contact_social_wrap" class="hidden">
+      <label for="social_platform">Which Platform?</label>
+      <select id="social_platform">
+        <option value="">Select…</option>
+        <option>Instagram</option>
+        <option>Facebook</option>
+        <option>TikTok</option>
+      </select>
+      <label for="social_handle">Your Handle *</label>
+      <input type="text" id="social_handle" placeholder="@yourhandle">
+    </div>
   </form>
 
   <div class="card">
@@ -597,6 +624,15 @@ dozensSelect.addEventListener('change', () => {
   pricePreview.classList.remove('hidden');
 });
 
+let cookieSize = 'regular';
+document.querySelectorAll('[data-size]').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('[data-size]').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    cookieSize = card.dataset.size;
+  });
+});
+
 document.querySelectorAll('[data-fulfillment]').forEach(card => {
   card.addEventListener('click', () => {
     document.querySelectorAll('[data-fulfillment]').forEach(c => c.classList.remove('selected'));
@@ -636,6 +672,13 @@ function getSelectedDietaryNotes() {
 const errorBox = document.getElementById('form-error');
 const submitBtn = document.getElementById('submit-btn');
 
+function updateContactMethodUI() {
+  const method = document.getElementById('contact_pref').value;
+  document.getElementById('contact_social_wrap').classList.toggle('hidden', method !== 'Social Media');
+}
+document.getElementById('contact_pref').addEventListener('change', updateContactMethodUI);
+updateContactMethodUI();
+
 submitBtn.addEventListener('click', async () => {
   errorBox.style.display = 'none';
 
@@ -653,6 +696,20 @@ submitBtn.addEventListener('click', async () => {
     errorBox.textContent = 'Please enter a valid email.';
     errorBox.style.display = 'block';
     return;
+  }
+
+  const isSocialContact = document.getElementById('contact_pref').value === 'Social Media';
+  if (isSocialContact) {
+    if (!document.getElementById('social_platform').value) {
+      errorBox.textContent = 'Please select which social platform to reach you on.';
+      errorBox.style.display = 'block';
+      return;
+    }
+    if (!document.getElementById('social_handle').value.trim()) {
+      errorBox.textContent = 'Please enter your social media handle.';
+      errorBox.style.display = 'block';
+      return;
+    }
   }
 
   const event_date_raw = document.getElementById('event_date').value;
@@ -686,7 +743,7 @@ submitBtn.addEventListener('click', async () => {
       event_type: document.getElementById('event_type').value === 'Other'
         ? (document.getElementById('event_type_other').value.trim() || 'Other')
         : (document.getElementById('event_type').value || null),
-      guest_count: document.getElementById('guest_count').value ? parseInt(document.getElementById('guest_count').value) : null,
+      cookie_size: cookieSize,
       dietary_notes: getSelectedDietaryNotes(),
       dozens_count,
       quoted_total,
@@ -695,6 +752,8 @@ submitBtn.addEventListener('click', async () => {
       delivery_address: fulfillment === 'delivery' ? (document.getElementById('delivery_address').value.trim() || null) : null,
       packaging_preference: document.getElementById('packaging_pref').value || null,
       contact_preference: document.getElementById('contact_pref').value || null,
+      social_platform: isSocialContact ? (document.getElementById('social_platform').value || null) : null,
+      social_handle: isSocialContact ? (document.getElementById('social_handle').value.trim() || null) : null,
       special_instructions: (dozens_count_raw === 'more' ? 'Requested MORE than 10 dozen — needs manual quote. ' : '') + (document.getElementById('special_instructions').value.trim() || ''),
     };
 
@@ -849,5 +908,21 @@ window.addEventListener('load', () => {
 });
 </script>
 
+<!-- Small "open in browser" button — installed-app mode hides the
+     address bar on purpose; this gives a one-tap way to pop into the real
+     browser (to copy/share the link, etc.) only when it's actually wanted. -->
+<button id="melsBrowserBarBtn" onclick="window.open(location.href, '_blank')" aria-label="Open in browser" style="position:fixed; bottom:18px; right:18px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:linear-gradient(135deg,#e20376,#ff6fb0); color:#fff; font-size:1.2rem; box-shadow:0 6px 16px rgba(226,3,118,0.35); display:none; align-items:center; justify-content:center; cursor:pointer;">🔗</button>
+<script>
+(function(){
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone) {
+    var btn = document.getElementById('melsBrowserBarBtn');
+    if (btn) btn.style.display = 'flex';
+  }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  }
+})();
+</script>
 </body>
 </html>

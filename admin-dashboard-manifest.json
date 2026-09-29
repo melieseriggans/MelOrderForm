@@ -1,0 +1,25 @@
+{
+  "name": "Mel's Admin",
+  "short_name": "Mel's Admin",
+  "description": "Manage orders, inventory, catering, and earnings for Mel's Treat.",
+  "start_url": "/admin-dashboard.html",
+  "scope": "/admin-dashboard.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff5f8",
+  "theme_color": "#e20376",
+  "icons": [
+    {
+      "src": "assets/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

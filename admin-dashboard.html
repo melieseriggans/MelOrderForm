@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#e20376" />
 <title>Dashboard – Mel's Treat</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="admin-dashboard-manifest.json">
 
 <!-- Makes this installable as a real app icon on iPhone home screens -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -105,6 +105,19 @@
 
   /* Tabs */
   .tabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  /* Main nav only: scrolls sideways on phones instead of wrapping into a
+     tall stack of rows, so the tabs you use every day (Today/Orders/
+     Inventory, first in the list) stay one thumb-swipe away instead of
+     getting buried under rarely-used ones after several wrapped rows. */
+  .tabs.main-tabs{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; scrollbar-width:thin;}
+  .tabs.main-tabs .tab-btn{flex:0 0 auto;}
+  .tabs.main-tabs::-webkit-scrollbar{height:5px;}
+  .tabs.main-tabs::-webkit-scrollbar-thumb{background:var(--pink-light, #f3b8d0); border-radius:4px;}
+  .tab-count-badge{
+    display:inline-block; min-width:18px; padding:0 5px; margin-left:5px; border-radius:9px;
+    background:#fff; color:var(--pink-hot); font-size:0.7rem; font-weight:700; line-height:18px; text-align:center;
+  }
+  .tab-btn.active .tab-count-badge{background:rgba(255,255,255,0.9);}
   .tab-btn{
     background:var(--white); border:1.5px solid var(--border); color:var(--ink-soft);
     border-radius:14px; padding:9px 16px; font-family:'Fredoka', sans-serif; font-weight:600;
@@ -297,6 +310,33 @@
   .log-filter-btn.active{background:var(--pink-hot); color:var(--white); border-color:var(--pink-hot);}
   .email-log-row{border:1.5px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:8px;}
   .email-log-row-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;}
+  .email-log-preview-btn{margin-top:8px; font-size:0.76rem; font-weight:700; color:var(--pink-hot); background:none; border:1.5px solid var(--pink-hot); border-radius:10px; padding:5px 12px; cursor:pointer;}
+  .email-log-preview-btn:disabled{color:var(--ink-soft); border-color:var(--border); cursor:default;}
+  .email-preview-overlay{
+    display:none; position:fixed; inset:0; background:rgba(58,36,48,0.55); z-index:500;
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .email-preview-overlay.open{display:flex;}
+  .email-preview-card{
+    background:var(--white); border-radius:18px; max-width:600px; width:100%; max-height:88vh;
+    display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.35);
+  }
+  .email-preview-head{
+    padding:14px 18px; border-bottom:1.5px solid var(--border); display:flex; justify-content:space-between;
+    align-items:center; gap:10px; background:var(--cream);
+  }
+  .email-preview-head-title{font-weight:700; font-size:0.95rem;}
+  .email-preview-head-sub{font-size:0.76rem; color:var(--ink-soft); margin-top:2px;}
+  .email-preview-close{background:none; border:none; font-size:1.4rem; color:var(--ink-soft); cursor:pointer; line-height:1; padding:4px 8px;}
+  .email-preview-frame{border:none; width:100%; flex:1; min-height:320px; background:#fff;}
+  .subscriber-toggle-btn{font-size:0.8rem; font-weight:700; color:var(--pink-hot); background:none; border:none; cursor:pointer; padding:0; text-decoration:underline;}
+  .subscriber-list{margin-top:10px; max-height:260px; overflow-y:auto; border:1.5px solid var(--border); border-radius:12px;}
+  .subscriber-row{display:flex; justify-content:space-between; gap:8px; padding:9px 12px; border-bottom:1px solid var(--border); font-size:0.82rem;}
+  .subscriber-row:last-child{border-bottom:none;}
+  .subscriber-row .sub-date{color:var(--ink-soft); white-space:nowrap;}
+  .holiday-tool{margin-top:22px; padding-top:18px; border-top:1.5px dashed var(--border);}
+  .holiday-tool-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media (max-width:480px){.holiday-tool-grid{grid-template-columns:1fr;}}
   .review-mgmt-row{border:1.5px solid var(--border); border-radius:16px; padding:16px; margin-bottom:12px;}
   .review-mgmt-row.pending{border-color:var(--pink-hot); background:#fff5f8;}
   .review-mgmt-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;}
@@ -348,6 +388,14 @@
 
   /* Summary stat row */
   .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;}
+  .stat-grid:has(.stat-card:nth-child(3)){grid-template-columns:1fr 1fr 1fr;}
+  .email-sched-group-label{font-weight:700; font-size:0.8rem; color:var(--pink-hot); text-transform:uppercase; letter-spacing:0.02em; margin:4px 0 6px;}
+  .email-sched-row{padding:8px 0; border-bottom:1px solid var(--pink-light);}
+  .email-sched-title{font-weight:700; font-size:0.9rem;}
+  details.card summary{outline:none;}
+  details.card summary::-webkit-details-marker{display:none;}
+  details.card summary::before{content:'▸'; display:inline-block; margin-right:8px; color:var(--pink-hot); transition:transform 0.15s;}
+  details.card[open] summary::before{transform:rotate(90deg);}
   .today-mini-row{
     display:flex; justify-content:space-between; align-items:center;
     padding:10px 0; border-bottom:1px solid var(--pink-light); font-size:0.88rem;
@@ -365,6 +413,13 @@
   }
   .stat-value{font-family:'Fredoka', sans-serif; font-weight:700; font-size:1.5rem; color:var(--pink-hot);}
   .stat-label{font-size:0.72rem; color:var(--ink-soft); font-weight:700; text-transform:uppercase; margin-top:4px;}
+  .flavor-rank-row{display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border);}
+  .flavor-rank-row:last-child{border-bottom:none;}
+  .flavor-rank-row.best-seller{font-weight:700;}
+  .flavor-rank-name{flex:1; font-size:0.86rem;}
+  .flavor-rank-bar-wrap{flex:1; background:var(--pink-light); border-radius:6px; height:8px; overflow:hidden;}
+  .flavor-rank-bar{height:100%; background:linear-gradient(90deg, var(--pink-hot), var(--pink-glow)); border-radius:6px;}
+  .flavor-rank-count{font-size:0.8rem; color:var(--ink-soft); font-weight:700; min-width:34px; text-align:right;}
 
   /* Order rows */
   .week-group{margin-bottom:14px;}
@@ -488,26 +543,29 @@
 
   <div id="admin-panel" class="hidden">
     <button type="button" id="logout-btn" class="logout-btn">Log Out ↩</button>
-    <div class="tabs">
+    <div class="tabs main-tabs">
       <button class="tab-btn active" data-tab="today">Today</button>
-      <button class="tab-btn" data-tab="menu-mgmt">Menu</button>
-      <button class="tab-btn" data-tab="orders">Orders</button>
+      <button class="tab-btn" data-tab="orders">Orders<span class="tab-count-badge" id="tab-badge-orders" style="display:none;"></span></button>
+      <button class="tab-btn" data-tab="menu-mgmt">🧺 Products<span class="tab-count-badge" id="tab-badge-inventory" style="display:none;"></span></button>
       <button class="tab-btn" data-tab="customers">Customers</button>
-      <button class="tab-btn" data-tab="catering">Catering</button>
-      <button class="tab-btn" data-tab="inventory">Inventory</button>
-      <button class="tab-btn" data-tab="ingredients">Ingredients</button>
-      <button class="tab-btn" data-tab="discounts">Discounts</button>
-      <button class="tab-btn" data-tab="reviews">Reviews</button>
-      <button class="tab-btn" data-tab="emails">Emails</button>
+      <button class="tab-btn" data-tab="catering">Catering<span class="tab-count-badge" id="tab-badge-catering" style="display:none;"></span></button>
+      <button class="tab-btn" data-tab="reviews">Reviews<span class="tab-count-badge" id="tab-badge-reviews" style="display:none;"></span></button>
+      <button class="tab-btn" data-tab="discounts">Discounts<span class="tab-count-badge" id="tab-badge-discounts" style="display:none;"></span></button>
+      <button class="tab-btn" data-tab="email-center">📧 Emails<span class="tab-count-badge" id="tab-badge-email-center" style="display:none;"></span></button>
       <button class="tab-btn" data-tab="scripts">Messages</button>
-      <button class="tab-btn" data-tab="emaillog">Email Log</button>
       <button class="tab-btn" data-tab="links">Links</button>
       <button class="tab-btn" data-tab="earnings">Earnings & Tax</button>
     </div>
 
     <!-- TODAY TAB -->
     <div class="tab-panel active" id="tab-today">
-      <div id="priority-banner" style="display:none; background:linear-gradient(135deg, var(--pink-hot), #ff5fa8); color:#fff; border-radius:16px; padding:14px 16px; margin-bottom:14px; font-weight:600; text-align:center;"></div>
+      <div id="priority-banner" style="display:none;"></div>
+
+      <div class="card" id="attention-card" style="display:none; border:2px solid var(--pink-hot, #e20376);">
+        <h2 style="margin-top:0;">🔔 Needs Your Attention</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Everything that's waiting on you, pulled from every tab into one place — tap any line to jump straight there.</div>
+        <div id="attention-list"></div>
+      </div>
 
       <div class="stat-grid">
         <div class="stat-card">
@@ -572,6 +630,13 @@
 
     <!-- MENU MANAGEMENT TAB -->
     <div class="tab-panel" id="tab-menu-mgmt">
+      <div class="card">
+        <h2>🍪 Cookies On Hand Today</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Update these daily: "Baked & Ready Today" for cookies already made and waiting to be picked up, and "Frozen Dough Balls" for what's in the freezer waiting to be baked. Both are just for your own reference and the Quick Add in-person sale form — they never limit what customers can order online.</div>
+        <button type="button" class="btn" id="save-all-stock-btn" style="margin-bottom:14px; width:100%;">💾 Save All Changes</button>
+        <div id="inventory-list"></div>
+      </div>
+
       <div class="card" id="menu-mgmt-category-card">
         <h2>👁️ Shop Categories</h2>
         <div class="order-detail" style="margin:0 0 12px;">Hide an entire category from your shop without deleting anything — flip it back on whenever you're ready to launch it. Customers only ever see what's turned on here.</div>
@@ -685,6 +750,7 @@
         <input type="text" id="qa-customer-name" placeholder="e.g. Jane (or 'Walk-up')" list="qa-customer-suggestions" autocomplete="off">
         <datalist id="qa-customer-suggestions"></datalist>
         <div class="order-detail" id="qa-returning-note" style="display:none; margin-top:4px; color:var(--pink-hot); font-weight:600;"></div>
+        <div id="qa-fuzzy-matches" style="display:none; margin-top:6px;"></div>
 
         <label style="margin-top:12px;">Fulfillment</label>
         <div class="tabs">
@@ -711,6 +777,24 @@
         </select>
         <div id="qa-order-error" class="error"></div>
         <button class="btn" id="qa-submit-btn" style="margin-top:14px;">Add Sale</button>
+      </div>
+
+      <div class="card" id="sales-snapshot-card">
+        <h2 style="margin-top:0;">📊 Sales Snapshot</h2>
+        <div class="stat-grid" id="sales-snapshot-stats"></div>
+        <div id="sales-snapshot-flavors"></div>
+      </div>
+
+      <div class="card" id="abandoned-checkouts-card" style="display:none;">
+        <h2 style="margin-top:0;">🛒 Left In Checkout</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Customers who started checking out online but didn't finish — could be worth a friendly follow-up.</div>
+        <div id="abandoned-checkouts-list"></div>
+      </div>
+
+      <div class="card" id="review-requests-card" style="display:none;">
+        <h2 style="margin-top:0;">📝 Ready For A Review Request</h2>
+        <div class="order-detail" style="margin:0 0 12px;">These customers got their order at least a day ago. Nothing is ever sent automatically — hit Send on the ones you want to ask.</div>
+        <div id="review-requests-list"></div>
       </div>
 
       <div class="card">
@@ -744,6 +828,12 @@
 
     <!-- CUSTOMERS TAB -->
     <div class="tab-panel" id="tab-customers">
+      <div class="card" id="customer-outreach-card" style="display:none;">
+        <h2>💌 Needs Follow-Up</h2>
+        <div class="order-detail" style="margin:0 0 12px;">A quick pointer to customers worth reaching out to — the actual lists live where the action happens, so nothing's duplicated here.</div>
+        <div id="customer-outreach-list"></div>
+      </div>
+
       <div class="card">
         <h2>👥 Customer Directory</h2>
         <div class="order-detail" style="margin:0 0 12px;">Every customer, built automatically from their order history — no separate list to maintain.</div>
@@ -764,69 +854,63 @@
 
     <!-- CATERING TAB -->
     <div class="tab-panel" id="tab-catering">
+      <div class="card">
+        <h2>🧮 Catering Calculator</h2>
+        <div class="section-note">Pick a size and how many of each flavor, and this works out what to charge, about how much it'll cost you in ingredients, and your estimated profit — before you ever send a quote.</div>
+        <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:10px 0;">
+          <label style="margin:0; display:flex; align-items:center; gap:6px;">Small (2", 2oz dough) cookies cost/charge
+            <input type="number" min="1" max="100" id="calc-size-ratio" value="50" style="width:64px; padding:6px 8px;"> % of regular (4", 4oz dough)
+          </label>
+        </div>
+        <div id="calc-flavor-rows" style="display:flex; flex-direction:column; gap:8px; margin:10px 0;"></div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin:16px 0; text-align:center;">
+          <div style="background:#fff5f8; border-radius:12px; padding:10px;">
+            <div style="font-size:0.75rem; color:var(--ink-soft, #8a6b78); font-weight:700; text-transform:uppercase;">Total Cookies</div>
+            <div id="calc-total-count" style="font-family:'Baloo 2', cursive; font-weight:800; font-size:1.3rem;">0</div>
+          </div>
+          <div style="background:#fff5f8; border-radius:12px; padding:10px;">
+            <div style="font-size:0.75rem; color:var(--ink-soft, #8a6b78); font-weight:700; text-transform:uppercase;">Suggested Charge</div>
+            <div id="calc-charge" style="font-family:'Baloo 2', cursive; font-weight:800; font-size:1.3rem; color:var(--pink-hot);">$0.00</div>
+          </div>
+          <div style="background:#fff5f8; border-radius:12px; padding:10px;">
+            <div style="font-size:0.75rem; color:var(--ink-soft, #8a6b78); font-weight:700; text-transform:uppercase;">Est. Ingredient Cost</div>
+            <div id="calc-cost" style="font-family:'Baloo 2', cursive; font-weight:800; font-size:1.3rem;">$0.00</div>
+          </div>
+          <div style="background:#fff5f8; border-radius:12px; padding:10px;">
+            <div style="font-size:0.75rem; color:var(--ink-soft, #8a6b78); font-weight:700; text-transform:uppercase;">Est. Profit</div>
+            <div id="calc-profit" style="font-family:'Baloo 2', cursive; font-weight:800; font-size:1.3rem; color:#1a8a4a;">$0.00</div>
+          </div>
+        </div>
+        <div class="section-note" id="calc-cost-basis-note"></div>
+        <button type="button" class="btn btn-small btn-outline" id="calc-reset-btn" style="margin-top:6px;">Reset Calculator</button>
+
+        <div style="margin-top:18px; border-top:1.5px dashed var(--pink-light, #f3b8d0); padding-top:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" id="calc-ingredients-toggle">
+            <h3 style="margin:0; font-size:1rem;">🧾 Ingredients To Buy (Optional)</h3>
+            <span id="calc-ingredients-caret">▸</span>
+          </div>
+          <div id="calc-ingredients-body" style="display:none; margin-top:10px;">
+            <div id="calc-ingredients-locked">
+              <div class="section-note">This pulls from your Recipe Book, so it asks for your recipe password separately — nothing extra to remember, same password you use there.</div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input type="password" id="calc-recipe-password" placeholder="Recipe Book password" style="flex:1; max-width:220px;">
+                <button type="button" class="btn btn-small" id="calc-unlock-recipes-btn">Unlock</button>
+              </div>
+              <div id="calc-recipes-error" class="section-note" style="color:#c0025e; display:none;"></div>
+            </div>
+            <div id="calc-ingredients-unlocked" style="display:none;">
+              <div class="section-note">Pick which recipe each flavor uses and how many batches you'll need — I'll scale the ingredient list for you. You know your batches best, so nothing here is auto-guessed.</div>
+              <div id="calc-recipe-picker-rows" style="display:flex; flex-direction:column; gap:10px;"></div>
+              <div id="calc-shopping-list" style="margin-top:14px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <h2 style="margin-bottom:6px;">Catering Requests</h2>
       <div id="catering-list"></div>
       <h2 style="margin:20px 0 6px;">Catering Payments</h2>
       <div id="payments-list"></div>
-    </div>
-
-    <!-- INVENTORY TAB -->
-    <div class="tab-panel" id="tab-inventory">
-      <div class="card">
-        <h2>🍪 Cookies On Hand Today</h2>
-        <div class="order-detail" style="margin:0 0 12px;">Update these daily: "Baked & Ready Today" for cookies already made and waiting to be picked up, and "Frozen Dough Balls" for what's in the freezer waiting to be baked. Both are just for your own reference and the Quick Add in-person sale form — they never limit what customers can order online.</div>
-        <div id="inventory-list"></div>
-      </div>
-    </div>
-
-    <!-- INGREDIENTS TAB -->
-    <div class="tab-panel" id="tab-ingredients">
-      <div class="card">
-        <h2>🍪 Cost Per Cookie</h2>
-        <div class="order-detail" style="margin:0 0 12px;">A blended average across all flavors: your ingredient spend divided by cookies sold. Doesn't include labor, packaging, or overhead.</div>
-        <div class="tabs" style="margin-bottom:14px;">
-          <button class="cpc-period-btn" data-period="week">Week</button>
-          <button class="cpc-period-btn active" data-period="month">Month</button>
-          <button class="cpc-period-btn" data-period="all">All Time</button>
-        </div>
-        <div class="earnings-line"><span>Ingredient Cost / Cookie</span><span id="cpc-cost">$0.00</span></div>
-        <div class="earnings-line"><span>Avg Revenue / Cookie</span><span id="cpc-revenue">$0.00</span></div>
-        <div class="earnings-line total"><span>Estimated Margin / Cookie</span><span id="cpc-margin">$0.00</span></div>
-        <div class="order-detail" style="margin-top:8px;" id="cpc-cookie-count"></div>
-      </div>
-
-      <div class="card">
-        <h2>Spend By Product Line</h2>
-        <div class="order-detail" style="margin:0 0 12px;">Only counts ingredient purchases you tagged as "Cookies Only" or "Cinnamon Rolls Only" when logging them — shared items (flour, eggs, etc.) aren't split here.</div>
-        <div id="ingredient-product-type-list"></div>
-      </div>
-
-      <div class="card">
-        <h2 id="insights-title">Ingredient Spending</h2>
-        <div class="order-detail" style="margin:0 0 14px;">Based on everything you've logged in "Log Expenses."</div>
-
-        <label style="margin-bottom:8px;">Category</label>
-        <div class="tabs" style="margin-bottom:16px;">
-          <button class="ing-category-btn active" data-category="ingredient">🍪 Ingredients</button>
-          <button class="ing-category-btn" data-category="business">📦 Packaging & Business</button>
-        </div>
-
-        <label style="margin-bottom:8px;">Sort By</label>
-        <div class="tabs" style="margin-bottom:14px;">
-          <button class="ing-sort-btn active" data-sort="spent">Highest Spend</button>
-          <button class="ing-sort-btn" data-sort="count">Most Purchased</button>
-        </div>
-
-        <label style="margin-bottom:8px;">Group By</label>
-        <div class="tabs" style="margin-bottom:16px;">
-          <button class="ing-period-btn active" data-period="all">All Time</button>
-          <button class="ing-period-btn" data-period="day">Day</button>
-          <button class="ing-period-btn" data-period="week">Week</button>
-          <button class="ing-period-btn" data-period="month">Month</button>
-        </div>
-
-        <div id="ingredient-insights-list"></div>
-      </div>
     </div>
 
     <!-- DISCOUNTS TAB -->
@@ -864,6 +948,15 @@
 
       <div class="card">
         <h2>Existing Codes</h2>
+        <div class="field-row" style="margin-bottom:10px;">
+          <input type="text" id="codes-search-input" placeholder="Search codes...">
+          <select id="codes-sort-select">
+            <option value="newest">Newest first</option>
+            <option value="az">Code A–Z</option>
+            <option value="most_used">Most used</option>
+            <option value="expiring">Expiring soonest</option>
+          </select>
+        </div>
         <div id="codes-list"></div>
       </div>
     </div>
@@ -878,10 +971,110 @@
       <div id="reviews-mgmt-list"></div>
     </div>
 
-    <!-- EMAILS TAB -->
-    <div class="tab-panel" id="tab-emails">
+    <!-- EMAIL CENTER TAB — everything related to email lives here: what
+         sends on its own, what's already gone out, and sending to your
+         subscriber list, so there's one place to check instead of three. -->
+    <div class="tab-panel" id="tab-email-center">
+
       <div class="card">
-        <h2>📧 Send An Email</h2>
+        <h2>📧 Email Center</h2>
+        <div class="order-detail" style="margin:0 0 14px;">Everything related to email, in one place.</div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="email-stat-today">0</div>
+            <div class="stat-label">Sent Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="email-stat-week">0</div>
+            <div class="stat-label">Sent This Week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="email-stat-issues">0</div>
+            <div class="stat-label">Not Delivered</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>⭐ Awaiting Your Approval <span id="email-awaiting-count" style="color:var(--pink-hot);">0</span></h2>
+        <div class="order-detail" style="margin:0 0 12px;">The only emails that genuinely wait on you — everything else on this page fires the instant its trigger happens, with nothing to stop in between. Hit Skip to permanently cancel one; it'll never be asked.</div>
+        <div id="review-requests-list-email"></div>
+      </div>
+
+      <div class="card">
+        <h2>🗓️ What Sends On Its Own</h2>
+        <div class="order-detail" style="margin:0 0 10px;">So you always know what's about to land in someone's inbox without you touching anything.</div>
+
+        <div class="email-sched-group-label">On A Schedule</div>
+        <div class="email-sched-row">
+          <div class="email-sched-title">Pickup Reminder — daily, ~10:00 AM Central*</div>
+          <div class="order-detail">To customers whose pickup/delivery is tomorrow. Same-day orders are skipped — they already got a confirmation.</div>
+        </div>
+        <div class="email-sched-row">
+          <div class="email-sched-title">Weekly Business Digest — Sunday nights, ~9:00 PM Central*</div>
+          <div class="order-detail">To you only — a recap of the week's orders, revenue, top flavors, and low stock. Doesn't appear in the log below since it never leaves your own inbox.</div>
+        </div>
+        <div class="email-sched-row">
+          <div class="email-sched-title">Site Health Check — every 6 hours</div>
+          <div class="order-detail">Silent unless something's actually broken — only emails you when a problem is newly found or newly fixed. Also doesn't appear in the log below.</div>
+        </div>
+
+        <div class="email-sched-group-label" style="margin-top:14px;">The Moment It Happens</div>
+        <div class="email-sched-row">
+          <div class="email-sched-title">Order Confirmation</div>
+          <div class="order-detail">To the customer, plus a copy to you, the instant a website order comes through.</div>
+        </div>
+        <div class="email-sched-row">
+          <div class="email-sched-title">Catering Payment Receipt</div>
+          <div class="order-detail">To the customer, plus a copy to you, the instant a catering payment is captured.</div>
+        </div>
+        <div class="email-sched-row">
+          <div class="email-sched-title">In-Person / App / Tap-to-Pay Receipt</div>
+          <div class="order-detail">Sends the moment you log that sale — only if you entered the customer's email.</div>
+        </div>
+        <div class="email-sched-row">
+          <div class="email-sched-title">Restock Notice</div>
+          <div class="order-detail">To anyone who asked to be notified, the instant your menu goes from all-out back to in-stock.</div>
+        </div>
+
+        <div class="email-sched-group-label" style="margin-top:14px;">Only When You Tap Send</div>
+        <div class="email-sched-row">
+          <div class="email-sched-title">Review Request</div>
+          <div class="order-detail">You approve each one yourself from the Reviews tab.</div>
+        </div>
+        <div class="email-sched-row" style="border-bottom:none;">
+          <div class="email-sched-title">Subscriber Email / Campaign</div>
+          <div class="order-detail">The "Send To Subscribers" tool below — never fires unless you click Send.</div>
+        </div>
+
+        <div class="order-detail" style="margin-top:12px; font-size:0.74rem;">*Central time shifts an hour with Daylight Saving since these run on a fixed clock behind the scenes — expect roughly an hour earlier in winter.</div>
+      </div>
+
+      <div class="card">
+        <h2>✏️ Edit What Your Emails Say</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Rewrite the wording of any automated email yourself — this only changes what it SAYS, never when or whether it sends. Nothing here can turn into a bulk-send.</div>
+        <div id="email-templates-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>📜 Delivery Log</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Every email that's actually gone out to a customer (the two self-only ones above aren't included), with whether it was delivered.</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+          <input type="text" id="emaillog-search-input" placeholder="Search by recipient or subject..." style="flex:2; min-width:160px;">
+          <select id="emaillog-type-filter" style="flex:1; min-width:150px;">
+            <option value="all">All types</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;" id="emaillog-filter-row">
+          <button type="button" class="log-filter-btn active" data-emaillog-filter="all">All</button>
+          <button type="button" class="log-filter-btn" data-emaillog-filter="issues">Not Delivered</button>
+        </div>
+        <div id="emaillog-list"></div>
+      </div>
+
+      <details class="card">
+        <summary style="cursor:pointer; font-weight:700; font-size:1.15rem; color:var(--ink); list-style:none;">📣 Send An Email To Your Subscriber List</summary>
+        <div style="margin-top:14px;">
         <div class="order-detail" style="margin:0 0 14px;">Pick a template to start, tweak it, then send it to your opted-in email list.</div>
 
         <label>Quick Templates</label>
@@ -906,6 +1099,8 @@
 
         <div class="order-detail" id="audience-count-note" style="margin:14px 0 0; background:var(--cream); padding:10px 12px; border-radius:10px;">Loading your opted-in list...</div>
         <div class="order-detail" style="margin:6px 0 0; font-size:0.76rem;">This only ever goes to people who signed up for the $2-off welcome offer — never to emails collected from regular orders. That keeps things opt-in only, the way email marketing should work.</div>
+        <button type="button" class="subscriber-toggle-btn" id="toggle-subscriber-list-btn" style="margin-top:8px;">View who's on this list</button>
+        <div class="subscriber-list" id="subscriber-list" style="display:none;"></div>
 
         <div id="email-error" class="error"></div>
         <div id="email-success" class="drawer-msg" style="display:none; color:var(--pink-hot); font-weight:600; margin-top:10px;"></div>
@@ -914,7 +1109,45 @@
           <button class="btn btn-small" id="send-test-email-btn" style="background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot); flex:1;">Send Test To Me</button>
           <button class="btn" id="send-campaign-btn" style="flex:2;">Send To List</button>
         </div>
-      </div>
+
+        <div class="holiday-tool">
+          <h2 style="margin-top:0;">🎁 Holiday / Free Treat Offer</h2>
+          <div class="order-detail" style="margin:0 0 12px;">For sending an occasional discount or free-cookie offer to your subscribers — pick your terms, generate a fresh code, and it'll fill in the message above for you to review before sending.</div>
+
+          <div class="holiday-tool-grid">
+            <div>
+              <label for="holiday-occasion-input">Occasion</label>
+              <input type="text" id="holiday-occasion-input" placeholder="e.g. Christmas, Valentine's Day" value="Holiday">
+            </div>
+            <div>
+              <label for="holiday-offer-select">Offer</label>
+              <select id="holiday-offer-select">
+                <option value="4">Free cookie (~$4 off)</option>
+                <option value="6">Free treat (~$6 off)</option>
+                <option value="2">$2 off</option>
+                <option value="5">$5 off</option>
+                <option value="10">$10 off</option>
+                <option value="pct15">15% off</option>
+                <option value="pct20">20% off</option>
+              </select>
+            </div>
+            <div>
+              <label for="holiday-expires-input">Expires in (days)</label>
+              <input type="number" id="holiday-expires-input" value="10" min="1" max="90">
+            </div>
+            <div>
+              <label for="holiday-code-input">Code (auto-filled, editable)</label>
+              <input type="text" id="holiday-code-input" placeholder="e.g. HOLIDAY10">
+            </div>
+          </div>
+
+          <div id="holiday-error" class="error"></div>
+          <div id="holiday-success" class="drawer-msg" style="display:none; color:var(--pink-hot); font-weight:600; margin-top:10px;"></div>
+
+          <button class="btn btn-small" id="generate-holiday-btn" style="margin-top:12px; width:100%;">Generate Code &amp; Fill In Message Above</button>
+        </div>
+        </div>
+      </details>
     </div>
 
     <!-- MESSAGE SCRIPTS TAB -->
@@ -926,16 +1159,17 @@
       </div>
     </div>
 
-    <!-- EMAIL LOG TAB (delivery tracking — separate from the "Emails" campaign tab above) -->
-    <div class="tab-panel" id="tab-emaillog">
-      <div class="card">
-        <h2>📬 Email Delivery Log</h2>
-        <div class="order-detail" style="margin:0 0 14px;">Every confirmation, receipt, reminder, and review-request email that's gone out, with whether it was actually delivered. This is different from the "Emails" tab above — that one sends to your list, this one shows what already went out.</div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;" id="emaillog-filter-row">
-          <button type="button" class="log-filter-btn active" data-emaillog-filter="all">All</button>
-          <button type="button" class="log-filter-btn" data-emaillog-filter="issues">Not Delivered</button>
+    <!-- Email content preview overlay (used by the Email Center's Delivery Log) -->
+    <div class="email-preview-overlay" id="email-preview-overlay">
+      <div class="email-preview-card">
+        <div class="email-preview-head">
+          <div>
+            <div class="email-preview-head-title" id="email-preview-title"></div>
+            <div class="email-preview-head-sub" id="email-preview-sub"></div>
+          </div>
+          <button type="button" class="email-preview-close" id="email-preview-close-btn" aria-label="Close">&times;</button>
         </div>
-        <div id="emaillog-list"></div>
+        <iframe class="email-preview-frame" id="email-preview-frame" title="Email preview"></iframe>
       </div>
     </div>
 
@@ -952,28 +1186,22 @@
     <div class="tab-panel" id="tab-earnings">
       <div class="jump-nav">
         <a href="#earnings-overview">Overview</a>
+        <a href="#earnings-ingredients">Ingredients</a>
         <a href="#earnings-payments">Payments</a>
         <a href="#earnings-expenses">Expenses</a>
         <a href="#earnings-tax">Tax</a>
-      </div>
-
-      <div class="card" id="earnings-ingredients-summary">
-        <div class="ing-summary-top">
-          <h2 style="margin:0;">Spent On Ingredients</h2>
-          <div class="ing-summary-value" id="ing-summary-value">$0.00</div>
-        </div>
-        <div class="tabs" style="margin-top:10px;">
-          <button class="ing-summary-period-btn active" data-period="week">Week</button>
-          <button class="ing-summary-period-btn" data-period="day">Day</button>
-          <button class="ing-summary-period-btn" data-period="month">Month</button>
-          <button class="ing-summary-period-btn" data-period="all">All Time</button>
-        </div>
       </div>
 
       <div class="card" id="earnings-category-breakdown">
         <h2>Sales By Category</h2>
         <div class="order-detail" style="margin:0 0 12px;">Revenue is estimated from units sold at standard menu pricing ($3/cookie, $5/cinnamon roll). Profit only subtracts ingredient purchases you specifically tagged to that product line — the more you tag, the more accurate this gets. Catering and manual income aren't split by category.</div>
         <div id="category-breakdown-list"></div>
+      </div>
+
+      <div class="card" id="traffic-source-card">
+        <h2>Where Customers Find Us</h2>
+        <div class="order-detail" style="margin:0 0 12px;">From the optional "where'd you find us" tap on the thank-you screens — customers can always skip it, so this only reflects who chose to answer.</div>
+        <div id="traffic-source-list"></div>
       </div>
 
       <div class="stat-grid" id="earnings-overview">
@@ -998,7 +1226,59 @@
         <div style="border-top:1.5px solid var(--pink-light); margin:12px 0 8px;"></div>
         <div class="earnings-line" style="font-size:0.85rem; color:var(--ink-soft);"><span>💕 Tips Collected (included above)</span><span id="earn-tips-collected">$0.00</span></div>
         <div class="earnings-line" style="font-size:0.85rem; color:var(--ink-soft);"><span>🏷️ Discounts Given</span><span id="earn-discounts-given">$0.00</span></div>
-        <button class="btn btn-small" id="export-csv-btn" style="width:100%; margin-top:14px;">📥 Export To CSV</button>
+        <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+          <input type="date" id="export-csv-from" style="flex:1; min-width:120px;" title="From (optional)">
+          <input type="date" id="export-csv-to" style="flex:1; min-width:120px;" title="To (optional)">
+        </div>
+        <div class="order-detail" style="margin:4px 0 0;">Leave dates blank to export everything.</div>
+        <button class="btn btn-small" id="export-csv-btn" style="width:100%; margin-top:8px;">📥 Export To CSV</button>
+      </div>
+
+      <div class="card" id="earnings-ingredients">
+        <h2>🍪 Cost Per Cookie</h2>
+        <div class="order-detail" style="margin:0 0 12px;">A blended average across all flavors: your ingredient spend divided by cookies sold. Doesn't include labor, packaging, or overhead.</div>
+        <div class="tabs" style="margin-bottom:14px;">
+          <button class="cpc-period-btn" data-period="week">Week</button>
+          <button class="cpc-period-btn active" data-period="month">Month</button>
+          <button class="cpc-period-btn" data-period="all">All Time</button>
+        </div>
+        <div class="earnings-line"><span>Ingredient Cost / Cookie</span><span id="cpc-cost">$0.00</span></div>
+        <div class="earnings-line"><span>Avg Revenue / Cookie</span><span id="cpc-revenue">$0.00</span></div>
+        <div class="earnings-line total"><span>Estimated Margin / Cookie</span><span id="cpc-margin">$0.00</span></div>
+        <div class="order-detail" style="margin-top:8px;" id="cpc-cookie-count"></div>
+      </div>
+
+      <div class="card">
+        <h2>Spend By Product Line</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Only counts ingredient purchases you tagged as "Cookies Only" or "Cinnamon Rolls Only" when logging them — shared items (flour, eggs, etc.) aren't split here.</div>
+        <div id="ingredient-product-type-list"></div>
+      </div>
+
+      <div class="card">
+        <h2 id="insights-title">Ingredient Spending</h2>
+        <div class="order-detail" style="margin:0 0 14px;">Based on everything you've logged in "Log Expenses" below.</div>
+
+        <label style="margin-bottom:8px;">Category</label>
+        <div class="tabs" style="margin-bottom:16px;">
+          <button class="ing-category-btn active" data-category="ingredient">🍪 Ingredients</button>
+          <button class="ing-category-btn" data-category="business">📦 Packaging & Business</button>
+        </div>
+
+        <label style="margin-bottom:8px;">Sort By</label>
+        <div class="tabs" style="margin-bottom:14px;">
+          <button class="ing-sort-btn active" data-sort="spent">Highest Spend</button>
+          <button class="ing-sort-btn" data-sort="count">Most Purchased</button>
+        </div>
+
+        <label style="margin-bottom:8px;">Group By</label>
+        <div class="tabs" style="margin-bottom:16px;">
+          <button class="ing-period-btn active" data-period="all">All Time</button>
+          <button class="ing-period-btn" data-period="day">Day</button>
+          <button class="ing-period-btn" data-period="week">Week</button>
+          <button class="ing-period-btn" data-period="month">Month</button>
+        </div>
+
+        <div id="ingredient-insights-list"></div>
       </div>
 
       <div class="card">
@@ -1197,7 +1477,9 @@
 
           <label for="home-base-address-input" style="margin-top:16px;">Your Starting Address</label>
           <div style="display:flex; gap:10px; align-items:center;">
-            <input type="text" id="home-base-address-input" placeholder="e.g. 123 Main St, Anniston, AL">
+            <div style="position:relative; flex:1;">
+              <input type="text" id="home-base-address-input" placeholder="e.g. 123 Main St, Anniston, AL" style="width:100%;">
+            </div>
             <button class="btn btn-small" id="save-home-base-btn">Save</button>
           </div>
           <div class="order-detail" style="margin:6px 0 0;">Used to auto-estimate delivery mileage below. Never shown to customers.</div>
@@ -1347,7 +1629,14 @@ async function tryLogin(pw) {
   // Load discounts and reviews in the background too, so those tabs are
   // ready instantly when tapped — one login now covers everything.
   callFunction('manage-discount-codes', 'list').then(d => {
-    if (d.success) { discountCodes = d.codes; renderCodes(); }
+    if (d.success) {
+      discountCodes = d.codes;
+      renderCodes();
+      // Expiring-code alerts depend on discountCodes, which loads after
+      // the first renderAll() — refresh those two once it's in.
+      renderPriorityBanner();
+      renderAttentionCard();
+    }
   }).catch(err => console.error('Could not load discount codes:', err));
 
   callFunction('manage-reviews', 'list').then(d => {
@@ -1400,14 +1689,19 @@ document.getElementById('password-input').addEventListener('input', (e) => {
   }, 500);
 });
 
+function goToTab(tabName) {
+  const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+  if (!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tabName).classList.add('active');
+  localStorage.setItem('mels_admin_last_tab', tabName);
+  btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-    localStorage.setItem('mels_admin_last_tab', btn.dataset.tab);
-  });
+  btn.addEventListener('click', () => goToTab(btn.dataset.tab));
 });
 
 // Jump straight back to whichever tab was open last time, since a busy
@@ -1425,6 +1719,16 @@ function restoreLastTab() {
 }
 
 function money(n){ return `$${Number(n || 0).toFixed(2)}`; }
+
+function timeAgoStr(dateStr) {
+  const ms = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.round(ms / 60000);
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs} hr${hrs === 1 ? '' : 's'} ago`;
+  const days = Math.round(hrs / 24);
+  return `${days} day${days === 1 ? '' : 's'} ago`;
+}
 
 // Escapes customer-supplied text (names, emails, addresses, reviews, etc.)
 // before it goes into innerHTML — without this, a malicious value typed
@@ -1476,6 +1780,48 @@ function flavorRowHtml(item) {
         <button type="button" class="btn btn-small mm-photo-btn" data-id="${item.id}" data-kind="inventory" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">${item.img_url ? '📷 Change Photo' : '📷 Add Photo'}</button>
         <button type="button" class="btn btn-small mm-toggle-active-btn" data-id="${item.id}" data-active="${item.active !== false}" style="background:var(--white); color:${item.active === false ? '#2e8b57' : '#c9962c'}; border:1.5px solid ${item.active === false ? '#2e8b57' : '#c9962c'};">${item.active === false ? 'Reactivate' : 'Remove From Menu'}</button>
       </div>
+      ${flavorEditPanelHtml(item)}
+    </div>
+  `;
+}
+
+// A real edit form in place of the old 3-stacked-prompt() flow — that
+// version could only touch name/price/description and lost the whole
+// edit if a prompt got mis-cancelled on mobile. This also finally lets
+// type and allergens be corrected after a flavor's been created instead
+// of being stuck forever (photo already has its own working button).
+function flavorEditPanelHtml(item) {
+  const allergenList = Array.isArray(item.allergens) ? item.allergens : [];
+  const allergenOptions = [
+    { key: 'dairy', label: '🥛 Dairy' }, { key: 'eggs', label: '🥚 Eggs' }, { key: 'gluten', label: '🌾 Gluten' },
+    { key: 'soy', label: '🫘 Soy' }, { key: 'nuts', label: '🥜 Tree Nuts' },
+  ];
+  return `
+    <div class="mm-edit-panel" id="flavor-edit-panel-${item.id}" style="display:none; margin-top:10px; padding:12px; background:#fff5f8; border-radius:12px; border:1.5px dashed var(--pink-light, #f3b8d0);">
+      <label style="display:block; font-size:0.8rem; font-weight:700;">Flavor Name</label>
+      <input type="text" id="fe-name-${item.id}" value="${escapeHtml(item.cookie_name)}" style="width:100%;">
+      <label style="display:block; font-size:0.8rem; font-weight:700; margin-top:8px;">Type</label>
+      <select id="fe-type-${item.id}" style="width:100%;">
+        <option value="cookie" ${item.product_type === 'cookie' ? 'selected' : ''}>Cookie</option>
+        <option value="cinnamon_roll" ${item.product_type === 'cinnamon_roll' ? 'selected' : ''}>Cinnamon Roll</option>
+        <option value="cake_slice" ${item.product_type === 'cake_slice' ? 'selected' : ''}>Cake Slice</option>
+        <option value="brownie" ${item.product_type === 'brownie' ? 'selected' : ''}>Brownie</option>
+      </select>
+      <label style="display:block; font-size:0.8rem; font-weight:700; margin-top:8px;">Price Per Item ($)</label>
+      <input type="number" min="0" step="0.01" id="fe-price-${item.id}" value="${item.price || 0}" style="width:100%;">
+      <label style="display:block; font-size:0.8rem; font-weight:700; margin-top:8px;">Description</label>
+      <textarea id="fe-desc-${item.id}" style="width:100%;">${escapeHtml(item.description || '')}</textarea>
+      <label style="display:block; font-size:0.8rem; font-weight:700; margin-top:8px;">Placeholder Emoji</label>
+      <input type="text" id="fe-emoji-${item.id}" maxlength="4" value="${escapeHtml(item.placeholder_emoji || '')}" style="width:100%;">
+      <label style="display:block; font-size:0.8rem; font-weight:700; margin-top:8px;">Allergens</label>
+      <div class="choice-group fe-allergen-group" data-id="${item.id}" style="flex-wrap:wrap;">
+        ${allergenOptions.map(a => `<div class="choice-card fe-allergen-chip ${allergenList.includes(a.key) ? 'selected' : ''}" data-id="${item.id}" data-allergen="${a.key}">${a.label}</div>`).join('')}
+      </div>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button type="button" class="btn btn-small fe-save-btn" data-id="${item.id}">Save Changes</button>
+        <button type="button" class="btn btn-small btn-outline fe-cancel-btn" data-id="${item.id}">Cancel</button>
+      </div>
+      <div class="error" id="fe-error-${item.id}"></div>
     </div>
   `;
 }
@@ -1603,7 +1949,25 @@ function renderMenuManagement() {
   });
 
   document.querySelectorAll('.mm-edit-btn').forEach(btn => {
-    btn.addEventListener('click', () => openFlavorEditPrompt(btn.dataset.id));
+    btn.addEventListener('click', () => {
+      const panel = document.getElementById('flavor-edit-panel-' + btn.dataset.id);
+      if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    });
+  });
+
+  document.querySelectorAll('.fe-cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = document.getElementById('flavor-edit-panel-' + btn.dataset.id);
+      if (panel) panel.style.display = 'none';
+    });
+  });
+
+  document.querySelectorAll('.fe-allergen-chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+
+  document.querySelectorAll('.fe-save-btn').forEach(btn => {
+    btn.addEventListener('click', () => saveFlavorEdit(btn.dataset.id, btn));
   });
 
   wirePhotoButtons(cookieListEl);
@@ -1613,30 +1977,43 @@ function renderMenuManagement() {
   renderThemeBoxManagement();
 }
 
-// A lightweight inline edit flow using prompt() for the handful of fields
-// that change rarely (name/price/description) — keeps this shippable
-// without building a full modal system.
-async function openFlavorEditPrompt(id) {
+async function saveFlavorEdit(id, btn) {
   const item = dashboardData.inventory.find(i => i.id === id);
   if (!item) return;
-  const newName = prompt('Flavor name:', item.cookie_name);
-  if (newName === null) return;
-  const newPriceStr = prompt('Price per item ($):', item.price || 0);
-  if (newPriceStr === null) return;
-  const newDesc = prompt('Description:', item.description || '');
-  if (newDesc === null) return;
-  const newPrice = parseFloat(newPriceStr);
-  if (isNaN(newPrice) || newPrice < 0) { alert('Please enter a valid price.'); return; }
+  const errorBox = document.getElementById('fe-error-' + id);
+  errorBox.textContent = '';
 
+  const name = document.getElementById('fe-name-' + id).value.trim();
+  const type = document.getElementById('fe-type-' + id).value;
+  const price = parseFloat(document.getElementById('fe-price-' + id).value);
+  const desc = document.getElementById('fe-desc-' + id).value.trim();
+  const emoji = document.getElementById('fe-emoji-' + id).value.trim();
+  const allergens = Array.from(document.querySelectorAll(`.fe-allergen-chip[data-id="${id}"].selected`)).map(c => c.dataset.allergen);
+
+  if (!name || isNaN(price) || price < 0) {
+    errorBox.textContent = 'Please enter a flavor name and a valid price.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
   try {
-    await callAdmin('update_inventory', { id, cookie_name: newName.trim(), price: newPrice, description: newDesc.trim() });
-    item.cookie_name = newName.trim();
-    item.price = newPrice;
-    item.description = newDesc.trim();
+    await callAdmin('update_inventory', {
+      id, cookie_name: name, product_type: type, price, description: desc,
+      placeholder_emoji: emoji || null, allergens,
+    });
+    item.cookie_name = name;
+    item.product_type = type;
+    item.price = price;
+    item.description = desc;
+    item.placeholder_emoji = emoji || null;
+    item.allergens = allergens;
     renderMenuManagement();
     showToast('Flavor updated ✧');
   } catch (err) {
-    alert('Could not save changes: ' + err.message);
+    errorBox.textContent = 'Could not save: ' + err.message;
+    btn.disabled = false;
+    btn.textContent = 'Save Changes';
   }
 }
 
@@ -1691,6 +2068,7 @@ document.getElementById('mm-add-btn').addEventListener('click', async () => {
     document.getElementById('mm-new-on-hand').value = '';
     document.getElementById('mm-new-stock').value = '';
     document.querySelectorAll('.mm-allergen-chip.selected').forEach(c => c.classList.remove('selected'));
+    mmNewFlavorDraft.clear();
     const refreshed = await callAdmin('dashboard_data');
     if (refreshed.success) { dashboardData = refreshed; renderAll(); }
     showToast('New flavor added ✧');
@@ -1931,6 +2309,7 @@ document.getElementById('mm-newbox-add-btn').addEventListener('click', async () 
     document.getElementById('mm-newbox-desc').value = '';
     document.getElementById('mm-newbox-emoji').value = '';
     document.getElementById('mm-newbox-photo').value = '';
+    mmNewBoxDraft.clear();
     const refreshed = await callAdmin('dashboard_data');
     if (refreshed.success) { dashboardData = refreshed; renderAll(); }
     showToast('New box created ✧');
@@ -1984,12 +2363,14 @@ function showToast(msg) {
 function renderAll() {
   renderTodayTab();
   renderPriorityBanner();
+  renderAttentionCard();
   renderBakingTodo();
   renderMonthlyGoal();
   renderBusinessNotes();
   renderMenuManagement();
   renderOrders();
   renderCatering();
+  renderCateringCalculator();
   renderInventory();
   renderIngredientInsights();
   renderIngredientSpendSummary();
@@ -2003,6 +2384,220 @@ function renderAll() {
   renderBusinessInfo();
   renderScriptsTab();
   renderEmailLogTab();
+  renderSalesSnapshot();
+  renderAbandonedCheckouts();
+  renderReviewRequests();
+}
+
+// Online checkouts that were started (a Stripe session was created) but
+// never turned into a real order — either the customer backed out or
+// just never finished. Only ones older than 30 minutes are sent by the
+// backend, so this never shows someone who's simply still mid-checkout.
+function renderAbandonedCheckouts() {
+  const card = document.getElementById('abandoned-checkouts-card');
+  const listEl = document.getElementById('abandoned-checkouts-list');
+  if (!card || !listEl) return;
+
+  const rows = dashboardData.abandonedCheckouts || [];
+  if (rows.length === 0) {
+    card.style.display = 'none';
+    listEl.innerHTML = '';
+    return;
+  }
+  card.style.display = '';
+
+  function timeAgo(dateStr) {
+    const ms = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.round(ms / 60000);
+    if (mins < 60) return `${mins} min ago`;
+    const hrs = Math.round(mins / 60);
+    if (hrs < 24) return `${hrs} hr${hrs === 1 ? '' : 's'} ago`;
+    const days = Math.round(hrs / 24);
+    return `${days} day${days === 1 ? '' : 's'} ago`;
+  }
+
+  listEl.innerHTML = rows.map(r => `
+    <div class="order-row" data-abandoned-id="${r.id}">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+        <div>
+          <div style="font-weight:700;">${escapeHtml(r.full_name || 'Unknown customer')}</div>
+          <div class="order-detail">${r.email ? escapeHtml(r.email) : ''}${r.email && r.phone ? ' · ' : ''}${r.phone ? escapeHtml(r.phone) : ''}</div>
+          <div class="order-detail" style="margin-top:4px;">${escapeHtml(r.items_summary || 'No items recorded')}</div>
+          <div class="order-detail" style="margin-top:4px;">${r.total != null ? money(Number(r.total)) : ''} · Started ${timeAgo(r.created_at)}</div>
+          ${contactLinksHtml(r.phone, r.email)}
+        </div>
+        <button type="button" class="btn btn-small btn-outline abandoned-dismiss-btn" data-id="${r.id}" style="white-space:nowrap;">Dismiss</button>
+      </div>
+    </div>
+  `).join('');
+
+  listEl.querySelectorAll('.abandoned-dismiss-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Dismissing...';
+      try {
+        await callAdmin('dismiss_abandoned_checkout', { id: btn.dataset.id });
+        const refreshed = await callAdmin('dashboard_data');
+        if (refreshed.success) { dashboardData = refreshed; renderAll(); }
+        showToast('Dismissed');
+      } catch (err) {
+        showToast('Could not dismiss: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Dismiss';
+      }
+    });
+  });
+}
+
+// Customers who got their order at least a day ago and haven't been asked
+// for a review yet. This ONLY ever surfaces candidates — nothing is
+// emailed until you personally click Send on a specific row. (There used
+// to be an hourly job that sent these automatically; it's been turned
+// off in favor of this approve-each-one list.)
+// The review-request queue is the one place an email genuinely "waits"
+// for a decision before it sends — everything else fires the instant its
+// trigger happens, with nothing to intervene on in between. Rendered into
+// both the Orders tab (where it's always lived) and the Email Center's
+// "Awaiting Your Approval" section, from one shared list of rows, so
+// Send/Skip works identically and stays in sync no matter where she acts
+// from.
+function reviewRequestRowHtml(r) {
+  const itemsSummary = Object.entries(r.cookies || {}).map(([name, qty]) => `${qty} × ${name}`).join(', ');
+  // How long this has been sitting in the queue — a 3-week-old one looks
+  // identical to a same-day one otherwise, and stale ones are the easiest
+  // to keep scrolling past without noticing.
+  let waitingText = '';
+  if (r.preferred_date) {
+    const daysSince = Math.floor((Date.now() - new Date(r.preferred_date + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24));
+    if (daysSince >= 1) waitingText = ` · waiting ${daysSince} day${daysSince === 1 ? '' : 's'}`;
+  }
+  return `
+    <div class="order-row" data-review-order-id="${r.id}">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:700;">${escapeHtml(r.full_name || 'Customer')}</div>
+          <div class="order-detail">${escapeHtml(r.email)}</div>
+          <div class="order-detail" style="margin-top:4px;">${escapeHtml(itemsSummary || 'No items listed')}</div>
+          <div class="order-detail" style="margin-top:4px;">${r.total != null ? money(Number(r.total)) : ''}${r.preferred_date ? ' · Picked up ' + r.preferred_date : ''}${waitingText}</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-small review-send-btn" data-id="${r.id}" style="white-space:nowrap;">Send Request</button>
+          <button type="button" class="btn btn-small btn-outline review-skip-btn" data-id="${r.id}" style="white-space:nowrap;">Skip — Don't Send</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function wireReviewRequestButtons(listEl) {
+  listEl.querySelectorAll('.review-send-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      try {
+        await callAdmin('send_review_request', { order_id: btn.dataset.id });
+        const refreshed = await callAdmin('dashboard_data');
+        if (refreshed.success) { dashboardData = refreshed; renderAll(); }
+        showToast('Review request sent ✧');
+      } catch (err) {
+        showToast('Could not send: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Send Request';
+      }
+    });
+  });
+
+  listEl.querySelectorAll('.review-skip-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Skipping...';
+      try {
+        await callAdmin('dismiss_review_request', { order_id: btn.dataset.id });
+        const refreshed = await callAdmin('dashboard_data');
+        if (refreshed.success) { dashboardData = refreshed; renderAll(); }
+        showToast('Skipped — won’t ask this customer');
+      } catch (err) {
+        showToast('Could not skip: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Skip';
+      }
+    });
+  });
+}
+
+function renderReviewRequests() {
+  renderCustomerOutreach();
+  const rows = dashboardData.pendingReviewRequests || [];
+  const rowsHtml = rows.map(reviewRequestRowHtml).join('');
+
+  // Orders tab copy: hides itself entirely when there's nothing waiting.
+  const card = document.getElementById('review-requests-card');
+  const listEl = document.getElementById('review-requests-list');
+  if (card && listEl) {
+    if (rows.length === 0) {
+      card.style.display = 'none';
+      listEl.innerHTML = '';
+    } else {
+      card.style.display = '';
+      listEl.innerHTML = rowsHtml;
+      wireReviewRequestButtons(listEl);
+    }
+  }
+
+  // Email Center copy: this is its "home", so it stays visible with an
+  // empty note instead of disappearing, and also drives that tab's badge.
+  const emailListEl = document.getElementById('review-requests-list-email');
+  if (emailListEl) {
+    emailListEl.innerHTML = rows.length === 0
+      ? '<div class="empty-note">Nothing waiting on you right now.</div>'
+      : rowsHtml;
+    wireReviewRequestButtons(emailListEl);
+  }
+  const emailBadge = document.getElementById('email-awaiting-count');
+  if (emailBadge) emailBadge.textContent = rows.length;
+}
+
+// Quick "what's actually selling" view for the Orders tab — total orders,
+// total revenue, and flavors ranked by quantity sold, computed client-side
+// from orders already loaded (no extra backend call needed).
+function renderSalesSnapshot() {
+  const statsEl = document.getElementById('sales-snapshot-stats');
+  const flavorsEl = document.getElementById('sales-snapshot-flavors');
+  if (!statsEl || !flavorsEl) return;
+
+  const orders = (dashboardData.orders || []).filter(o => o.status !== 'cancelled');
+  const orderCount = orders.length;
+  const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+
+  const flavorTotals = {};
+  orders.forEach(o => {
+    Object.entries(o.cookies || {}).forEach(([flavor, qty]) => {
+      flavorTotals[flavor] = (flavorTotals[flavor] || 0) + Number(qty || 0);
+    });
+  });
+  const ranked = Object.entries(flavorTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const maxCount = ranked.length ? ranked[0][1] : 0;
+
+  statsEl.innerHTML = `
+    <div class="stat-card"><div class="stat-value">${orderCount}</div><div class="stat-label">Orders</div></div>
+    <div class="stat-card"><div class="stat-value">$${totalRevenue.toFixed(2)}</div><div class="stat-label">Revenue</div></div>
+  `;
+
+  if (ranked.length === 0) {
+    flavorsEl.innerHTML = '<div class="empty-note" style="padding-top:8px;">No flavor data yet.</div>';
+    return;
+  }
+
+  flavorsEl.innerHTML = `
+    <div class="drawer-section-title" style="margin-top:14px;">🏆 Best Sellers</div>
+    ${ranked.map(([flavor, count], idx) => `
+      <div class="flavor-rank-row ${idx === 0 ? 'best-seller' : ''}">
+        <span class="flavor-rank-name">${idx === 0 ? '🏆 ' : ''}${escapeHtml(flavor)}</span>
+        <span class="flavor-rank-bar-wrap"><span class="flavor-rank-bar" style="width:${maxCount ? Math.round((count / maxCount) * 100) : 0}%;"></span></span>
+        <span class="flavor-rank-count">${count}</span>
+      </div>
+    `).join('')}
+  `;
 }
 
 let cpcPeriod = 'month';
@@ -2076,37 +2671,205 @@ document.querySelectorAll('.cpc-period-btn').forEach(btn => {
 // The single most urgent thing to know right now, checked in priority
 // order — meant to be readable in the two seconds it takes to open the
 // app during a busy stretch, without scrolling through every card.
-function renderPriorityBanner() {
-  const banner = document.getElementById('priority-banner');
+// Single source of truth for "things waiting on Meliese" — feeds the
+// stacked priority banner, the Today tab's Needs Attention card, and the
+// small count badges on the tab buttons, so all three always agree
+// instead of each tab silently defining "low stock" or "pending" a
+// slightly different way.
+function getAttentionItems() {
   const todayStr = new Date().toISOString().split('T')[0];
   const orders = dashboardData.orders || [];
+  const items = [];
 
   const dueTodayNotDone = orders.filter(o => o.preferred_date === todayStr && o.status !== 'completed' && o.status !== 'cancelled');
-  const outOfStock = (dashboardData.inventory || []).filter(i => i.in_stock === false);
-  const needsQuote = (dashboardData.catering || []).filter(r => !r.quoted_total && r.status !== 'cancelled');
+  if (dueTodayNotDone.length > 0) {
+    items.push({ icon: '📦', tab: 'today', count: dueTodayNotDone.length,
+      text: `${dueTodayNotDone.length} order${dueTodayNotDone.length === 1 ? '' : 's'} due today ${dueTodayNotDone.length === 1 ? "isn't" : "aren't"} marked complete yet` });
+  }
+
   const now = new Date();
   const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   const lapsedOrSoonBizInfo = getBusinessInfoItems().filter(item => new Date(item.date + 'T00:00:00') <= in30Days);
-
-  let message = null;
   if (lapsedOrSoonBizInfo.length > 0) {
     const item = lapsedOrSoonBizInfo.sort((a, b) => new Date(a.date) - new Date(b.date))[0];
     const isExpired = new Date(item.date + 'T00:00:00') < now;
-    message = isExpired ? `⚠️ Your ${item.name} has expired` : `⚠️ Your ${item.name} renews soon (${new Date(item.date + 'T00:00:00').toLocaleDateString()})`;
-  } else if (dueTodayNotDone.length > 0) {
-    message = `📦 ${dueTodayNotDone.length} order${dueTodayNotDone.length === 1 ? '' : 's'} due today ${dueTodayNotDone.length === 1 ? "isn't" : "aren't"} marked complete yet`;
-  } else if (outOfStock.length > 0) {
-    message = `⚠️ ${outOfStock.length} item${outOfStock.length === 1 ? ' is' : 's are'} out of stock — customers may be trying to order`;
-  } else if (needsQuote.length > 0) {
-    message = `📋 ${needsQuote.length} catering request${needsQuote.length === 1 ? '' : 's'} still ${needsQuote.length === 1 ? 'needs' : 'need'} a quote`;
+    items.push({ icon: '⚠️', tab: 'earnings', count: lapsedOrSoonBizInfo.length,
+      text: isExpired ? `Your ${item.name} has expired` : `Your ${item.name} renews soon (${new Date(item.date + 'T00:00:00').toLocaleDateString()})` });
   }
 
-  if (message) {
-    banner.textContent = message;
-    banner.style.display = 'block';
-  } else {
-    banner.style.display = 'none';
+  const outOfStock = (dashboardData.inventory || []).filter(i => i.in_stock === false);
+  if (outOfStock.length > 0) {
+    items.push({ icon: '⚠️', tab: 'menu-mgmt', count: outOfStock.length,
+      text: `${outOfStock.length} item${outOfStock.length === 1 ? ' is' : 's are'} out of stock — customers may be trying to order` });
   }
+
+  const lowStock = (dashboardData.inventory || []).filter(i => i.in_stock !== false && i.stock_count <= 5);
+  if (lowStock.length > 0) {
+    items.push({ icon: '🧺', tab: 'menu-mgmt', count: lowStock.length,
+      text: `${lowStock.length} flavor${lowStock.length === 1 ? ' is' : 's are'} running low (5 or fewer on hand)` });
+  }
+
+  const needsQuote = (dashboardData.catering || []).filter(r => !r.quoted_total && r.status !== 'cancelled');
+  if (needsQuote.length > 0) {
+    items.push({ icon: '📋', tab: 'catering', count: needsQuote.length,
+      text: `${needsQuote.length} catering request${needsQuote.length === 1 ? '' : 's'} still ${needsQuote.length === 1 ? 'needs' : 'need'} a quote` });
+  }
+
+  // Anything sitting in "new" for 2+ days is exactly the kind of thing
+  // that's easy to lose track of — it's not urgent-looking, so it never
+  // fights its way back to the top of mind on its own.
+  const staleOrders = orders.filter(o => {
+    if (o.status !== 'new') return false;
+    const ageHours = (now.getTime() - new Date(o.created_at).getTime()) / (1000 * 60 * 60);
+    return ageHours >= 48;
+  });
+  if (staleOrders.length > 0) {
+    items.push({ icon: '⏳', tab: 'orders', count: staleOrders.length,
+      text: `${staleOrders.length} order${staleOrders.length === 1 ? "'s" : "s've"} been sitting in "New" for 2+ days — worth a look` });
+  }
+
+  // A catering request that's confirmed but shows no matching payment on
+  // file is an easy thing to lose track of, especially once it's off her
+  // mental radar as "handled."
+  const confirmedNoPayment = (dashboardData.catering || []).filter(r => {
+    if (r.status !== 'confirmed') return false;
+    return !(dashboardData.payments || []).some(p => p.catering_request_id === r.id);
+  });
+  if (confirmedNoPayment.length > 0) {
+    items.push({ icon: '💳', tab: 'catering', count: confirmedNoPayment.length,
+      text: `${confirmedNoPayment.length} confirmed catering order${confirmedNoPayment.length === 1 ? ' has' : 's have'} no payment logged yet` });
+  }
+
+  // Discount codes about to expire, or already expired but still marked
+  // active — both are easy to forget once she's not actively thinking
+  // about promotions.
+  const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const expiringCodes = (discountCodes || []).filter(c => {
+    if (!c.active || !c.expires_at) return false;
+    const exp = new Date(c.expires_at);
+    return exp <= in7Days;
+  });
+  if (expiringCodes.length > 0) {
+    const hasExpired = expiringCodes.some(c => new Date(c.expires_at) < now);
+    items.push({ icon: '🏷️', tab: 'discounts', count: expiringCodes.length,
+      text: `${expiringCodes.length} discount code${expiringCodes.length === 1 ? '' : 's'} ${hasExpired ? 'expired or expiring' : 'expiring'} within a week` });
+  }
+
+  // Stale on-hand/frozen counts quietly poison the Baking To-Do list —
+  // easy to forget to update if the day gets away from her. Uses the
+  // most recent inventory row's updated_at, so nothing new needs saving
+  // just to track this.
+  const activeInventory = (dashboardData.inventory || []).filter(i => i.active !== false);
+  if (activeInventory.length > 0) {
+    const mostRecentUpdate = activeInventory.reduce((latest, i) => {
+      const t = i.updated_at ? new Date(i.updated_at).getTime() : 0;
+      return t > latest ? t : latest;
+    }, 0);
+    if (mostRecentUpdate > 0) {
+      const hoursSince = (now.getTime() - mostRecentUpdate) / (1000 * 60 * 60);
+      if (hoursSince >= 24) {
+        const daysSince = Math.floor(hoursSince / 24);
+        items.push({ icon: '🔄', tab: 'menu-mgmt', count: 1,
+          text: `Your stock counts haven't been updated in ${daysSince}+ day${daysSince === 1 ? '' : 's'}` });
+      }
+    }
+  }
+
+  const abandonedCheckouts = (dashboardData.abandonedCheckouts || []);
+  if (abandonedCheckouts.length > 0) {
+    items.push({ icon: '🛒', tab: 'orders', count: abandonedCheckouts.length,
+      text: `${abandonedCheckouts.length} customer${abandonedCheckouts.length === 1 ? '' : 's'} started checking out but didn't finish` });
+  }
+
+  const pendingReviews = (dashboardData.pendingReviewRequests || []);
+  if (pendingReviews.length > 0) {
+    items.push({ icon: '📝', tab: 'reviews', count: pendingReviews.length,
+      text: `${pendingReviews.length} customer${pendingReviews.length === 1 ? ' is' : 's are'} ready for a review request` });
+  }
+
+  return items;
+}
+
+function renderPriorityBanner() {
+  const banner = document.getElementById('priority-banner');
+  const items = getAttentionItems();
+
+  if (items.length === 0) {
+    banner.style.display = 'none';
+    banner.innerHTML = '';
+    return;
+  }
+
+  // Stack every urgent item as its own line instead of showing only the
+  // single highest-priority one — a full inbox shouldn't hide everything
+  // behind whichever item happened to be checked first.
+  banner.style.display = 'block';
+  banner.innerHTML = items.map(item => `
+    <div class="priority-banner-line" data-tab="${item.tab}" style="background:linear-gradient(135deg, var(--pink-hot), #ff5fa8); color:#fff; border-radius:16px; padding:12px 16px; margin-bottom:8px; font-weight:600; text-align:center; cursor:pointer;">
+      ${item.icon} ${item.text}
+    </div>
+  `).join('');
+  banner.querySelectorAll('.priority-banner-line').forEach(el => {
+    el.addEventListener('click', () => goToTab(el.dataset.tab));
+  });
+}
+
+function renderAttentionCard() {
+  const card = document.getElementById('attention-card');
+  const list = document.getElementById('attention-list');
+  const items = getAttentionItems();
+
+  if (items.length === 0) {
+    card.style.display = 'none';
+    list.innerHTML = '';
+  } else {
+    card.style.display = 'block';
+    list.innerHTML = items.map(item => `
+      <div class="today-mini-row attention-row" data-tab="${item.tab}" style="cursor:pointer;">
+        <span>${item.icon} ${item.text}</span>
+        <span style="color:var(--pink-hot); font-weight:700;">›</span>
+      </div>
+    `).join('');
+    list.querySelectorAll('.attention-row').forEach(el => {
+      el.addEventListener('click', () => goToTab(el.dataset.tab));
+    });
+  }
+
+  // Small count badges on the tab buttons themselves, so she can see
+  // there's pending work without opening the tab at all. Keys here are
+  // item.tab values; the badge element id isn't always 'tab-badge-<tab>'
+  // (the Products tab kept its older id="tab-badge-inventory" from before
+  // Inventory merged into it), so each tab maps to its actual badge id.
+  const badgeIdByTab = { orders: 'tab-badge-orders', 'menu-mgmt': 'tab-badge-inventory', catering: 'tab-badge-catering', reviews: 'tab-badge-reviews', discounts: 'tab-badge-discounts' };
+  const badgeCounts = { orders: 0, 'menu-mgmt': 0, catering: 0, reviews: 0, discounts: 0 };
+  items.forEach(item => { if (item.tab in badgeCounts) badgeCounts[item.tab] += item.count; });
+  Object.entries(badgeCounts).forEach(([tab, count]) => {
+    const badge = document.getElementById(badgeIdByTab[tab] || ('tab-badge-' + tab));
+    if (!badge) return;
+    if (count > 0) {
+      badge.textContent = count;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  });
+}
+
+// Loosely parses free-text pickup times like "2:00 PM", "2pm", "14:30"
+// into minutes-since-midnight, so today's list can be sorted by what's
+// actually coming up next instead of by whatever order they were placed
+// in. Returns null for anything unparseable rather than guessing.
+function parseTimeToMinutes(timeStr) {
+  if (!timeStr) return null;
+  const m = String(timeStr).trim().match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+  if (!m) return null;
+  let hour = parseInt(m[1], 10);
+  const min = m[2] ? parseInt(m[2], 10) : 0;
+  const ampm = m[3] ? m[3].toLowerCase() : null;
+  if (Number.isNaN(hour) || hour > 23) return null;
+  if (ampm === 'pm' && hour < 12) hour += 12;
+  if (ampm === 'am' && hour === 12) hour = 0;
+  return hour * 60 + min;
 }
 
 function renderTodayTab() {
@@ -2118,19 +2881,38 @@ function renderTodayTab() {
   document.getElementById('today-order-count').textContent = todaysOrders.length;
   document.getElementById('today-revenue').textContent = money(todayRevenue);
 
+  // Soonest pickups first, so the clock — not the order they were placed
+  // in — decides what she sees first; anything without a parseable time
+  // sinks to the bottom instead of interrupting the real ordering.
+  const now = new Date();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const sortedTodaysOrders = [...todaysOrders].sort((a, b) => {
+    const am = parseTimeToMinutes(a.pickup_time);
+    const bm = parseTimeToMinutes(b.pickup_time);
+    if (am === null && bm === null) return 0;
+    if (am === null) return 1;
+    if (bm === null) return -1;
+    return am - bm;
+  });
+
   const list = document.getElementById('today-orders-list');
   if (todaysOrders.length === 0) {
     list.innerHTML = '<div class="empty-note">Nothing scheduled for today.</div>';
   } else {
-    list.innerHTML = todaysOrders.map(o => `
-      <div class="today-mini-row">
+    list.innerHTML = sortedTodaysOrders.map(o => {
+      const mins = parseTimeToMinutes(o.pickup_time);
+      const notDone = o.status !== 'completed' && o.status !== 'cancelled';
+      const isOverdue = mins !== null && mins < nowMinutes && notDone;
+      return `
+      <div class="today-mini-row" style="${isOverdue ? 'background:#fde8ef; border-radius:10px; padding:8px 10px; margin:-2px -2px 2px;' : ''}">
         <div>
-          <div class="name">${escapeHtml(o.full_name)}</div>
+          <div class="name">${escapeHtml(o.full_name)}${isOverdue ? ' <span style="color:#c0025e; font-weight:700; font-size:0.78rem;">⏰ OVERDUE</span>' : ''}</div>
           <div class="detail">${o.fulfillment_type === 'pickup' ? 'Pickup' : 'Delivery'} · ${o.pickup_time || 'Time TBD'}</div>
         </div>
         <div class="order-total">${money(o.total)}</div>
       </div>
-    `).join('');
+    `;
+    }).join('');
   }
 
   const lowStock = (dashboardData.inventory || []).filter(i => i.in_stock === false || i.stock_count <= 5);
@@ -2243,7 +3025,7 @@ function renderBusinessNotes() {
   listEl.innerHTML = sorted.map(n => `
     <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid var(--pink-light);">
       <input type="checkbox" class="business-note-check" data-id="${n.id}" ${n.done ? 'checked' : ''} style="margin-top:3px; width:18px; height:18px; flex-shrink:0; accent-color:var(--pink-hot);">
-      <span style="flex:1; ${n.done ? 'text-decoration:line-through; color:var(--ink-soft); opacity:0.7;' : ''}">${n.text}</span>
+      <span style="flex:1; ${n.done ? 'text-decoration:line-through; color:var(--ink-soft); opacity:0.7;' : ''}">${escapeHtml(n.text)}</span>
       <button type="button" class="business-note-delete" data-id="${n.id}" style="background:none; border:none; color:#c0025e; cursor:pointer; font-size:1.1rem; flex-shrink:0;">✕</button>
     </div>
   `).join('');
@@ -2292,6 +3074,44 @@ function buildCustomerFrequency(orders) {
   return counts;
 }
 
+// Pulls together the two places a customer might need a follow-up —
+// abandoned checkouts (Orders tab) and pending review requests (Email
+// Center) — into one pointer card here, rather than duplicating either
+// list. Purely a signpost: clicking a line jumps to where you'd act on it.
+function renderCustomerOutreach() {
+  const card = document.getElementById('customer-outreach-card');
+  const listEl = document.getElementById('customer-outreach-list');
+  if (!card || !listEl) return;
+  const abandoned = dashboardData.abandonedCheckouts || [];
+  const pendingReviews = dashboardData.pendingReviewRequests || [];
+  if (abandoned.length === 0 && pendingReviews.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  const rows = [];
+  if (abandoned.length > 0) {
+    rows.push(`
+      <div class="today-mini-row attention-row" data-tab="orders" style="cursor:pointer;">
+        <span>🛒 ${abandoned.length} left something in checkout</span>
+        <span style="color:var(--pink-hot); font-weight:700;">Orders tab →</span>
+      </div>
+    `);
+  }
+  if (pendingReviews.length > 0) {
+    rows.push(`
+      <div class="today-mini-row attention-row" data-tab="email-center" style="cursor:pointer;">
+        <span>📝 ${pendingReviews.length} ready for a review request</span>
+        <span style="color:var(--pink-hot); font-weight:700;">Emails tab →</span>
+      </div>
+    `);
+  }
+  listEl.innerHTML = rows.join('');
+  listEl.querySelectorAll('.attention-row').forEach(row => {
+    row.addEventListener('click', () => goToTab(row.dataset.tab));
+  });
+}
+
 function renderCustomerDirectory() {
   const listEl = document.getElementById('customer-directory-list');
   const orders = dashboardData.orders || [];
@@ -2305,7 +3125,7 @@ function renderCustomerDirectory() {
     const isPlaceholder = !o.email || o.email === 'in-person-sale@melstreat.com';
     const key = isPlaceholder ? `name:${o.full_name.toLowerCase()}` : o.email.toLowerCase();
     if (!customers[key]) {
-      customers[key] = { name: o.full_name, email: isPlaceholder ? '' : o.email, phone: o.phone || '', orderCount: 0, totalSpent: 0, lastOrderDate: null, items: {} };
+      customers[key] = { key, name: o.full_name, email: isPlaceholder ? '' : o.email, phone: o.phone || '', orderCount: 0, totalSpent: 0, lastOrderDate: null, items: {}, orders: [] };
     }
     const c = customers[key];
     c.orderCount += 1;
@@ -2314,6 +3134,7 @@ function renderCustomerDirectory() {
     const orderDate = new Date(o.created_at);
     if (!c.lastOrderDate || orderDate > c.lastOrderDate) c.lastOrderDate = orderDate;
     Object.entries(o.cookies || {}).forEach(([name, qty]) => { c.items[name] = (c.items[name] || 0) + Number(qty || 0); });
+    c.orders.push(o);
   });
 
   let list = Object.values(customers);
@@ -2333,24 +3154,92 @@ function renderCustomerDirectory() {
   }
 
   const now = new Date();
+  const allNotes = getCustomerNotes();
   listEl.innerHTML = list.map(c => {
     const daysSince = Math.floor((now - c.lastOrderDate) / (1000 * 60 * 60 * 24));
     const lapsedTag = daysSince > 60 ? ` <span style="color:#c0025e; font-weight:700;">· ${daysSince}d ago</span>` : ` · ${daysSince}d ago`;
     const favorite = Object.entries(c.items).sort((a, b) => b[1] - a[1])[0];
+    const noteText = allNotes[c.key] || '';
+    const sortedOrders = c.orders.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const historyHtml = sortedOrders.map(o => {
+      const itemsText = Object.entries(o.cookies || {}).map(([n, q]) => `${q}× ${n}`).join(', ');
+      return `<div class="order-detail" style="padding:4px 0; border-bottom:1px dashed var(--border);">${new Date(o.created_at).toLocaleDateString()} · ${money(o.total)} · ${escapeHtml(itemsText || 'No items listed')} <span style="text-transform:capitalize;">(${escapeHtml(o.status)})</span></div>`;
+    }).join('');
     return `
-      <div style="padding:10px 0; border-bottom:1px solid var(--pink-light);">
-        <div style="display:flex; justify-content:space-between; align-items:baseline;">
-          <span style="font-weight:600;">${escapeHtml(c.name)}</span>
-          <span style="font-size:0.8rem; color:var(--ink-soft);">${c.orderCount} order${c.orderCount === 1 ? '' : 's'} · ${money(c.totalSpent)}</span>
+      <details class="customer-row-details" style="padding:10px 0; border-bottom:1px solid var(--pink-light);">
+        <summary style="cursor:pointer; list-style:none;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-weight:600;"><span class="chevron">▸</span> ${escapeHtml(c.name)}</span>
+            <span style="font-size:0.8rem; color:var(--ink-soft);">${c.orderCount} order${c.orderCount === 1 ? '' : 's'} · ${money(c.totalSpent)}</span>
+          </div>
+          <div class="order-detail" style="margin:2px 0 0;">Last order${lapsedTag}${favorite ? ` · Usually gets ${escapeHtml(favorite[0])}` : ''}${noteText ? ' · 📌 Has a note' : ''}</div>
+        </summary>
+        <div style="margin-top:8px;">
+          ${contactLinksHtml(c.phone, c.email)}
+          <div style="margin-top:10px; font-weight:700; font-size:0.8rem;">Order History</div>
+          ${historyHtml || '<div class="empty-note">No orders on file.</div>'}
+          <label style="margin-top:10px; display:block; font-size:0.8rem; font-weight:700;">📌 Notes (allergy, preferences, VIP, etc.)</label>
+          <textarea class="customer-note-input" style="width:100%;" placeholder="e.g. Allergic to walnuts, always wants extra frosting">${escapeHtml(noteText)}</textarea>
+          <button type="button" class="btn btn-small customer-note-save-btn" data-key="${escapeHtml(c.key)}" style="margin-top:6px;">Save Note</button>
         </div>
-        <div class="order-detail" style="margin:2px 0 0;">Last order${lapsedTag}${favorite ? ` · Usually gets ${escapeHtml(favorite[0])}` : ''}</div>
-        ${contactLinksHtml(c.phone, c.email)}
-      </div>
+      </details>
     `;
   }).join('');
+
+  listEl.querySelectorAll('.customer-note-save-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const textarea = btn.closest('details').querySelector('.customer-note-input');
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      try {
+        await saveCustomerNote(btn.dataset.key, textarea.value.trim());
+        showToast('Note saved ✧');
+      } catch (err) {
+        alert('Could not save note: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+  });
 }
 document.getElementById('customer-search-input').addEventListener('input', renderCustomerDirectory);
 document.getElementById('customer-sort-select').addEventListener('change', renderCustomerDirectory);
+
+// Per-customer notes (allergy, preferences, VIP flags) — stored as one
+// JSON blob in Settings keyed by the same customer key the directory
+// already groups orders by, same lightweight pattern as Business Notes.
+function getCustomerNotes() {
+  try { return JSON.parse(dashboardData.settings.customer_notes || '{}'); } catch (e) { return {}; }
+}
+async function saveCustomerNote(key, note) {
+  const notes = getCustomerNotes();
+  if (note) notes[key] = note; else delete notes[key];
+  await callAdmin('update_setting', { key: 'customer_notes', value: JSON.stringify(notes) });
+  dashboardData.settings.customer_notes = JSON.stringify(notes);
+}
+
+// Opens Google Voice directly (its Android app, if installed — Android
+// hands voice.google.com links straight to the app it's registered for,
+// separately from which app is set as your default dialer/texting app,
+// so this works without making Voice your default and without risking
+// a personal call/text going out on the business line by accident) and
+// copies the customer's number to the clipboard first so it's just a
+// paste away in Voice's own "new message" search. On a computer this
+// opens the Google Voice website instead, where a Copy Number step is
+// just as fast. Never sends anything by itself — it only gets you to
+// the point of typing/sending inside Google Voice.
+async function textViaVoice(phone) {
+  const cleanPhone = phone.replace(/[^\d+]/g, '');
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(cleanPhone);
+      showToast('Number copied — paste into Google Voice\'s search ✧');
+    }
+  } catch (e) { /* clipboard not available — still open Voice below */ }
+  window.open('https://voice.google.com/u/0/messages', '_blank');
+}
 
 function contactLinksHtml(phone, email) {
   if (!phone && !email) return '';
@@ -2359,6 +3248,7 @@ function contactLinksHtml(phone, email) {
     const cleanPhone = phone.replace(/[^\d+]/g, '');
     links.push(`<a href="tel:${cleanPhone}" class="btn btn-small" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">📞 Call</a>`);
     links.push(`<a href="sms:${cleanPhone}" class="btn btn-small" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">💬 Text</a>`);
+    links.push(`<button type="button" class="btn btn-small" onclick="textViaVoice('${cleanPhone}')" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border); display:inline-flex; align-items:center; gap:4px; cursor:pointer;">📲 Via Voice</button>`);
   }
   if (email && !email.includes('in-person-sale@melstreat.com')) {
     links.push(`<a href="mailto:${escapeHtml(email)}" class="btn btn-small" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">✉️ Email</a>`);
@@ -2428,10 +3318,180 @@ function orderRowHtml(o, customerCounts) {
         <select class="status-select" data-table="orders" data-id="${o.id}">
           ${['new','confirmed','baking','ready','completed','cancelled'].map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
         </select>
+        <button type="button" class="btn btn-small btn-outline edit-items-btn" data-order-id="${o.id}" style="flex-shrink:0;">✏️ Edit</button>
         <button class="btn btn-small delete-order-btn" data-table="orders" data-id="${o.id}" style="background:var(--white); color:#c0025e; border:1.5px solid #c0025e; flex-shrink:0;">Delete</button>
       </div>
+      ${orderEditPanelHtml(o)}
     </div>
   `;
+}
+
+// Lets Meliese fix a mistake or add to an existing order (a customer calls
+// to add a dozen cookies, a Quick Add total was fat-fingered) without
+// deleting and fully re-entering it — a full delete+redo loses the
+// original timestamp and paper trail, and there's no other way to touch
+// an order's items once it's placed.
+let orderEditQty = {};
+
+function orderEditPanelHtml(o) {
+  const items = dashboardData.inventory || [];
+  const rows = items.map(item => {
+    const qty = (o.cookies || {})[item.cookie_name] || 0;
+    const safeName = item.cookie_name.replace(/\s+/g, '_');
+    return `
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border);">
+        <span>${escapeHtml(item.cookie_name)}</span>
+        <span style="display:flex; align-items:center; gap:10px;">
+          <button type="button" class="oe-qty-btn" data-order-id="${o.id}" data-name="${escapeHtml(item.cookie_name)}" data-action="dec" style="width:28px; height:28px; border-radius:50%; border:1.5px solid var(--pink-hot); background:#fff; color:var(--pink-hot); font-weight:700; cursor:pointer;">−</button>
+          <span id="oe-qty-${o.id}-${safeName}" style="min-width:20px; text-align:center; font-weight:700;">${qty}</span>
+          <button type="button" class="oe-qty-btn" data-order-id="${o.id}" data-name="${escapeHtml(item.cookie_name)}" data-action="inc" style="width:28px; height:28px; border-radius:50%; border:1.5px solid var(--pink-hot); background:var(--pink-hot); color:#fff; font-weight:700; cursor:pointer;">+</button>
+        </span>
+      </div>`;
+  }).join('');
+  return `
+    <div class="order-edit-panel" id="order-edit-panel-${o.id}" style="display:none; margin-top:10px; padding:12px; background:#fff5f8; border-radius:12px; border:1.5px dashed var(--pink-light, #f3b8d0);">
+      <div style="font-weight:700; margin-bottom:8px;">✏️ Edit This Order</div>
+      ${rows}
+      ${o.fulfillment_type === 'delivery' ? `<label style="margin-top:10px; display:block; font-size:0.8rem; font-weight:700;">Delivery Address</label><input type="text" id="oe-address-${o.id}" value="${escapeHtml(o.delivery_address || '')}" style="width:100%;">` : ''}
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <div style="flex:1;">
+          <label style="display:block; font-size:0.8rem; font-weight:700;">${o.fulfillment_type === 'delivery' ? 'Delivery' : 'Pickup'} Date</label>
+          <input type="date" id="oe-date-${o.id}" value="${o.preferred_date || ''}" style="width:100%;">
+        </div>
+        <div style="flex:1;">
+          <label style="display:block; font-size:0.8rem; font-weight:700;">Time</label>
+          <input type="text" id="oe-time-${o.id}" value="${escapeHtml(o.pickup_time || '')}" placeholder="e.g. 2:00 PM" style="width:100%;">
+        </div>
+      </div>
+      <label style="margin-top:10px; display:block; font-size:0.8rem; font-weight:700;">Total Charged ($)</label>
+      <input type="number" step="0.01" min="0" id="oe-total-${o.id}" value="${o.total}" style="width:100%;">
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button type="button" class="btn btn-small oe-save-btn" data-order-id="${o.id}">Save Changes</button>
+        <button type="button" class="btn btn-small btn-outline oe-cancel-btn" data-order-id="${o.id}">Cancel</button>
+      </div>
+      <div class="error" id="oe-error-${o.id}"></div>
+      ${reminderSkipControlHtml(o)}
+    </div>
+  `;
+}
+
+// Lets Meliese cancel just tomorrow's automated pickup/delivery reminder
+// for THIS order — without cancelling the order itself — for when she
+// already told the customer in person, or anything similar. Only shows
+// up once there's actually a reminder still pending for this order.
+function reminderSkipControlHtml(o) {
+  if (o.status === 'cancelled') return '';
+  if (o.reminder_sent) {
+    return `<div class="order-detail" style="margin-top:12px; padding-top:10px; border-top:1px solid var(--pink-light);">🔕 The automatic pickup reminder for this order won't go out (already sent, or already skipped).</div>`;
+  }
+  return `
+    <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--pink-light);">
+      <div class="order-detail" style="margin-bottom:6px;">Already told this customer in person, or the order's changed? You can stop just the automatic pickup reminder without cancelling the order.</div>
+      <button type="button" class="btn btn-small btn-outline oe-skip-reminder-btn" data-order-id="${o.id}" style="background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">🔕 Skip This Order's Reminder</button>
+    </div>
+  `;
+}
+
+async function skipPickupReminder(orderId, btn) {
+  if (!confirm("Skip the automatic pickup reminder for this order? The order itself won't be touched — this just stops that one email.")) return;
+  btn.disabled = true;
+  btn.textContent = 'Skipping...';
+  try {
+    await callAdmin('skip_pickup_reminder', { order_id: orderId });
+    const order = dashboardData.orders.find(o => o.id === orderId);
+    if (order) order.reminder_sent = true;
+    renderOrders();
+    showToast("Reminder skipped for this order ✧");
+  } catch (err) {
+    alert("Could not skip the reminder: " + err.message);
+    btn.disabled = false;
+    btn.textContent = "🔕 Skip This Order's Reminder";
+  }
+}
+
+function openOrderEdit(orderId) {
+  const order = (dashboardData.orders || []).find(o => o.id === orderId);
+  if (!order) return;
+  orderEditQty[orderId] = { ...(order.cookies || {}) };
+  const panel = document.getElementById('order-edit-panel-' + orderId);
+  if (panel) panel.style.display = 'block';
+}
+
+// Catches the classic "got distracted mid-edit" slip: closing the panel
+// (or tapping away) without saving silently threw away whatever was
+// typed. This checks whether anything actually changed before letting
+// the panel close quietly, so a real edit never vanishes unnoticed.
+function orderEditIsDirty(orderId) {
+  const order = (dashboardData.orders || []).find(o => o.id === orderId);
+  if (!order) return false;
+  const qty = orderEditQty[orderId] || {};
+  const origQty = order.cookies || {};
+  const qtyKeys = new Set([...Object.keys(qty), ...Object.keys(origQty)]);
+  for (const k of qtyKeys) {
+    if ((qty[k] || 0) !== (origQty[k] || 0)) return true;
+  }
+  const totalInput = document.getElementById('oe-total-' + orderId);
+  if (totalInput && parseFloat(totalInput.value) !== Number(order.total)) return true;
+  const dateInput = document.getElementById('oe-date-' + orderId);
+  if (dateInput && dateInput.value !== (order.preferred_date || '')) return true;
+  const timeInput = document.getElementById('oe-time-' + orderId);
+  if (timeInput && timeInput.value.trim() !== (order.pickup_time || '')) return true;
+  const addressInput = document.getElementById('oe-address-' + orderId);
+  if (addressInput && addressInput.value.trim() !== (order.delivery_address || '')) return true;
+  return false;
+}
+
+function closeOrderEdit(orderId, opts) {
+  const skipConfirm = opts && opts.skipConfirm;
+  if (!skipConfirm && orderEditIsDirty(orderId)) {
+    if (!confirm("You've made changes here that aren't saved yet. Close without saving?")) return;
+  }
+  delete orderEditQty[orderId];
+  const panel = document.getElementById('order-edit-panel-' + orderId);
+  if (panel) panel.style.display = 'none';
+}
+
+async function saveOrderEdit(orderId, btn) {
+  const qty = orderEditQty[orderId] || {};
+  const cookies = {};
+  Object.entries(qty).forEach(([name, n]) => { if (n > 0) cookies[name] = n; });
+  if (Object.keys(cookies).length === 0) {
+    document.getElementById('oe-error-' + orderId).textContent = 'At least one item is required.';
+    return;
+  }
+  const totalInput = document.getElementById('oe-total-' + orderId);
+  const total = parseFloat(totalInput.value) || 0;
+  const addressInput = document.getElementById('oe-address-' + orderId);
+  const delivery_address = addressInput ? addressInput.value.trim() : undefined;
+  const dateInput = document.getElementById('oe-date-' + orderId);
+  const preferred_date = dateInput ? dateInput.value : undefined;
+  const timeInput = document.getElementById('oe-time-' + orderId);
+  const pickup_time = timeInput ? timeInput.value.trim() : undefined;
+
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    await callAdmin('update_order_items', { id: orderId, cookies, total, delivery_address, preferred_date, pickup_time });
+    const order = dashboardData.orders.find(o => o.id === orderId);
+    if (order) {
+      order.cookies = cookies;
+      order.total = total;
+      if (delivery_address !== undefined) order.delivery_address = delivery_address;
+      if (preferred_date !== undefined) order.preferred_date = preferred_date;
+      if (pickup_time !== undefined) order.pickup_time = pickup_time;
+    }
+    closeOrderEdit(orderId, { skipConfirm: true });
+    renderOrders();
+    renderTodayTab();
+    renderPriorityBanner();
+    renderAttentionCard();
+    renderBakingTodo();
+    showToast('Order updated ✧');
+  } catch (err) {
+    document.getElementById('oe-error-' + orderId).textContent = 'Could not save: ' + err.message;
+    btn.disabled = false;
+    btn.textContent = 'Save Changes';
+  }
 }
 
 // One-tap advance to the next status in the normal order lifecycle,
@@ -2506,29 +3566,68 @@ document.querySelectorAll('.qa-fulfillment-btn').forEach(btn => {
   });
 });
 
-document.getElementById('qa-customer-name').addEventListener('input', (e) => {
-  const name = e.target.value.trim().toLowerCase();
-  const directory = buildCustomerDirectory();
-  const match = directory[name];
+// Applies a confirmed/matched directory entry to the form — pulled out so
+// both the exact-match path and the "did you mean" chip click share it.
+function applyQaCustomerMatch(match) {
   const noteEl = document.getElementById('qa-returning-note');
   const addressInput = document.getElementById('qa-address');
   const mapsLinksEl = document.getElementById('qa-maps-links');
+  noteEl.style.display = 'block';
+  noteEl.textContent = `🔁 Returning customer${match.address ? ' — their last address filled in below' : ''}`;
+  if (match.address) {
+    addressInput.value = match.address;
+    document.querySelectorAll('.qa-fulfillment-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.qa-fulfillment-btn[data-fulfillment="delivery"]').classList.add('active');
+    document.getElementById('qa-address-wrap').style.display = 'block';
+    mapsLinksEl.innerHTML = mapsLinksHtml(match.address);
+    mapsLinksEl.style.display = 'flex';
+  }
+}
+
+document.getElementById('qa-customer-name').addEventListener('input', (e) => {
+  const typed = e.target.value.trim();
+  const name = typed.toLowerCase();
+  const directory = buildCustomerDirectory();
+  const match = directory[name];
+  const noteEl = document.getElementById('qa-returning-note');
+  const fuzzyEl = document.getElementById('qa-fuzzy-matches');
 
   if (match) {
-    noteEl.style.display = 'block';
-    noteEl.textContent = `🔁 Returning customer${match.address ? ' — their last address filled in below' : ''}`;
-    if (match.address) {
-      addressInput.value = match.address;
-      // Switch to delivery so the auto-filled address is actually used
-      document.querySelectorAll('.qa-fulfillment-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector('.qa-fulfillment-btn[data-fulfillment="delivery"]').classList.add('active');
-      document.getElementById('qa-address-wrap').style.display = 'block';
-      mapsLinksEl.innerHTML = mapsLinksHtml(match.address);
-      mapsLinksEl.style.display = 'flex';
-    }
-  } else {
-    noteEl.style.display = 'none';
+    applyQaCustomerMatch(match);
+    fuzzyEl.style.display = 'none';
+    fuzzyEl.innerHTML = '';
+    return;
   }
+
+  noteEl.style.display = 'none';
+
+  // No exact match — before assuming this is a brand-new customer, check
+  // for a close one (a different spelling, or just a first name typed
+  // where a fuller name is on file) so a typo doesn't quietly split one
+  // real customer's history into two separate records.
+  if (name.length >= 2) {
+    const candidates = Object.values(directory).filter(c => {
+      const cName = c.name.toLowerCase();
+      return cName !== name && (cName.includes(name) || name.includes(cName.split(' ')[0]));
+    }).slice(0, 3);
+    if (candidates.length > 0) {
+      fuzzyEl.style.display = 'block';
+      fuzzyEl.innerHTML = `<span style="font-size:0.8rem; color:var(--ink-soft);">Did you mean:</span> ` +
+        candidates.map(c => `<button type="button" class="btn btn-small btn-outline qa-fuzzy-btn" data-name="${escapeHtml(c.name)}" style="margin:4px 6px 0 0; padding:4px 10px; font-size:0.8rem;">${escapeHtml(c.name)}</button>`).join('');
+      fuzzyEl.querySelectorAll('.qa-fuzzy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('qa-customer-name').value = btn.dataset.name;
+          applyQaCustomerMatch(directory[btn.dataset.name.toLowerCase()]);
+          fuzzyEl.style.display = 'none';
+          fuzzyEl.innerHTML = '';
+        });
+      });
+      return;
+    }
+  }
+
+  fuzzyEl.style.display = 'none';
+  fuzzyEl.innerHTML = '';
 });
 
 document.getElementById('qa-address').addEventListener('input', (e) => {
@@ -2541,7 +3640,60 @@ document.getElementById('qa-address').addEventListener('input', (e) => {
   }
 });
 
-let qaQty = {};
+// ---- Draft persistence for quick-entry forms ----
+// Nothing worse than losing a half-typed entry to an accidental refresh
+// or closed tab. These autosave to this browser's localStorage as you
+// type/click and restore themselves on load; a successful submit clears
+// the draft so old data doesn't linger for next time.
+function wireFormDraft(storageKey, fieldIds) {
+  const restore = () => {
+    let saved;
+    try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch { saved = {}; }
+    fieldIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && saved[id] !== undefined) el.value = saved[id];
+    });
+    return saved;
+  };
+  const save = () => {
+    const data = {};
+    fieldIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) data[id] = el.value;
+    });
+    try { localStorage.setItem(storageKey, JSON.stringify(data)); } catch { /* best-effort */ }
+  };
+  fieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', save);
+  });
+  const savedValues = restore();
+  return { clear: () => { try { localStorage.removeItem(storageKey); } catch { /* best-effort */ } }, save, savedValues };
+}
+
+const mmNewFlavorDraft = wireFormDraft('melsTreatDraft_newFlavor', ['mm-new-name', 'mm-new-type', 'mm-new-price', 'mm-new-desc', 'mm-new-emoji', 'mm-new-on-hand', 'mm-new-stock']);
+const mmNewBoxDraft = wireFormDraft('melsTreatDraft_newBox', ['mm-newbox-name', 'mm-newbox-price', 'mm-newbox-desc', 'mm-newbox-emoji']);
+const qaFieldsDraft = wireFormDraft('melsTreatDraft_quickAdd', ['qa-customer-name', 'qa-total', 'qa-payment-method', 'qa-address']);
+// A restored total was typed by her, not auto-suggested — treat it the
+// same as if she'd just typed it, so adding another item doesn't
+// silently overwrite it with the auto-suggested total.
+if (qaFieldsDraft.savedValues && qaFieldsDraft.savedValues['qa-total']) {
+  const totalEl = document.getElementById('qa-total');
+  if (totalEl) totalEl.dataset.manuallyEdited = 'true';
+}
+
+const QA_QTY_DRAFT_KEY = 'melsTreatDraft_quickAddQty';
+function saveQaQtyDraft() {
+  try { localStorage.setItem(QA_QTY_DRAFT_KEY, JSON.stringify(qaQty)); } catch { /* best-effort */ }
+}
+function restoreQaQtyDraft() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(QA_QTY_DRAFT_KEY) || '{}');
+    return saved && typeof saved === 'object' ? saved : {};
+  } catch { return {}; }
+}
+
+let qaQty = restoreQaQtyDraft();
 // Mirrors the exact same box pricing customers see on the actual order
 // page — so an in-person sale gets priced the same way a website order
 // would be, instead of a flat per-item guess that ignores box discounts
@@ -2589,7 +3741,7 @@ function renderQuickAddItems() {
       <span>${item.cookie_name}</span>
       <span style="display:flex; align-items:center; gap:10px;">
         <button type="button" class="qa-qty-btn" data-action="dec" data-name="${item.cookie_name}" style="width:30px; height:30px; border-radius:50%; border:1.5px solid var(--pink-hot); background:#fff; color:var(--pink-hot); font-weight:700; cursor:pointer;">−</button>
-        <span id="qa-qty-${item.cookie_name.replace(/\s+/g,'_')}" style="min-width:20px; text-align:center; font-weight:700;">0</span>
+        <span id="qa-qty-${item.cookie_name.replace(/\s+/g,'_')}" style="min-width:20px; text-align:center; font-weight:700;">${qaQty[item.cookie_name] || 0}</span>
         <button type="button" class="qa-qty-btn" data-action="inc" data-name="${item.cookie_name}" style="width:30px; height:30px; border-radius:50%; border:1.5px solid var(--pink-hot); background:var(--pink-hot); color:#fff; font-weight:700; cursor:pointer;">+</button>
       </span>
     </div>`).join('');
@@ -2600,6 +3752,7 @@ function renderQuickAddItems() {
       const current = qaQty[name] || 0;
       qaQty[name] = btn.dataset.action === 'inc' ? current + 1 : Math.max(0, current - 1);
       document.getElementById(`qa-qty-${name.replace(/\s+/g,'_')}`).textContent = qaQty[name];
+      saveQaQtyDraft();
       // Suggest a total using the real box pricing (same as the website
       // charges) as a starting point — she can always override it for
       // discounts or special pricing.
@@ -2656,12 +3809,16 @@ document.getElementById('qa-submit-btn').addEventListener('click', async () => {
 
     // Reset the quick-add form
     qaQty = {};
+    saveQaQtyDraft();
+    qaFieldsDraft.clear();
     document.getElementById('qa-customer-name').value = '';
     document.getElementById('qa-total').value = '';
     document.getElementById('qa-total').dataset.manuallyEdited = '';
     document.getElementById('qa-address').value = '';
     document.getElementById('qa-maps-links').style.display = 'none';
     document.getElementById('qa-returning-note').style.display = 'none';
+    document.getElementById('qa-fuzzy-matches').style.display = 'none';
+    document.getElementById('qa-fuzzy-matches').innerHTML = '';
     document.querySelectorAll('.qa-fulfillment-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('.qa-fulfillment-btn[data-fulfillment="pickup"]').classList.add('active');
     document.getElementById('qa-address-wrap').style.display = 'none';
@@ -2686,6 +3843,7 @@ document.getElementById('qa-submit-btn').addEventListener('click', async () => {
 
 function renderOrders() {
   renderCustomerDirectory();
+  renderCustomerOutreach();
   const list = document.getElementById('orders-list');
   let orders = dashboardData.orders || [];
   const customerCounts = buildCustomerFrequency(dashboardData.orders || []);
@@ -2797,6 +3955,36 @@ function renderOrders() {
   list.querySelectorAll('.next-step-btn').forEach(btn => {
     btn.addEventListener('click', () => advanceStatus(btn.dataset.table, btn.dataset.id, btn.dataset.nextStatus, btn));
   });
+
+  list.querySelectorAll('.edit-items-btn').forEach(btn => {
+    btn.addEventListener('click', () => openOrderEdit(btn.dataset.orderId));
+  });
+
+  list.querySelectorAll('.oe-cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => closeOrderEdit(btn.dataset.orderId));
+  });
+
+  list.querySelectorAll('.oe-save-btn').forEach(btn => {
+    btn.addEventListener('click', () => saveOrderEdit(btn.dataset.orderId, btn));
+  });
+
+  list.querySelectorAll('.oe-skip-reminder-btn').forEach(btn => {
+    btn.addEventListener('click', () => skipPickupReminder(btn.dataset.orderId, btn));
+  });
+
+  list.querySelectorAll('.oe-qty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const orderId = btn.dataset.orderId;
+      const name = btn.dataset.name;
+      if (!orderEditQty[orderId]) orderEditQty[orderId] = {};
+      const current = orderEditQty[orderId][name] || 0;
+      const next = btn.dataset.action === 'inc' ? current + 1 : Math.max(0, current - 1);
+      orderEditQty[orderId][name] = next;
+      const safeName = name.replace(/\s+/g, '_');
+      const label = document.getElementById(`oe-qty-${orderId}-${safeName}`);
+      if (label) label.textContent = next;
+    });
+  });
 }
 
 async function deleteOrder(table, id, btn) {
@@ -2850,6 +4038,380 @@ document.querySelectorAll('.order-group-btn').forEach(btn => {
   });
 });
 
+// Sums whatever's actually been paid toward a catering request (tips
+// excluded — tip_amount is tracked separately so it never gets counted
+// against the quoted total) and compares it to the quote, so the rest of
+// the UI can tell "nothing paid" from "deposit in" from "paid in full"
+// instead of the old any-payment-at-all check.
+function cateringPaymentStatus(r) {
+  const paid = (dashboardData.payments || [])
+    .filter(p => p.catering_request_id === r.id)
+    .reduce((s, p) => s + Number(p.amount_paid || 0), 0);
+  const quoted = Number(r.quoted_total || 0);
+  const remaining = Math.max(0, quoted - paid);
+  let status = 'none';
+  if (paid > 0 && remaining <= 0.005) status = 'paid';
+  else if (paid > 0) status = 'partial';
+  return { paid, quoted, remaining, status };
+}
+
+// Same math as Cost Per Cookie's "all time" view, pulled out on its own
+// so the calculator can use it without disturbing that card's period
+// filter or its DOM writes.
+function getAllTimeCostPerCookie() {
+  const expenses = (dashboardData.manualExpenses || []).filter(e => (e.category || 'ingredient') === 'ingredient');
+  const orders = dashboardData.orders || [];
+  const ingredientSpend = expenses.reduce((s, e) => s + Number(e.amount || 0), 0);
+  let totalCookies = 0;
+  orders.forEach(o => { Object.values(o.cookies || {}).forEach(qty => { totalCookies += Number(qty); }); });
+  return totalCookies > 0 ? ingredientSpend / totalCookies : 0;
+}
+
+// ---- Catering Calculator ----
+// Quantities and the size ratio are saved to this browser's localStorage
+// (not the database — this is scratch-work, not an order) so a mid-quote
+// refresh or accidental tab close doesn't lose what's been typed in.
+const CALC_DRAFT_KEY = 'melsTreatCateringCalcDraft';
+
+function loadCalcDraft() {
+  try {
+    const raw = localStorage.getItem(CALC_DRAFT_KEY);
+    return raw ? JSON.parse(raw) : { ratio: 50, qtys: {} };
+  } catch { return { ratio: 50, qtys: {} }; }
+}
+function saveCalcDraft(draft) {
+  try { localStorage.setItem(CALC_DRAFT_KEY, JSON.stringify(draft)); } catch { /* best-effort */ }
+}
+
+function friendlyProductType(pt) {
+  if (pt === 'cookie') return 'cookie';
+  return (pt || 'item').replace(/_/g, ' ');
+}
+
+function renderCateringCalculator() {
+  const rowsEl = document.getElementById('calc-flavor-rows');
+  if (!rowsEl) return;
+  const items = (dashboardData.inventory || []).filter(i => i.active !== false);
+  const draft = loadCalcDraft();
+
+  const ratioInput = document.getElementById('calc-size-ratio');
+  if (ratioInput && !ratioInput.dataset.userTouched) ratioInput.value = draft.ratio ?? 50;
+
+  if (items.length === 0) {
+    rowsEl.innerHTML = '<div class="empty-note">Add some products in 🧺 Products first, then come back here.</div>';
+    updateCalculatorTotals();
+    return;
+  }
+
+  rowsEl.innerHTML = items.map(item => {
+    const saved = draft.qtys[item.cookie_name] || {};
+    if (item.product_type === 'cookie') {
+      return `
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:140px; font-weight:700; font-size:0.9rem;">${escapeHtml(item.cookie_name)}</div>
+          <label style="margin:0; font-size:0.78rem; font-weight:600;">4" Qty
+            <input type="number" min="0" class="calc-qty-input" data-name="${escapeHtml(item.cookie_name)}" data-size="regular" value="${saved.regular || ''}" placeholder="0" style="width:70px; padding:6px 8px; margin-left:4px;">
+          </label>
+          <label style="margin:0; font-size:0.78rem; font-weight:600;">2" Qty
+            <input type="number" min="0" class="calc-qty-input" data-name="${escapeHtml(item.cookie_name)}" data-size="small" value="${saved.small || ''}" placeholder="0" style="width:70px; padding:6px 8px; margin-left:4px;">
+          </label>
+        </div>
+      `;
+    }
+    return `
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:140px; font-weight:700; font-size:0.9rem;">${escapeHtml(item.cookie_name)} <span style="font-weight:500; color:var(--ink-soft, #8a6b78); font-size:0.78rem;">(${friendlyProductType(item.product_type)})</span></div>
+        <label style="margin:0; font-size:0.78rem; font-weight:600;">Qty
+          <input type="number" min="0" class="calc-qty-input" data-name="${escapeHtml(item.cookie_name)}" data-size="single" value="${saved.single || ''}" placeholder="0" style="width:70px; padding:6px 8px; margin-left:4px;">
+        </label>
+      </div>
+    `;
+  }).join('');
+
+  rowsEl.querySelectorAll('.calc-qty-input').forEach(input => {
+    input.addEventListener('input', () => {
+      persistCalcDraft();
+      updateCalculatorTotals();
+      if (calcRecipesCache) renderRecipePickerRows();
+    });
+  });
+  if (ratioInput && !ratioInput.dataset.wired) {
+    ratioInput.dataset.wired = '1';
+    ratioInput.addEventListener('input', () => {
+      ratioInput.dataset.userTouched = '1';
+      persistCalcDraft();
+      updateCalculatorTotals();
+    });
+  }
+
+  const resetBtn = document.getElementById('calc-reset-btn');
+  if (resetBtn && !resetBtn.dataset.wired) {
+    resetBtn.dataset.wired = '1';
+    resetBtn.addEventListener('click', () => {
+      if (!confirm('Clear all quantities in the calculator?')) return;
+      saveCalcDraft({ ratio: 50, qtys: {} });
+      if (ratioInput) { ratioInput.value = 50; delete ratioInput.dataset.userTouched; }
+      renderCateringCalculator();
+    });
+  }
+
+  updateCalculatorTotals();
+}
+
+function persistCalcDraft() {
+  const ratio = parseFloat(document.getElementById('calc-size-ratio').value) || 50;
+  const qtys = {};
+  document.querySelectorAll('.calc-qty-input').forEach(input => {
+    const name = input.dataset.name;
+    const size = input.dataset.size;
+    const val = parseFloat(input.value) || 0;
+    if (!qtys[name]) qtys[name] = {};
+    qtys[name][size] = val;
+  });
+  saveCalcDraft({ ratio, qtys });
+}
+
+function updateCalculatorTotals() {
+  const totalEl = document.getElementById('calc-total-count');
+  const chargeEl = document.getElementById('calc-charge');
+  const costEl = document.getElementById('calc-cost');
+  const profitEl = document.getElementById('calc-profit');
+  const noteEl = document.getElementById('calc-cost-basis-note');
+  if (!totalEl) return;
+
+  const ratio = (parseFloat(document.getElementById('calc-size-ratio')?.value) || 50) / 100;
+  const baseCostPerCookie = getAllTimeCostPerCookie();
+  const items = (dashboardData.inventory || []).filter(i => i.active !== false);
+
+  let totalCount = 0, charge = 0, cost = 0;
+  let hasUntrackedCost = false;
+  let hasCookieQty = false;
+
+  items.forEach(item => {
+    if (item.product_type === 'cookie') {
+      const regEl = document.querySelector(`.calc-qty-input[data-name="${cssEscape(item.cookie_name)}"][data-size="regular"]`);
+      const smallEl = document.querySelector(`.calc-qty-input[data-name="${cssEscape(item.cookie_name)}"][data-size="small"]`);
+      const reg = parseFloat(regEl?.value) || 0;
+      const small = parseFloat(smallEl?.value) || 0;
+      if (reg > 0 || small > 0) hasCookieQty = true;
+      totalCount += reg + small;
+      const price = Number(item.price || 0);
+      charge += reg * price + small * price * ratio;
+      cost += reg * baseCostPerCookie + small * baseCostPerCookie * ratio;
+    } else {
+      const singleEl = document.querySelector(`.calc-qty-input[data-name="${cssEscape(item.cookie_name)}"][data-size="single"]`);
+      const qty = parseFloat(singleEl?.value) || 0;
+      if (qty > 0) hasUntrackedCost = true;
+      totalCount += qty;
+      charge += qty * Number(item.price || 0);
+      // No reliable per-unit ingredient cost is tracked for non-cookie
+      // items (cinnamon rolls, etc.) — left out of the cost estimate
+      // rather than guessed, and flagged in the note below.
+    }
+  });
+
+  totalEl.textContent = totalCount;
+  chargeEl.textContent = money(charge);
+  costEl.textContent = money(cost);
+  profitEl.textContent = money(charge - cost);
+
+  const notes = [];
+  if (!hasCookieQty) {
+    notes.push('Cost is based on your all-time average ingredient spend per cookie — add some quantities above to see it in action.');
+  } else if (baseCostPerCookie === 0) {
+    notes.push("No ingredient spend logged yet, so cost shows as $0 — log some in Earnings & Tax for a real estimate.");
+  } else {
+    notes.push(`Cost is estimated from your all-time average ingredient spend per cookie (${money(baseCostPerCookie)}/cookie), scaled down for small cookies.`);
+  }
+  if (hasUntrackedCost) {
+    notes.push("Ingredient cost isn't tracked separately for non-cookie items, so they're only counted in the charge total, not the cost estimate.");
+  }
+  noteEl.textContent = notes.join(' ');
+}
+
+// Minimal CSS.escape fallback for cookie names with quotes/special chars
+// in querySelector attribute matches (older browsers may lack the real one).
+function cssEscape(str) {
+  if (window.CSS && CSS.escape) return CSS.escape(str);
+  return String(str).replace(/["\\]/g, '\\$&');
+}
+
+// ---- Ingredients To Buy (optional recipe integration) ----
+let calcRecipesCache = null; // { categories, recipes } once unlocked this session
+
+document.getElementById('calc-ingredients-toggle')?.addEventListener('click', () => {
+  const body = document.getElementById('calc-ingredients-body');
+  const caret = document.getElementById('calc-ingredients-caret');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  caret.textContent = isOpen ? '▸' : '▾';
+});
+
+document.getElementById('calc-unlock-recipes-btn')?.addEventListener('click', async () => {
+  const pwInput = document.getElementById('calc-recipe-password');
+  const errBox = document.getElementById('calc-recipes-error');
+  const btn = document.getElementById('calc-unlock-recipes-btn');
+  errBox.style.display = 'none';
+  const password = pwInput.value;
+  if (!password) return;
+  btn.disabled = true;
+  btn.textContent = 'Unlocking...';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/manage-recipes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify({ password, action: 'list' }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Incorrect password.');
+    calcRecipesCache = { categories: data.categories, recipes: data.recipes };
+    pwInput.value = '';
+    document.getElementById('calc-ingredients-locked').style.display = 'none';
+    document.getElementById('calc-ingredients-unlocked').style.display = 'block';
+    renderRecipePickerRows();
+  } catch (err) {
+    errBox.textContent = err.message || 'Could not unlock recipes.';
+    errBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Unlock';
+  }
+});
+
+// Scales the leading quantity in a free-text ingredient line (e.g. "1 1/2
+// cups flour", "2 tbsp cocoa", "1 box cake mix") by a multiplier, keeping
+// the rest of the text as-is. Ingredients with no parseable leading
+// number (rare) are left untouched and marked so they aren't silently
+// under-scaled.
+function scaleIngredientText(text, multiplier) {
+  const m = String(text).match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d*\.\d+|\d+)(.*)$/);
+  if (!m) return { text, scaled: false };
+  let qty;
+  const numPart = m[1].trim();
+  if (numPart.includes(' ')) {
+    const [whole, frac] = numPart.split(' ');
+    const [n, d] = frac.split('/').map(Number);
+    qty = Number(whole) + n / d;
+  } else if (numPart.includes('/')) {
+    const [n, d] = numPart.split('/').map(Number);
+    qty = n / d;
+  } else {
+    qty = parseFloat(numPart);
+  }
+  const scaledQty = qty * multiplier;
+  const rounded = Math.round(scaledQty * 100) / 100;
+  return { text: `${rounded}${m[2]}`, scaled: true };
+}
+
+function renderRecipePickerRows() {
+  const rowsEl = document.getElementById('calc-recipe-picker-rows');
+  if (!rowsEl || !calcRecipesCache) return;
+
+  // Only flavors the calculator currently has a quantity for — no point
+  // picking a recipe for something she isn't making this order.
+  const activeFlavors = [];
+  document.querySelectorAll('.calc-qty-input').forEach(input => {
+    const val = parseFloat(input.value) || 0;
+    if (val > 0 && !activeFlavors.includes(input.dataset.name)) activeFlavors.push(input.dataset.name);
+  });
+
+  if (activeFlavors.length === 0) {
+    rowsEl.innerHTML = '<div class="empty-note">Enter some quantities above first.</div>';
+    document.getElementById('calc-shopping-list').innerHTML = '';
+    return;
+  }
+
+  const recipeOptions = calcRecipesCache.recipes
+    .map(r => `<option value="${r.id}">${escapeHtml(r.title)}${r.yields_count ? ` (makes ${r.yields_count})` : ''}</option>`).join('');
+
+  rowsEl.innerHTML = activeFlavors.map(flavor => `
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <div style="flex:1; min-width:120px; font-weight:700; font-size:0.88rem;">${escapeHtml(flavor)}</div>
+      <select class="calc-recipe-select" data-flavor="${escapeHtml(flavor)}" style="flex:1; min-width:160px;">
+        <option value="">Skip / no recipe</option>
+        ${recipeOptions}
+      </select>
+      <label style="margin:0; font-size:0.78rem; font-weight:600;">Batches
+        <input type="number" min="0" step="0.5" class="calc-batch-input" data-flavor="${escapeHtml(flavor)}" value="1" style="width:56px; padding:6px 8px; margin-left:4px;">
+      </label>
+    </div>
+    <div class="calc-batch-note" data-flavor="${escapeHtml(flavor)}" style="font-size:0.75rem; color:var(--ink-soft, #8a6b78); margin:-4px 0 4px;"></div>
+  `).join('');
+
+  // Picking a recipe that has "Makes how many cookies?" set (from the
+  // Recipe Book) auto-fills the batch count from how many of that flavor
+  // are on order — she can still override it by hand afterward.
+  rowsEl.querySelectorAll('.calc-recipe-select').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const flavor = sel.dataset.flavor;
+      const batchInput = document.querySelector(`.calc-batch-input[data-flavor="${cssEscape(flavor)}"]`);
+      const noteEl = document.querySelector(`.calc-batch-note[data-flavor="${cssEscape(flavor)}"]`);
+      const recipe = calcRecipesCache.recipes.find(r => r.id === sel.value);
+      if (recipe && recipe.yields_count) {
+        const needed = getFlavorTotalQty(flavor);
+        const batches = Math.ceil(needed / recipe.yields_count * 100) / 100;
+        if (batchInput) batchInput.value = batches;
+        if (noteEl) noteEl.textContent = `Auto: ${needed} needed ÷ ${recipe.yields_count} per batch = ${batches} batches.`;
+      } else if (noteEl) {
+        noteEl.textContent = recipe ? "This recipe doesn't have a yield set yet — add one in the Recipe Book to auto-calculate batches." : '';
+      }
+      renderShoppingList();
+    });
+  });
+  rowsEl.querySelectorAll('.calc-batch-input').forEach(el => {
+    el.addEventListener('input', renderShoppingList);
+  });
+  renderShoppingList();
+}
+
+// Total quantity ordered for a flavor across both sizes (or the single
+// qty field for non-cookie items) — what the recipe picker's auto-batch
+// math is based on.
+function getFlavorTotalQty(flavor) {
+  let total = 0;
+  document.querySelectorAll(`.calc-qty-input[data-name="${cssEscape(flavor)}"]`).forEach(input => {
+    total += parseFloat(input.value) || 0;
+  });
+  return total;
+}
+
+function renderShoppingList() {
+  const listEl = document.getElementById('calc-shopping-list');
+  if (!listEl || !calcRecipesCache) return;
+
+  const selections = [];
+  document.querySelectorAll('.calc-recipe-select').forEach(sel => {
+    if (!sel.value) return;
+    const batchInput = document.querySelector(`.calc-batch-input[data-flavor="${cssEscape(sel.dataset.flavor)}"]`);
+    const batches = parseFloat(batchInput?.value) || 0;
+    if (batches <= 0) return;
+    const recipe = calcRecipesCache.recipes.find(r => r.id === sel.value);
+    if (recipe) selections.push({ flavor: sel.dataset.flavor, recipe, batches });
+  });
+
+  if (selections.length === 0) {
+    listEl.innerHTML = '<div class="empty-note">Pick a recipe and batch count above to see a scaled shopping list.</div>';
+    return;
+  }
+
+  listEl.innerHTML = selections.map(({ flavor, recipe, batches }) => {
+    const scaledLines = (recipe.ingredients || []).map(ing => {
+      const { text, scaled } = scaleIngredientText(ing, batches);
+      return `<li>${escapeHtml(text)}${!scaled ? ' <span style="color:var(--ink-soft, #8a6b78); font-size:0.75rem;">(check amount — couldn\'t auto-scale)</span>' : ''}</li>`;
+    }).join('');
+    return `
+      <div style="background:#fff5f8; border-radius:12px; padding:12px 14px; margin-bottom:8px;">
+        <div style="font-weight:700; font-size:0.9rem; color:#a8025f;">${escapeHtml(flavor)} — ${escapeHtml(recipe.title)} (${batches}× batch)</div>
+        <ul style="margin:6px 0 0; padding-left:18px; font-size:0.85rem;">${scaledLines}</ul>
+      </div>
+    `;
+  }).join('');
+}
+
 function renderCatering() {
   const reqList = document.getElementById('catering-list');
   const requests = dashboardData.catering;
@@ -2858,6 +4420,19 @@ function renderCatering() {
   } else {
     const rowHtml = (r) => {
       const dest = r.fulfillment_type === 'delivery' ? r.delivery_address : null;
+      // A confirmed event with nothing (or only part) logged in Catering
+      // Payments is easy to lose track of once it's mentally filed as
+      // "handled" — flag it right on the row, not just buried in the
+      // Today banner.
+      const payStatus = cateringPaymentStatus(r);
+      let paymentWarning = '';
+      if (r.status === 'confirmed' && r.quoted_total) {
+        if (payStatus.status === 'none') {
+          paymentWarning = `<div class="order-detail" style="color:#c0025e; font-weight:700;">💳 No payment logged yet</div>`;
+        } else if (payStatus.status === 'partial') {
+          paymentWarning = `<div class="order-detail" style="color:#a15c00; font-weight:700;">💳 ${money(payStatus.paid)} paid — ${money(payStatus.remaining)} remaining</div>`;
+        }
+      }
       return `
         <div class="order-row">
           <div class="order-top">
@@ -2865,13 +4440,32 @@ function renderCatering() {
             <span class="order-total">${r.quoted_total ? money(r.quoted_total) : 'Not quoted'}</span>
           </div>
           <div class="order-detail">${r.dozens_count ? r.dozens_count + ' dozen' : 'Amount TBD'} — ${escapeHtml(r.email)}</div>
+          ${paymentWarning}
           ${contactLinksHtml(r.phone, r.email)}
           <div class="order-detail">${r.event_date || 'Date TBD'} ${r.event_time || ''}</div>
-          ${r.event_type || r.guest_count ? `<div class="order-detail">${r.event_type ? escapeHtml(r.event_type) : ''}${r.event_type && r.guest_count ? ' · ' : ''}${r.guest_count ? '~' + r.guest_count + ' guests' : ''}</div>` : ''}
+          ${r.event_type || r.cookie_size ? `<div class="order-detail">${r.event_type ? escapeHtml(r.event_type) : ''}${r.event_type && r.cookie_size ? ' · ' : ''}${r.cookie_size === 'small' ? '2" (Small) Cookies' : r.cookie_size === 'regular' ? '4" (Regular) Cookies' : ''}</div>` : ''}
+          ${payStatus.status === 'paid' ? `<div class="order-detail" style="color:#1a8a4a; font-weight:700;">✅ Paid in full (${money(payStatus.paid)})</div>` : ''}
           ${r.dietary_notes ? `<div class="order-detail" style="color:#c9962c; font-weight:700;">⚠️ ${escapeHtml(r.dietary_notes)}</div>` : ''}
           ${r.packaging_preference ? `<div class="order-detail">📦 ${escapeHtml(r.packaging_preference)}</div>` : ''}
           ${r.contact_preference ? `<div class="order-detail">📞 Prefers: ${escapeHtml(r.contact_preference)}</div>` : ''}
-          ${r.quoted_total ? `<button type="button" class="btn btn-small copy-payment-link-btn" data-catering-id="${r.id}" style="margin:4px 0 0; background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">🔗 Copy Payment Link</button>` : ''}
+          ${!r.quoted_total ? `
+            <div style="display:flex; gap:8px; align-items:center; margin:6px 0;">
+              <input type="number" min="0" step="0.01" class="catering-quote-input" id="catering-quote-input-${r.id}" placeholder="Quote amount ($)" style="flex:1; max-width:160px;">
+              <button type="button" class="btn btn-small set-quote-btn" data-catering-id="${r.id}">Send Quote</button>
+            </div>
+          ` : `
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 0;">
+              ${payStatus.status === 'paid' ? '' : payStatus.status === 'partial'
+                ? `<button type="button" class="btn btn-small copy-payment-link-btn" data-catering-id="${r.id}" data-mode="balance" style="background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">🔗 Copy Remaining Balance Link (${money(payStatus.remaining)})</button>`
+                : `<button type="button" class="btn btn-small copy-payment-link-btn" data-catering-id="${r.id}" data-mode="full" style="background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">🔗 Copy Payment Link</button>`}
+              <button type="button" class="btn btn-small btn-outline edit-quote-toggle-btn" data-catering-id="${r.id}">✏️ Edit Quote ($${Number(r.quoted_total).toFixed(2)})</button>
+            </div>
+            <div id="edit-quote-row-${r.id}" style="display:none; gap:8px; align-items:center; margin:6px 0;">
+              <input type="number" min="0" step="0.01" class="catering-edit-quote-input" id="catering-edit-quote-input-${r.id}" value="${Number(r.quoted_total).toFixed(2)}" style="flex:1; max-width:160px;">
+              <button type="button" class="btn btn-small update-quote-btn" data-catering-id="${r.id}">Save</button>
+              <button type="button" class="btn btn-small btn-outline cancel-edit-quote-btn" data-catering-id="${r.id}">Cancel</button>
+            </div>
+          `}
           ${dest ? `<div class="order-detail">📍 ${escapeHtml(dest)}</div>` : ''}
           ${dest ? `<div style="display:flex; gap:8px; margin:4px 0 0; flex-wrap:wrap;">${mapsLinksHtml(dest)}<button type="button" class="btn btn-small estimate-catering-mileage-btn" data-catering-id="${r.id}" style="background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">📍 Log Mileage</button></div>` : ''}
           <div class="order-detail">Requested ${new Date(r.created_at).toLocaleString()}</div>
@@ -2942,6 +4536,26 @@ function renderCatering() {
     reqList.querySelectorAll('.copy-payment-link-btn').forEach(btn => {
       btn.addEventListener('click', () => copyPaymentLink(btn.dataset.cateringId, btn));
     });
+    reqList.querySelectorAll('.set-quote-btn').forEach(btn => {
+      btn.addEventListener('click', () => setCateringQuote(btn.dataset.cateringId, btn));
+    });
+    reqList.querySelectorAll('.edit-quote-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const row = document.getElementById('edit-quote-row-' + btn.dataset.cateringId);
+        if (!row) return;
+        row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+        if (row.style.display === 'flex') document.getElementById('catering-edit-quote-input-' + btn.dataset.cateringId).focus();
+      });
+    });
+    reqList.querySelectorAll('.cancel-edit-quote-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const row = document.getElementById('edit-quote-row-' + btn.dataset.cateringId);
+        if (row) row.style.display = 'none';
+      });
+    });
+    reqList.querySelectorAll('.update-quote-btn').forEach(btn => {
+      btn.addEventListener('click', () => editCateringQuote(btn.dataset.cateringId, btn));
+    });
   }
 
   const payList = document.getElementById('payments-list');
@@ -2984,7 +4598,7 @@ async function advanceStatus(table, id, nextStatus, btn) {
     const list = table === 'orders' ? dashboardData.orders : dashboardData.catering;
     const record = list.find(r => r.id === id);
     if (record) record.status = nextStatus;
-    if (table === 'orders') { renderOrders(); renderTodayTab(); renderPriorityBanner(); renderBakingTodo(); }
+    if (table === 'orders') { renderOrders(); renderTodayTab(); renderPriorityBanner(); renderAttentionCard(); renderBakingTodo(); }
     else { renderCatering(); }
     showToast(nextStatus === 'completed' ? 'Marked complete ✧' : `Moved to "${nextStatus}" ✧`);
   } catch (err) {
@@ -2994,9 +4608,71 @@ async function advanceStatus(table, id, nextStatus, btn) {
   }
 }
 
+// Entering a quote used to have nowhere to go — quoted_total could only
+// ever be set by hand in the database. Now it's one tap: type the $
+// amount, hit Send, and the request flips to "quoted" and unlocks the
+// payment-link button right away.
+async function setCateringQuote(id, btn) {
+  const input = document.getElementById('catering-quote-input-' + id);
+  const amount = parseFloat(input.value);
+  if (!amount || amount <= 0) {
+    alert('Enter a quote amount greater than $0 first.');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    await callAdmin('set_catering_quote', { id, quoted_total: amount });
+    const record = dashboardData.catering.find(r => r.id === id);
+    if (record) { record.quoted_total = amount; if (record.status === 'new') record.status = 'quoted'; }
+    renderCatering();
+    renderTodayTab();
+    renderPriorityBanner();
+    renderAttentionCard();
+    showToast('Quote sent ✧');
+  } catch (err) {
+    alert('Could not save the quote: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = 'Send Quote';
+  }
+}
+
+async function editCateringQuote(id, btn) {
+  const input = document.getElementById('catering-edit-quote-input-' + id);
+  const amount = parseFloat(input.value);
+  if (!amount || amount <= 0) {
+    alert('Enter a quote amount greater than $0.');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    await callAdmin('set_catering_quote', { id, quoted_total: amount });
+    const record = dashboardData.catering.find(r => r.id === id);
+    if (record) record.quoted_total = amount;
+    const row = document.getElementById('edit-quote-row-' + id);
+    if (row) row.style.display = 'none';
+    renderCatering();
+    showToast('Quote updated ✧');
+  } catch (err) {
+    alert('Could not update the quote: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save';
+  }
+}
+
 function inventoryRowHtml(item) {
   const isRetired = item.active === false;
   const totalAvailable = (item.on_hand_count || 0) + (item.stock_count || 0);
+  // "Ready Today" badge flag — separate from the counts above so you can
+  // manually hide/show an item's badge on the menu (e.g. holding some
+  // back) without it snapping back the next time you edit the counts.
+  // Flagging it here when it disagrees with what's actually on hand
+  // makes it a one-glance, one-click fix instead of something to notice
+  // on the live site first.
+  const isMismatched = item.in_stock === false && totalAvailable > 0;
+  const badgeOn = item.in_stock !== false;
   return `
     <div class="inv-row" style="${isRetired ? 'opacity:0.6;' : ''} flex-direction:column; align-items:stretch;">
       <span class="inv-name ${totalAvailable === 0 ? 'low-stock' : ''}">
@@ -3014,7 +4690,13 @@ function inventoryRowHtml(item) {
           <input type="number" min="0" value="${item.stock_count || 0}" data-id="${item.id}" data-field="stock_count" class="stock-input frozen-input" style="width:100%;">
         </div>
       </div>
-      <button class="btn btn-small save-stock-btn" data-id="${item.id}" style="margin-top:8px; align-self:flex-start;">Save</button>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;">
+        <button class="btn btn-small save-stock-btn" data-id="${item.id}">Save</button>
+        <button type="button" class="btn btn-small btn-outline instock-toggle-btn" data-id="${item.id}" data-current="${badgeOn}">
+          ${badgeOn ? '✓ Showing "Ready Today" badge' : 'Not showing "Ready Today" badge'}
+        </button>
+        ${isMismatched ? `<span style="font-size:0.75rem; color:#c0025e; font-weight:700;">⚠ You have ${totalAvailable} on hand — tap to turn the badge back on</span>` : ''}
+      </div>
     </div>
   `;
 }
@@ -3051,6 +4733,72 @@ function renderInventory() {
         showToast('Stock updated ✧');
       } catch (err) {
         alert('Could not update stock: ' + err.message);
+        btn.disabled = false;
+      }
+    });
+  });
+
+  // Save every changed row in one tap instead of hunting down each
+  // flavor's own Save button — the common case after a baking session is
+  // updating 5-10 flavors at once. Rows whose numbers haven't changed are
+  // skipped so this doesn't spam unnecessary writes.
+  const saveAllBtn = document.getElementById('save-all-stock-btn');
+  if (saveAllBtn) {
+    saveAllBtn.onclick = async () => {
+      const rows = Array.from(list.querySelectorAll('.on-hand-input')).map(onHandInput => {
+        const id = onHandInput.dataset.id;
+        const frozenInput = list.querySelector(`.frozen-input[data-id="${id}"]`);
+        const on_hand_count = parseInt(onHandInput.value) || 0;
+        const stock_count = parseInt(frozenInput.value) || 0;
+        const item = dashboardData.inventory.find(i => i.id === id);
+        const changed = !item || item.on_hand_count !== on_hand_count || item.stock_count !== stock_count;
+        return { id, on_hand_count, stock_count, changed };
+      }).filter(r => r.changed);
+
+      if (rows.length === 0) {
+        showToast('Nothing to save — no changes yet');
+        return;
+      }
+
+      saveAllBtn.disabled = true;
+      saveAllBtn.textContent = `Saving ${rows.length} flavor${rows.length === 1 ? '' : 's'}...`;
+      try {
+        await Promise.all(rows.map(async (r) => {
+          const in_stock = (r.on_hand_count + r.stock_count) > 0;
+          await callAdmin('update_inventory', { id: r.id, on_hand_count: r.on_hand_count, stock_count: r.stock_count, in_stock });
+          const item = dashboardData.inventory.find(i => i.id === r.id);
+          if (item) { item.on_hand_count = r.on_hand_count; item.stock_count = r.stock_count; item.in_stock = in_stock; }
+        }));
+        renderInventory();
+        renderPriorityBanner();
+        renderAttentionCard();
+        showToast(`Saved ${rows.length} flavor${rows.length === 1 ? '' : 's'} ✧`);
+      } catch (err) {
+        alert('Could not save all changes: ' + err.message);
+      } finally {
+        saveAllBtn.disabled = false;
+        saveAllBtn.textContent = '💾 Save All Changes';
+      }
+    };
+  }
+
+  // Manual "Ready Today" badge toggle — independent of the counts above,
+  // so flipping it doesn't touch what's actually on hand or in the
+  // freezer. A one-click way to turn the badge back on when it's out of
+  // sync, or to hide it on purpose.
+  list.querySelectorAll('.instock-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const newValue = btn.dataset.current !== 'true';
+      btn.disabled = true;
+      try {
+        await callAdmin('update_inventory', { id, in_stock: newValue });
+        const item = dashboardData.inventory.find(i => i.id === id);
+        if (item) item.in_stock = newValue;
+        renderInventory();
+        showToast(newValue ? 'Badge turned on ✧' : 'Badge turned off');
+      } catch (err) {
+        alert('Could not update: ' + err.message);
         btn.disabled = false;
       }
     });
@@ -3183,7 +4931,12 @@ function renderIngredientSpendSummary() {
   }
 
   const total = filtered.reduce((sum, e) => sum + Number(e.amount || 0), 0);
-  document.getElementById('ing-summary-value').textContent = money(total);
+  // The standalone "Spent On Ingredients" card was folded into the
+  // Ingredients section of Earnings & Tax (Cost Per Cookie covers this
+  // same total in more detail), so this element no longer exists — guard
+  // it rather than deleting every call site above.
+  const el = document.getElementById('ing-summary-value');
+  if (el) el.textContent = money(total);
 }
 
 document.querySelectorAll('.ing-summary-period-btn').forEach(btn => {
@@ -3235,6 +4988,41 @@ function renderEarnings() {
   renderPeriodBreakdown();
   renderYtdAndQuarterly(taxRate);
   renderCategoryBreakdown();
+  renderTrafficSources();
+}
+
+// Simple bar-style breakdown of the anonymous "where'd you find us" taps
+// from the thank-you screens (manage-dashboard already tallies these into
+// trafficSourceSummary, sorted highest-first) — no names or orders attached,
+// just a feel for where the traffic is actually coming from.
+function renderTrafficSources() {
+  const listEl = document.getElementById('traffic-source-list');
+  if (!listEl) return;
+  const summary = dashboardData.trafficSourceSummary || [];
+  const total = dashboardData.trafficSourceTotal || 0;
+
+  if (total === 0) {
+    listEl.innerHTML = `<div class="order-detail">No responses yet — this fills in as customers tap an answer on the thank-you screen.</div>`;
+    return;
+  }
+
+  const maxCount = Math.max(...summary.map(s => s.count));
+  listEl.innerHTML = `
+    <div class="order-detail" style="margin:0 0 10px;">${total} response${total === 1 ? '' : 's'} so far</div>
+  ` + summary.map(s => {
+    const pct = total > 0 ? Math.round((s.count / total) * 100) : 0;
+    const barPct = maxCount > 0 ? Math.round((s.count / maxCount) * 100) : 0;
+    return `
+    <div style="padding:7px 0;">
+      <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.88rem; margin-bottom:4px;">
+        <span style="font-weight:600;">${escapeHtml(s.source)}</span>
+        <span style="color:var(--ink-soft);">${s.count} (${pct}%)</span>
+      </div>
+      <div style="background:var(--pink-light); border-radius:6px; height:8px; overflow:hidden;">
+        <div style="background:var(--pink-hot); height:100%; width:${barPct}%; border-radius:6px;"></div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // Orders only store a total $ amount, not itemized per-product pricing, so
@@ -3453,6 +5241,7 @@ function renderBusinessInfo() {
       await saveBusinessInfoItems(items);
       renderBusinessInfo();
       renderPriorityBanner();
+      renderAttentionCard();
       showToast('Removed ✧');
     });
   });
@@ -3477,6 +5266,7 @@ document.getElementById('add-biz-info-btn').addEventListener('click', async () =
     document.getElementById('biz-info-date').value = '';
     renderBusinessInfo();
     renderPriorityBanner();
+    renderAttentionCard();
     showToast('Added ✧');
   } catch (err) {
     alert('Could not save: ' + err.message);
@@ -3648,6 +5438,59 @@ async function getHomeBaseCoords() {
   return coords;
 }
 
+// Address autocomplete — as you type, real matching addresses (from
+// OpenStreetMap's free Nominatim search, the same service already used
+// to geocode this field) show up in a dropdown to click, so it's rare to
+// accidentally save a typo'd or made-up address. Purely a convenience —
+// typing your own address and ignoring the list still works fine.
+function addrEscapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+function attachAddressAutocomplete(input) {
+  const wrapper = input.parentElement;
+  if (getComputedStyle(wrapper).position === 'static') wrapper.style.position = 'relative';
+  const list = document.createElement('div');
+  list.className = 'addr-suggest-list';
+  list.style.cssText = 'display:none; position:absolute; top:100%; left:0; right:0; z-index:50; background:#fff; border:1.5px solid var(--border,#f7c3d6); border-radius:12px; margin-top:4px; max-height:220px; overflow-y:auto; box-shadow:0 6px 20px rgba(0,0,0,0.12);';
+  wrapper.appendChild(list);
+
+  let debounceTimer = null;
+  function hideList() { list.style.display = 'none'; list.innerHTML = ''; }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const q = input.value.trim();
+    if (q.length < 5) { hideList(); return; }
+    debounceTimer = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({ format: 'json', addressdetails: '1', limit: '5', countrycodes: 'us', q });
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data || data.length === 0) { hideList(); return; }
+        list.innerHTML = data.map((r, i) => `<div class="addr-suggest-item" data-idx="${i}" style="padding:10px 12px; cursor:pointer; font-size:0.9rem; border-bottom:1px solid #f4e3ea;">${addrEscapeHtml(r.display_name)}</div>`).join('');
+        list.style.display = 'block';
+        list.querySelectorAll('.addr-suggest-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // fires before the input's blur, so the click still registers
+            const chosen = data[parseInt(el.dataset.idx, 10)];
+            input.value = chosen.display_name;
+            hideList();
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          });
+          el.addEventListener('mouseenter', () => { el.style.background = '#fff5f8'; });
+          el.addEventListener('mouseleave', () => { el.style.background = ''; });
+        });
+      } catch (e) { /* suggestions are a nice-to-have, never block typing */ }
+    }, 400);
+  });
+  input.addEventListener('blur', () => { setTimeout(hideList, 150); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideList(); });
+}
+attachAddressAutocomplete(document.getElementById('home-base-address-input'));
+
 document.getElementById('home-base-address-input').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('save-home-base-btn').click();
 });
@@ -3709,14 +5552,34 @@ function copyPaymentLink(cateringId, btn) {
   const request = dashboardData.catering.find(r => r.id === cateringId);
   if (!request || !request.quoted_total) return;
 
+  // A fresh link offers the customer the choice between paying in full or
+  // splitting it (half now, half later) against the full quoted amount.
+  // Once a deposit's been logged, the link instead charges exactly what's
+  // left — no plan choice, so there's no way to under- or over-charge the
+  // remaining balance.
+  const mode = btn.dataset.mode || 'full';
+  const payStatus = cateringPaymentStatus(request);
+  const amount = mode === 'balance' ? payStatus.remaining : request.quoted_total;
+
   const url = new URL('https://melstreat.com/catering-payment.html');
-  url.searchParams.set('amount', request.quoted_total);
+  url.searchParams.set('amount', amount);
+  url.searchParams.set('mode', mode);
   url.searchParams.set('name', request.full_name);
   if (request.email) url.searchParams.set('email', request.email);
   url.searchParams.set('request_id', request.id);
   if (request.event_type) url.searchParams.set('event_type', request.event_type);
   if (request.event_date) url.searchParams.set('event_date', request.event_date);
   if (request.dozens_count) url.searchParams.set('dozens', request.dozens_count);
+  if (request.cookie_size) url.searchParams.set('cookie_size', request.cookie_size);
+  if (request.fulfillment_type) url.searchParams.set('fulfillment_type', request.fulfillment_type);
+  if (request.fulfillment_type === 'delivery' && request.delivery_address) {
+    url.searchParams.set('delivery_address', request.delivery_address);
+  }
+  if (request.event_time) url.searchParams.set('event_time', request.event_time);
+  if (request.cookies_requested && Object.keys(request.cookies_requested).length) {
+    url.searchParams.set('flavors', JSON.stringify(request.cookies_requested));
+  }
+  if (request.special_instructions) url.searchParams.set('notes', request.special_instructions);
 
   navigator.clipboard.writeText(url.toString()).then(() => {
     const original = btn.textContent;
@@ -4355,13 +6218,25 @@ function csvEscape(val) {
 }
 
 document.getElementById('export-csv-btn').addEventListener('click', () => {
+  const fromStr = document.getElementById('export-csv-from').value;
+  const toStr = document.getElementById('export-csv-to').value;
+  const inRange = (dateStr) => {
+    if (!dateStr) return true;
+    const d = dateStr.split('T')[0];
+    if (fromStr && d < fromStr) return false;
+    if (toStr && d > toStr) return false;
+    return true;
+  };
+
   const rows = [['Type', 'Date', 'Name/Description', 'Details', 'Amount', 'Discount Code', 'Discount', 'Tip', 'Pre-Order']];
 
   (dashboardData.orders || []).forEach(o => {
+    const dateStr = o.preferred_date || o.created_at.split('T')[0];
+    if (!inRange(dateStr)) return;
     const cookieText = Object.entries(o.cookies || {}).map(([k,v]) => `${v}x ${k}`).join('; ');
     rows.push([
       o.source === 'in_person' ? 'In-Person Sale' : 'Website Order',
-      o.preferred_date || o.created_at.split('T')[0],
+      dateStr,
       o.full_name,
       cookieText,
       o.total,
@@ -4372,26 +6247,36 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
     ]);
   });
   (dashboardData.payments || []).forEach(p => {
-    rows.push(['Catering Payment', p.created_at.split('T')[0], p.full_name, p.email, p.amount_paid, '', '', '', '']);
+    const dateStr = p.created_at.split('T')[0];
+    if (!inRange(dateStr)) return;
+    rows.push(['Catering Payment', dateStr, p.full_name, p.email, p.amount_paid, '', '', '', '']);
   });
   (dashboardData.manualIncome || []).forEach(m => {
-    rows.push(['Outside Income', m.date_earned || m.created_at.split('T')[0], m.description, m.payment_method, m.amount, '', '', '', '']);
+    const dateStr = m.date_earned || m.created_at.split('T')[0];
+    if (!inRange(dateStr)) return;
+    rows.push(['Outside Income', dateStr, m.description, m.payment_method, m.amount, '', '', '', '']);
   });
   (dashboardData.manualExpenses || []).forEach(e => {
+    const dateStr = e.date_spent || e.created_at.split('T')[0];
+    if (!inRange(dateStr)) return;
     const name = e.ingredient === 'Other' && e.custom_note ? e.custom_note : e.ingredient;
-    rows.push(['Expense', e.date_spent || e.created_at.split('T')[0], name, `${e.category || 'ingredient'} x${e.quantity || 1}`, -Number(e.amount), '', '', '', '']);
+    rows.push(['Expense', dateStr, name, `${e.category || 'ingredient'} x${e.quantity || 1}`, -Number(e.amount), '', '', '', '']);
   });
   (dashboardData.mileageLog || []).forEach(m => {
+    if (!inRange(m.date_driven)) return;
     const deduction = Number(m.miles || 0) * Number(m.rate_used || 0.76);
     rows.push(['Mileage', m.date_driven, m.purpose, `${m.miles} mi @ $${m.rate_used}/mi`, deduction.toFixed(2), '', '', '', '']);
   });
+
+  if (rows.length === 1) { alert('No records fall in that date range.'); return; }
 
   const csvContent = rows.map(row => row.map(csvEscape).join(',')).join('\n');
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `mels-treat-financials-${new Date().toISOString().split('T')[0]}.csv`;
+  const rangeSuffix = (fromStr || toStr) ? `_${fromStr || 'start'}_to_${toStr || 'now'}` : '';
+  a.download = `mels-treat-financials${rangeSuffix}-${new Date().toISOString().split('T')[0]}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -4404,26 +6289,146 @@ function renderCodes() {
     list.innerHTML = '<div class="empty-note">No discount codes yet — add one above!</div>';
     return;
   }
-  list.innerHTML = discountCodes.map(c => {
+
+  const searchInput = document.getElementById('codes-search-input');
+  const sortSelect = document.getElementById('codes-sort-select');
+  const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+  const sortBy = sortSelect ? sortSelect.value : 'newest';
+
+  let visible = discountCodes.filter(c =>
+    !query ||
+    (c.code || '').toLowerCase().includes(query) ||
+    (c.referral_owner_email || '').toLowerCase().includes(query)
+  );
+
+  visible = [...visible].sort((a, b) => {
+    if (sortBy === 'az') return (a.code || '').localeCompare(b.code || '');
+    if (sortBy === 'most_used') return Number(b.uses_count || 0) - Number(a.uses_count || 0);
+    if (sortBy === 'expiring') {
+      if (!a.expires_at && !b.expires_at) return 0;
+      if (!a.expires_at) return 1;
+      if (!b.expires_at) return -1;
+      return new Date(a.expires_at) - new Date(b.expires_at);
+    }
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
+  if (visible.length === 0) {
+    list.innerHTML = '<div class="empty-note">No codes match your search.</div>';
+    return;
+  }
+
+  list.innerHTML = visible.map(c => {
     const discountText = c.percent_off ? `${c.percent_off}% off` : (c.flat_off ? `${money(c.flat_off)} off` : 'No discount set');
     const usesText = c.max_uses ? `${c.uses_count} / ${c.max_uses} uses` : `${c.uses_count} uses (unlimited)`;
     const expiresText = c.expires_at ? `Expires ${new Date(c.expires_at).toLocaleDateString()}` : 'No expiration';
+    let expiryBadge = '';
+    if (c.active && c.expires_at) {
+      const expDate = new Date(c.expires_at);
+      const daysUntil = Math.ceil((expDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      if (daysUntil < 0) {
+        expiryBadge = `<span class="code-status" style="background:#f3d6dc; color:#8a0a3a;">⏰ Expired</span>`;
+      } else if (daysUntil <= 7) {
+        expiryBadge = `<span class="code-status" style="background:#fff0d9; color:#a15c00;">⏰ Expires in ${daysUntil}d</span>`;
+      }
+    }
     return `
       <div class="code-row ${c.active ? '' : 'inactive'}" data-id="${c.id}">
         <div class="code-top">
           <span class="code-name">${c.code}</span>
           <span class="code-status ${c.active ? '' : 'inactive-badge'}">${c.active ? 'Active' : 'Inactive'}</span>
+          ${c.is_referral_code ? `<span class="code-status" style="background:#e6f3ff; color:#0a6bd6;">🔗 Referral${c.referral_owner_email ? ' — ' + c.referral_owner_email : ''}</span>` : ''}
+          ${expiryBadge}
         </div>
         <div class="code-detail">${discountText}</div>
         <div class="code-detail">${usesText}</div>
         <div class="code-detail">${expiresText}</div>
         <div class="code-actions">
+          <button class="btn btn-small btn-outline code-copy-btn" data-code="${escapeHtml(c.code)}">📋 Copy</button>
+          <button class="btn btn-small btn-outline code-edit-btn" data-id="${c.id}">✏️ Edit</button>
           <button class="btn btn-small btn-outline code-toggle-btn" data-id="${c.id}" data-active="${c.active}">${c.active ? 'Deactivate' : 'Activate'}</button>
           <button class="btn btn-small code-delete-btn" data-id="${c.id}" style="background:#c0025e;">Delete</button>
+        </div>
+        <div class="code-edit-panel" id="code-edit-panel-${c.id}" style="display:none; margin-top:10px; padding:12px; background:#fff5f8; border-radius:12px; border:1.5px dashed var(--pink-light, #f3b8d0);">
+          <label style="display:block; font-size:0.8rem; font-weight:700;">% Off (leave blank if using $ off)</label>
+          <input type="number" min="0" max="100" id="ce-percent-${c.id}" value="${c.percent_off || ''}" style="width:100%;">
+          <label style="display:block; font-size:0.8rem; font-weight:700; margin-top:8px;">$ Off (leave blank if using % off)</label>
+          <input type="number" min="0" step="0.01" id="ce-flat-${c.id}" value="${c.flat_off || ''}" style="width:100%;">
+          <label style="display:block; font-size:0.8rem; font-weight:700; margin-top:8px;">Expires</label>
+          <input type="date" id="ce-expires-${c.id}" value="${c.expires_at ? new Date(c.expires_at).toISOString().split('T')[0] : ''}" style="width:100%;">
+          <label style="display:block; font-size:0.8rem; font-weight:700; margin-top:8px;">Max Uses (leave blank for unlimited)</label>
+          <input type="number" min="1" id="ce-maxuses-${c.id}" value="${c.max_uses || ''}" style="width:100%;">
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button type="button" class="btn btn-small code-edit-save-btn" data-id="${c.id}">Save Changes</button>
+            <button type="button" class="btn btn-small btn-outline code-edit-cancel-btn" data-id="${c.id}">Cancel</button>
+          </div>
+          <div class="error" id="ce-error-${c.id}"></div>
         </div>
       </div>
     `;
   }).join('');
+
+  list.querySelectorAll('.code-copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.code);
+        const original = btn.textContent;
+        btn.textContent = '✓ Copied';
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      } catch (err) {
+        alert('Could not copy — here is the code: ' + btn.dataset.code);
+      }
+    });
+  });
+
+  list.querySelectorAll('.code-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = document.getElementById('code-edit-panel-' + btn.dataset.id);
+      if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    });
+  });
+
+  list.querySelectorAll('.code-edit-cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = document.getElementById('code-edit-panel-' + btn.dataset.id);
+      if (panel) panel.style.display = 'none';
+    });
+  });
+
+  list.querySelectorAll('.code-edit-save-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const errorBox = document.getElementById('ce-error-' + id);
+      errorBox.textContent = '';
+      const percentStr = document.getElementById('ce-percent-' + id).value;
+      const flatStr = document.getElementById('ce-flat-' + id).value;
+      const expiresStr = document.getElementById('ce-expires-' + id).value;
+      const maxUsesStr = document.getElementById('ce-maxuses-' + id).value;
+      if (!percentStr && !flatStr) {
+        errorBox.textContent = 'Please set either a % off or $ off amount.';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      try {
+        await callFunction('manage-discount-codes', 'update', {
+          id,
+          percent_off: percentStr ? parseFloat(percentStr) : null,
+          flat_off: flatStr ? parseFloat(flatStr) : null,
+          expires_at: expiresStr ? new Date(expiresStr + 'T23:59:59').toISOString() : null,
+          max_uses: maxUsesStr ? parseInt(maxUsesStr) : null,
+        });
+        const data = await callFunction('manage-discount-codes', 'list');
+        discountCodes = data.codes;
+        renderCodes();
+        showToast('Code updated ✧');
+      } catch (err) {
+        errorBox.textContent = 'Could not save: ' + err.message;
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+      }
+    });
+  });
 
   list.querySelectorAll('.code-toggle-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -4444,8 +6449,13 @@ function renderCodes() {
 
   list.querySelectorAll('.code-delete-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Delete this discount code permanently?')) return;
       const id = btn.dataset.id;
+      const code = (discountCodes || []).find(c => c.id === id);
+      const usesCount = code ? Number(code.uses_count || 0) : 0;
+      const warning = usesCount > 0
+        ? `This code has been used ${usesCount} time${usesCount === 1 ? '' : 's'} already. Deleting it removes it permanently — if you just want to stop new uses, "Deactivate" is safer and can be undone. Delete anyway?`
+        : 'Delete this discount code permanently?';
+      if (!confirm(warning)) return;
       btn.disabled = true;
       try {
         await callFunction('manage-discount-codes', 'delete', { id });
@@ -4459,6 +6469,9 @@ function renderCodes() {
     });
   });
 }
+
+document.getElementById('codes-search-input').addEventListener('input', renderCodes);
+document.getElementById('codes-sort-select').addEventListener('change', renderCodes);
 
 document.getElementById('create-btn').addEventListener('click', async () => {
   const errBox = document.getElementById('create-error');
@@ -4546,6 +6559,14 @@ function renderReviewsMgmt() {
           <span class="review-mgmt-stars">${reviewStarString(r.rating)}</span>
         </div>
         ${r.order_reference ? `<div class="review-mgmt-order">Ordered: ${escapeHtml(r.order_reference)}</div>` : ''}
+        ${(() => {
+          // Match the reviewer back to a customer record so a glowing
+          // review can be thanked, or a critical one followed up on,
+          // without switching to Orders/Customers to hunt for them.
+          const directory = buildCustomerDirectory();
+          const match = directory[(r.customer_name || '').trim().toLowerCase()];
+          return match ? contactLinksHtml(match.phone, match.email) : '';
+        })()}
         ${r.review_text ? `<div class="review-mgmt-text">"${escapeHtml(r.review_text)}"</div>` : '<div class="review-mgmt-text" style="color:var(--ink-soft); font-style:italic;">No written review left.</div>'}
         ${subParts.length ? `<div class="review-mgmt-subratings">${subParts.join(' · ')}</div>` : ''}
         <div class="review-mgmt-date">${new Date(r.created_at).toLocaleDateString()}</div>
@@ -4663,6 +6684,52 @@ function updateAudienceNote() {
     : `💌 Nobody's opted in yet — this list fills up as customers use the "$2 off" signup on your home page.`;
 }
 
+// --- Who's opted in (welcome_signups) ---
+let subscriberListShown = false;
+
+function renderSubscriberList() {
+  const box = document.getElementById('subscriber-list');
+  if (!box) return;
+  const rows = dashboardData?.welcomeSignups || [];
+  if (rows.length === 0) {
+    box.innerHTML = `<div class="empty-note" style="padding:12px;">Nobody's signed up yet.</div>`;
+    return;
+  }
+  // Dedupe by email (lowercased) — a subscriber signing up more than once
+  // shouldn't show twice, just keep their most recent signup.
+  const seen = new Set();
+  const deduped = [];
+  for (const r of rows) {
+    const key = (r.email || '').toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(r);
+  }
+  box.innerHTML = deduped.map(r => {
+    const when = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+    return `
+      <div class="subscriber-row">
+        <span>${escapeHtml(r.email || '—')}</span>
+        <span class="sub-date">${when}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+document.getElementById('toggle-subscriber-list-btn')?.addEventListener('click', () => {
+  subscriberListShown = !subscriberListShown;
+  const box = document.getElementById('subscriber-list');
+  const btn = document.getElementById('toggle-subscriber-list-btn');
+  if (subscriberListShown) {
+    renderSubscriberList();
+    box.style.display = 'block';
+    btn.textContent = 'Hide the list';
+  } else {
+    box.style.display = 'none';
+    btn.textContent = "View who's on this list";
+  }
+});
+
 function textToHtml(text) {
   return text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
 }
@@ -4753,6 +6820,81 @@ document.getElementById('send-campaign-btn').addEventListener('click', async () 
   }
 });
 
+// --- Holiday / Free Treat offer generator ---
+// Creates a real discount code (reusing the same discount_codes table and
+// manage-discount-codes function as the Discount Codes tab) and drops a
+// ready-to-send message into the compose box above. "Free cookie" isn't a
+// literal free single item in the checkout system (discounts are cart-level,
+// not per-item), so it's modeled as a flat dollar amount close to what one
+// cookie costs — the email text is worded around that.
+document.getElementById('generate-holiday-btn')?.addEventListener('click', async () => {
+  const errBox = document.getElementById('holiday-error');
+  const successBox = document.getElementById('holiday-success');
+  errBox.style.display = 'none';
+  successBox.style.display = 'none';
+
+  const occasion = (document.getElementById('holiday-occasion-input').value || 'Holiday').trim();
+  const offerValue = document.getElementById('holiday-offer-select').value;
+  const expiresInDays = parseInt(document.getElementById('holiday-expires-input').value, 10) || 10;
+  const isPercent = offerValue.startsWith('pct');
+  const amount = isPercent ? parseInt(offerValue.replace('pct', ''), 10) : parseFloat(offerValue);
+  const isFreeTreat = !isPercent && amount <= 6; // the two "free cookie/treat" presets
+
+  let code = (document.getElementById('holiday-code-input').value || '').trim().toUpperCase();
+  if (!code) {
+    const slug = occasion.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 10) || 'TREAT';
+    code = `${slug}${new Date().getFullYear()}`;
+    document.getElementById('holiday-code-input').value = code;
+  }
+
+  const btn = document.getElementById('generate-holiday-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+  try {
+    const expiresAt = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000).toISOString();
+    const createBody = isPercent
+      ? { code, percent_off: amount, expires_at: expiresAt }
+      : { code, flat_off: amount, expires_at: expiresAt };
+    const data = await callFunction('manage-discount-codes', 'create', createBody);
+    if (!data.success) throw new Error(data.message || 'Could not create the discount code.');
+
+    const offerLine = isPercent
+      ? `${amount}% off your next order`
+      : isFreeTreat
+        ? `a free treat (up to $${amount.toFixed(2)} off) on your next order`
+        : `$${amount.toFixed(2)} off your next order`;
+    const niceExpiry = new Date(expiresAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+
+    document.getElementById('email-subject-input').value = `${isFreeTreat ? 'A little treat from me 🎁' : `${occasion} treat for you 🎁`} — Mel's Treat`;
+    document.getElementById('email-body-input').value =
+      `Happy ${occasion}! 🎉\n\n` +
+      `As a thank-you for being one of my subscribers, here's ${offerLine}.\n\n` +
+      `Use code: ${code}\n\n` +
+      `Valid through ${niceExpiry} — just enter it at checkout on melstreat.com.\n\n` +
+      `Can't wait to bake for you! 💕\n— Meliese`;
+
+    // Refresh so the Discount Codes tab (and any future dashboard reload)
+    // already shows this new code without her having to switch tabs first.
+    try {
+      const refreshed = await callFunction('manage-dashboard', 'dashboard_data');
+      if (refreshed.success) { dashboardData = refreshed; }
+    } catch (e) { /* non-fatal — the code was still created */ }
+    try {
+      const codesData = await callFunction('manage-discount-codes', 'list');
+      if (codesData.success) { discountCodes = codesData.codes; renderCodes(); }
+    } catch (e) { /* non-fatal */ }
+
+    successBox.textContent = `Code ${code} created! The message above is ready — review it, then use "Send Test To Me" or "Send To List".`;
+    successBox.style.display = 'block';
+  } catch (err) {
+    errBox.textContent = err.message || 'Something went wrong creating the code.';
+    errBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate Code & Fill In Message Above';
+  }
+});
+
 // --- Links tab ---
 const SITE_LINKS = [
   { name: 'Home Page', url: 'https://melstreat.com/shop.html' },
@@ -4808,8 +6950,12 @@ function scriptsRowEditFormHtml(tpl) {
   `;
 }
 
-// --- Email Delivery Log (separate from the "Emails" campaign-blast tab) ---
+// --- Email Center: stats + delivery log (the campaign-blast tool is the
+// collapsible "Send To Subscribers" section further down the same tab) ---
 let emailLogFilter = 'all';
+let emailLogSearch = '';
+let emailLogTypeFilter = 'all';
+let emailTypeFilterPopulated = false;
 
 const EMAIL_TYPE_LABELS = {
   order_confirmation_customer: '🍪 Order Confirmation',
@@ -4826,17 +6972,182 @@ const EMAIL_TYPE_LABELS = {
   review_request: '⭐ Review Request',
   loyalty_reward: '🎁 Loyalty Reward',
   restock_notice: '🔔 Restock Notice',
+  marketing_campaign: '📣 Subscriber Email',
+  marketing_test: '🧪 Test Send (to you)',
 };
+
+// Sent Today / Sent This Week / Not Delivered — the top-of-tab snapshot
+// so she can tell at a glance whether email is running smoothly without
+// reading the full log. Also drives the small count badge on the tab
+// itself, same pattern as the Orders/Catering/Reviews badges.
+function renderEmailStats() {
+  const rows = dashboardData.emailLog || [];
+  const now = new Date();
+  const todayStr = now.toDateString();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  let sentToday = 0, sentWeek = 0, issues = 0;
+  rows.forEach(r => {
+    if (!r.created_at) return;
+    const d = new Date(r.created_at);
+    if (d.toDateString() === todayStr) sentToday++;
+    if (d >= weekAgo) sentWeek++;
+    if (r.status !== 'sent' && r.status !== 'delivered') issues++;
+  });
+
+  const todayEl = document.getElementById('email-stat-today');
+  const weekEl = document.getElementById('email-stat-week');
+  const issuesEl = document.getElementById('email-stat-issues');
+  if (todayEl) todayEl.textContent = sentToday;
+  if (weekEl) weekEl.textContent = sentWeek;
+  if (issuesEl) issuesEl.textContent = issues;
+
+  const badge = document.getElementById('tab-badge-email-center');
+  if (badge) {
+    if (issues > 0) { badge.textContent = issues; badge.style.display = 'inline-block'; }
+    else { badge.style.display = 'none'; }
+  }
+}
+
+// Lets Meliese personally edit — or blank out and rewrite — the wording
+// of any automated customer-facing email, so a cancelled order or an
+// in-person conversation never leaves her stuck with the built-in text.
+// This only ever touches SAYS, never WHEN/WHETHER something sends.
+let emailTemplatesEditing = {};
+
+function emailTemplateCardHtml(t) {
+  const isEditing = !!emailTemplatesEditing[t.type];
+  const tokenHint = t.tokens.length ? `Available: ${t.tokens.map(tok => `{${tok}}`).join(', ')}` : 'No fill-in tokens for this one.';
+  if (!isEditing) {
+    return `
+      <div class="order-row" data-tpl-type="${t.type}">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+          <div>
+            <div style="font-weight:700;">${escapeHtml(t.label)}${t.isCustom ? ' <span style="color:var(--pink-hot); font-size:0.78rem; font-weight:700;">✎ Custom</span>' : ''}</div>
+            <div class="order-detail" style="margin-top:2px;">${escapeHtml(t.description)}</div>
+            <div class="order-detail" style="margin-top:6px; font-style:italic;">"${escapeHtml(t.subject)}"</div>
+          </div>
+          <button type="button" class="btn btn-small btn-outline tpl-edit-btn" data-type="${t.type}" style="white-space:nowrap;">Edit Wording</button>
+        </div>
+      </div>
+    `;
+  }
+  return `
+    <div class="order-row" data-tpl-type="${t.type}">
+      <div style="font-weight:700; margin-bottom:6px;">${escapeHtml(t.label)}</div>
+      <div class="order-detail" style="margin-bottom:10px;">${escapeHtml(t.description)}</div>
+      <label style="font-size:0.8rem; font-weight:700;">Subject Line</label>
+      <input type="text" id="tpl-subject-${t.type}" value="${escapeHtml(t.subject)}" style="width:100%;">
+      <label style="margin-top:10px; font-size:0.8rem; font-weight:700;">Email Body (basic HTML is okay)</label>
+      <textarea id="tpl-body-${t.type}" style="min-height:180px; width:100%; font-family:monospace; font-size:0.82rem;">${escapeHtml(t.body)}</textarea>
+      <div class="order-detail" style="margin-top:6px;">${escapeHtml(tokenHint)} — each gets swapped for the real value right before sending.</div>
+      <div class="error" id="tpl-error-${t.type}"></div>
+      <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-small tpl-save-btn" data-type="${t.type}">Save</button>
+        <button type="button" class="btn btn-small btn-outline tpl-cancel-btn" data-type="${t.type}">Cancel</button>
+        ${t.isCustom ? `<button type="button" class="btn btn-small tpl-reset-btn" data-type="${t.type}" style="background:var(--white); color:#c0025e; border:1.5px solid #c0025e;">Revert To Original</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderEmailTemplates() {
+  const listEl = document.getElementById('email-templates-list');
+  if (!listEl) return;
+  const templates = dashboardData.emailTemplates || [];
+  listEl.innerHTML = templates.map(emailTemplateCardHtml).join('');
+
+  listEl.querySelectorAll('.tpl-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => { emailTemplatesEditing[btn.dataset.type] = true; renderEmailTemplates(); });
+  });
+  listEl.querySelectorAll('.tpl-cancel-btn').forEach(btn => {
+    btn.addEventListener('click', () => { delete emailTemplatesEditing[btn.dataset.type]; renderEmailTemplates(); });
+  });
+  listEl.querySelectorAll('.tpl-save-btn').forEach(btn => {
+    btn.addEventListener('click', () => saveEmailTemplate(btn.dataset.type, btn));
+  });
+  listEl.querySelectorAll('.tpl-reset-btn').forEach(btn => {
+    btn.addEventListener('click', () => resetEmailTemplate(btn.dataset.type, btn));
+  });
+}
+
+async function saveEmailTemplate(type, btn) {
+  const subjectInput = document.getElementById(`tpl-subject-${type}`);
+  const bodyInput = document.getElementById(`tpl-body-${type}`);
+  const errEl = document.getElementById(`tpl-error-${type}`);
+  const subject = subjectInput.value.trim();
+  const body = bodyInput.value;
+  if (!subject) { errEl.textContent = 'A subject line is required.'; return; }
+  if (!body.trim()) { errEl.textContent = "The email can't be blank — write something, or use Revert To Original."; return; }
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    await callAdmin('save_email_template', { email_type: type, subject, body });
+    const refreshed = await callFunction('manage-dashboard', 'dashboard_data');
+    if (refreshed.success) dashboardData = refreshed;
+    delete emailTemplatesEditing[type];
+    renderEmailTemplates();
+    showToast('Email wording saved ✧');
+  } catch (err) {
+    errEl.textContent = 'Could not save: ' + err.message;
+    btn.disabled = false;
+    btn.textContent = 'Save';
+  }
+}
+
+async function resetEmailTemplate(type, btn) {
+  if (!confirm('Go back to the original wording for this email? Your edits will be gone.')) return;
+  btn.disabled = true;
+  btn.textContent = 'Reverting...';
+  try {
+    await callAdmin('reset_email_template', { email_type: type });
+    const refreshed = await callFunction('manage-dashboard', 'dashboard_data');
+    if (refreshed.success) dashboardData = refreshed;
+    delete emailTemplatesEditing[type];
+    renderEmailTemplates();
+    showToast('Reverted to original wording ✧');
+  } catch (err) {
+    alert('Could not revert: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = 'Revert To Original';
+  }
+}
 
 function renderEmailLogTab() {
   const list = document.getElementById('emaillog-list');
   if (!list) return;
+
+  renderEmailStats();
+  renderEmailTemplates();
+
+  const typeSelect = document.getElementById('emaillog-type-filter');
+  if (typeSelect && !emailTypeFilterPopulated) {
+    Object.entries(EMAIL_TYPE_LABELS).forEach(([value, label]) => {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = label;
+      typeSelect.appendChild(opt);
+    });
+    emailTypeFilterPopulated = true;
+  }
+
   let rows = dashboardData.emailLog || [];
   if (emailLogFilter === 'issues') {
     rows = rows.filter(r => r.status !== 'sent' && r.status !== 'delivered');
   }
+  if (emailLogTypeFilter !== 'all') {
+    rows = rows.filter(r => r.email_type === emailLogTypeFilter);
+  }
+  if (emailLogSearch) {
+    const q = emailLogSearch.toLowerCase();
+    rows = rows.filter(r =>
+      (r.to_email || '').toLowerCase().includes(q) ||
+      (r.subject || '').toLowerCase().includes(q)
+    );
+  }
   if (rows.length === 0) {
-    list.innerHTML = `<div class="empty-note">${emailLogFilter === 'issues' ? 'No delivery problems — everything on file is sent or delivered.' : 'No emails logged yet.'}</div>`;
+    list.innerHTML = `<div class="empty-note">${dashboardData.emailLog && dashboardData.emailLog.length > 0 ? 'Nothing matches that search/filter.' : 'No emails logged yet.'}</div>`;
     return;
   }
   list.innerHTML = rows.map(r => {
@@ -4844,6 +7155,7 @@ function renderEmailLogTab() {
     const typeLabel = EMAIL_TYPE_LABELS[r.email_type] || r.email_type;
     const when = r.created_at ? new Date(r.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
     const title = r.error ? ` title="${escapeHtml(r.error)}"` : '';
+    const hasPreview = !!r.body_html;
     return `
       <div class="email-log-row">
         <div class="email-log-row-top">
@@ -4856,10 +7168,52 @@ function renderEmailLogTab() {
             <div class="order-detail" style="margin:2px 0 0;">${when}</div>
           </div>
         </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
+          <button type="button" class="email-log-preview-btn" data-log-id="${r.id}" ${hasPreview ? '' : 'disabled'}>
+            ${hasPreview ? '👁️ Preview this email' : '👁️ Preview unavailable (sent before this feature)'}
+          </button>
+          ${(r.status !== 'sent' && r.status !== 'delivered' && r.to_email && r.body_html) ? `<button type="button" class="btn btn-small email-log-resend-btn" data-log-id="${r.id}" style="background:var(--white); color:var(--pink-hot); border:1.5px solid var(--pink-hot);">🔁 Resend</button>` : ''}
+        </div>
       </div>
     `;
   }).join('');
+
+  list.querySelectorAll('.email-log-resend-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Resending...';
+      try {
+        await callAdmin('resend_email', { id: btn.dataset.logId });
+        const refreshed = await callAdmin('dashboard_data');
+        if (refreshed.success) { dashboardData = refreshed; renderEmailLogTab(); }
+        showToast('Email resent ✧');
+      } catch (err) {
+        alert('Could not resend: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = '🔁 Resend';
+      }
+    });
+  });
 }
+
+document.addEventListener('click', (e) => {
+  const previewBtn = e.target.closest('.email-log-preview-btn');
+  if (previewBtn && !previewBtn.disabled) {
+    const row = (dashboardData.emailLog || []).find(r => String(r.id) === previewBtn.dataset.logId);
+    if (row && row.body_html) {
+      const typeLabel = EMAIL_TYPE_LABELS[row.email_type] || row.email_type;
+      document.getElementById('email-preview-title').textContent = typeLabel;
+      document.getElementById('email-preview-sub').textContent = `To: ${row.to_email || '—'} · Subject: ${row.subject || '—'}`;
+      document.getElementById('email-preview-frame').srcdoc = row.body_html;
+      document.getElementById('email-preview-overlay').classList.add('open');
+    }
+    return;
+  }
+  if (e.target.id === 'email-preview-close-btn' || e.target.id === 'email-preview-overlay') {
+    document.getElementById('email-preview-overlay').classList.remove('open');
+    document.getElementById('email-preview-frame').srcdoc = '';
+  }
+});
 
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('.log-filter-btn');
@@ -4867,6 +7221,16 @@ document.addEventListener('click', (e) => {
   document.querySelectorAll('.log-filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   emailLogFilter = btn.dataset.emaillogFilter;
+  renderEmailLogTab();
+});
+
+document.getElementById('emaillog-search-input').addEventListener('input', (e) => {
+  emailLogSearch = e.target.value;
+  renderEmailLogTab();
+});
+
+document.getElementById('emaillog-type-filter').addEventListener('change', (e) => {
+  emailLogTypeFilter = e.target.value;
   renderEmailLogTab();
 });
 
@@ -4880,22 +7244,76 @@ function renderScriptsTab() {
     ? scriptsRowEditFormHtml(null)
     : `<button type="button" class="btn btn-small" id="scripts-add-btn" style="margin-bottom:14px;">+ Add New Message</button>`;
 
-  const rowsHtml = templates.map(tpl => {
+  const directory = buildCustomerDirectory();
+  const suggestionsHtml = `<datalist id="msg-send-suggestions">${Object.values(directory).map(c => `<option value="${escapeHtml(c.name)}">`).join('')}</datalist>`;
+
+  const rowsHtml = templates.map((tpl, idx) => {
     if (scriptsEditingId === tpl.id) return scriptsRowEditFormHtml(tpl);
+    const hasPlaceholder = tpl.body.includes('{name}');
+    const isFirst = idx === 0;
+    const isLast = idx === templates.length - 1;
     return `
       <div class="msg-row">
         <div class="msg-row-label">${escapeHtml(tpl.label)}</div>
         <div class="msg-row-text">${escapeHtml(tpl.body)}</div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
           <button type="button" class="msg-row-copy-btn" data-text="${escapeHtml(tpl.body)}">Copy</button>
           <button type="button" class="btn btn-small scripts-edit-btn" data-id="${tpl.id}" style="background:var(--white); color:var(--ink-soft); border:1.5px solid var(--border);">Edit</button>
           <button type="button" class="btn btn-small scripts-delete-btn" data-id="${tpl.id}" style="background:var(--white); color:#c0025e; border:1.5px solid #c0025e;">Delete</button>
+          <span style="display:inline-flex; gap:4px; margin-left:auto;">
+            <button type="button" class="scripts-move-btn" data-id="${tpl.id}" data-dir="up" title="Move up" ${isFirst ? 'disabled' : ''} style="width:30px; height:30px; border-radius:50%; border:1.5px solid var(--border); background:#fff; cursor:${isFirst ? 'default' : 'pointer'}; opacity:${isFirst ? '0.35' : '1'};">↑</button>
+            <button type="button" class="scripts-move-btn" data-id="${tpl.id}" data-dir="down" title="Move down" ${isLast ? 'disabled' : ''} style="width:30px; height:30px; border-radius:50%; border:1.5px solid var(--border); background:#fff; cursor:${isLast ? 'default' : 'pointer'}; opacity:${isLast ? '0.35' : '1'};">↓</button>
+          </span>
+        </div>
+        <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);">
+          <label style="font-size:0.75rem; font-weight:700; margin-bottom:4px; display:block;">Send to a customer${hasPlaceholder ? ' (fills in {name} for you)' : ''}</label>
+          <input type="text" class="msg-send-name-input" id="msg-send-name-${tpl.id}" list="msg-send-suggestions" placeholder="Type a customer name..." autocomplete="off" style="margin-bottom:6px;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-small msg-send-text-btn" data-id="${tpl.id}" data-body="${escapeHtml(tpl.body)}" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">💬 Text</button>
+            <button type="button" class="btn btn-small msg-send-email-btn" data-id="${tpl.id}" data-body="${escapeHtml(tpl.body)}" style="background:var(--white); color:var(--ink); border:1.5px solid var(--border);">✉️ Email</button>
+          </div>
         </div>
       </div>
     `;
   }).join('');
 
-  list.innerHTML = addButtonOrForm + rowsHtml + (templates.length === 0 && scriptsEditingId !== 'new' ? '<div class="empty-note">No saved messages yet — add your first one above.</div>' : '');
+  list.innerHTML = suggestionsHtml + addButtonOrForm + rowsHtml + (templates.length === 0 && scriptsEditingId !== 'new' ? '<div class="empty-note">No saved messages yet — add your first one above.</div>' : '');
+
+  // Sends a template directly to a specific customer instead of copy →
+  // switch tabs → find their contact → paste manually. {name} in the
+  // template body is swapped for the matched customer's first name.
+  function findDirectoryMatch(typedName) {
+    const key = typedName.trim().toLowerCase();
+    if (directory[key]) return directory[key];
+    return Object.values(directory).find(c => c.name.toLowerCase() === key) || null;
+  }
+  function mergedBody(body, customerName) {
+    const firstName = (customerName || '').split(' ')[0] || 'there';
+    return body.replace(/\{name\}/g, firstName);
+  }
+
+  list.querySelectorAll('.msg-send-text-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const nameInput = document.getElementById('msg-send-name-' + btn.dataset.id);
+      const match = findDirectoryMatch(nameInput.value);
+      if (!match) { alert('Type a customer name from your directory first (start typing to see suggestions).'); return; }
+      if (!match.phone) { alert(`${match.name} doesn't have a phone number on file.`); return; }
+      const cleanPhone = match.phone.replace(/[^\d+]/g, '');
+      const body = mergedBody(btn.dataset.body, match.name);
+      window.location.href = `sms:${cleanPhone}?&body=${encodeURIComponent(body)}`;
+    });
+  });
+
+  list.querySelectorAll('.msg-send-email-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const nameInput = document.getElementById('msg-send-name-' + btn.dataset.id);
+      const match = findDirectoryMatch(nameInput.value);
+      if (!match) { alert('Type a customer name from your directory first (start typing to see suggestions).'); return; }
+      if (!match.email) { alert(`${match.name} doesn't have an email on file.`); return; }
+      const body = mergedBody(btn.dataset.body, match.name);
+      window.location.href = `mailto:${encodeURIComponent(match.email)}?body=${encodeURIComponent(body)}`;
+    });
+  });
 
   const addBtn = document.getElementById('scripts-add-btn');
   if (addBtn) addBtn.addEventListener('click', () => { scriptsEditingId = 'new'; renderScriptsTab(); });
@@ -4919,6 +7337,44 @@ function renderScriptsTab() {
 
   list.querySelectorAll('.scripts-edit-btn').forEach(btn => {
     btn.addEventListener('click', () => { scriptsEditingId = btn.dataset.id; renderScriptsTab(); });
+  });
+
+  // Reorders a template one spot up or down in the list — so a message
+  // you use constantly (like "Order Ready") can live at the top instead
+  // of the bottom wherever it happened to get added. Swaps sort_order
+  // with whichever neighbor it's moving past.
+  list.querySelectorAll('.scripts-move-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (scriptsBusy) return;
+      const id = btn.dataset.id;
+      const dir = btn.dataset.dir;
+      const idx = templates.findIndex(t => t.id === id);
+      const swapIdx = dir === 'up' ? idx - 1 : idx + 1;
+      if (idx === -1 || swapIdx < 0 || swapIdx >= templates.length) return;
+
+      const a = templates[idx];
+      const b = templates[swapIdx];
+      const aOrder = a.sort_order;
+      const bOrder = b.sort_order;
+
+      scriptsBusy = true;
+      btn.disabled = true;
+      try {
+        await Promise.all([
+          callAdmin('update_message_template', { id: a.id, sort_order: bOrder }),
+          callAdmin('update_message_template', { id: b.id, sort_order: aOrder }),
+        ]);
+        a.sort_order = bOrder;
+        b.sort_order = aOrder;
+        dashboardData.messageTemplates.sort((x, y) => (x.sort_order || 0) - (y.sort_order || 0));
+        scriptsBusy = false;
+        renderScriptsTab();
+      } catch (err) {
+        alert(err.message || 'Could not reorder that message.');
+        scriptsBusy = false;
+        btn.disabled = false;
+      }
+    });
   });
 
   list.querySelectorAll('.scripts-cancel-btn').forEach(btn => {

@@ -67,6 +67,14 @@
   }
   .back-btn:hover{background:var(--pink-deep);}
 
+  .traffic-ask{margin-top:18px; padding-top:16px; border-top:1px dashed var(--border); position:relative; z-index:1;}
+  .traffic-ask-label{color:var(--ink-soft); font-size:0.76rem; margin:0 0 8px; opacity:0.85; line-height:1.4;}
+  .traffic-skip{background:none; border:none; color:var(--ink-soft); text-decoration:underline; font-size:0.72rem; cursor:pointer; padding:0; margin-left:4px; font-family:inherit;}
+  .traffic-chips{display:flex; flex-wrap:wrap; gap:6px; justify-content:center;}
+  .traffic-chip{background:#fff; border:1px solid var(--border); color:var(--ink-soft); border-radius:999px; padding:5px 11px; font-size:0.7rem; cursor:pointer; font-family:inherit;}
+  .traffic-chip:hover{background:var(--pink-light); color:var(--pink-hot); border-color:var(--pink-hot);}
+  .traffic-thanks{color:var(--pink-deep); font-size:0.78rem; margin:0;}
+
   .sticker-star{
     position:absolute; pointer-events:none; z-index:2;
     filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
@@ -115,11 +123,95 @@
   <img src="assets/logo.png" alt="Mel's Treat" class="logo">
   <div class="emoji">🎉🍪</div>
   <h1>Order Confirmed!</h1>
-  <p>Thank you so much! Your payment went through and your order is officially in. I'll be in touch to confirm any final details — can't wait for you to try these!</p>
+  <p id="confirm-message">Thank you so much! Your payment went through and your order is officially in. I'll be in touch to confirm any final details — can't wait for you to try these!</p>
   <a href="shop.html" class="back-btn">← Back To Shop</a>
+
+  <div class="traffic-ask" id="traffic-ask">
+    <p class="traffic-ask-label">Mind sharing where you found us? <button type="button" class="traffic-skip" id="traffic-skip">skip</button></p>
+    <div class="traffic-chips">
+      <button type="button" class="traffic-chip" data-source="Instagram">Instagram</button>
+      <button type="button" class="traffic-chip" data-source="Facebook">Facebook</button>
+      <button type="button" class="traffic-chip" data-source="TikTok">TikTok</button>
+      <button type="button" class="traffic-chip" data-source="Google Search">Google</button>
+      <button type="button" class="traffic-chip" data-source="Friend/Family">Friend/Family</button>
+      <button type="button" class="traffic-chip" data-source="Local Market/Pop-Up">Market/Pop-Up</button>
+      <button type="button" class="traffic-chip" data-source="Other">Other</button>
+    </div>
+  </div>
 </div>
 
 <script>
+(function initTrafficAsk() {
+  var STORAGE_KEY = 'mels_traffic_source_answered';
+  var wrap = document.getElementById('traffic-ask');
+  if (!wrap) return;
+  try { if (localStorage.getItem(STORAGE_KEY)) { wrap.remove(); return; } } catch (e) {}
+
+  function dismiss(delay) {
+    setTimeout(function () {
+      wrap.style.transition = 'opacity 0.5s ease';
+      wrap.style.opacity = '0';
+      setTimeout(function () { wrap.remove(); }, 550);
+    }, delay || 0);
+  }
+
+  Array.prototype.forEach.call(wrap.querySelectorAll('.traffic-chip'), function (btn) {
+    btn.addEventListener('click', function () {
+      var source = btn.getAttribute('data-source');
+      try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+      wrap.innerHTML = '<p class="traffic-thanks">Thanks! 💕</p>';
+      fetch('https://wgicnbaoqsekageoygea.supabase.co/functions/v1/log-traffic-source', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4'
+        },
+        body: JSON.stringify({ source: source, page: 'shop-thankyou' })
+      }).catch(function () { /* best effort, no need to bother the customer */ });
+      dismiss(1400);
+    });
+  });
+
+  var skipBtn = document.getElementById('traffic-skip');
+  if (skipBtn) {
+    skipBtn.addEventListener('click', function () {
+      try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+      dismiss(0);
+    });
+  }
+})();
+</script>
+<script>
+// This page only loads after Stripe redirects back from a completed
+// payment, so it's the right moment (not the moment checkout starts) to
+// clear the cart and the in-progress checkout draft. Keeping this here
+// instead of on menu.html means backing out of Stripe leaves someone's
+// cart and typed info intact.
+try {
+  localStorage.removeItem('mels_cart');
+  localStorage.removeItem('mels_checkout_fields');
+} catch (e) { /* storage unavailable, nothing to clear */ }
+
+// Cash orders (pickup or delivery) land here too (menu.html redirects
+// straight here once the order is saved, since there's no Stripe payment
+// page to come back from) — swap the wording so it doesn't claim a
+// payment went through when the customer is actually paying Meliese cash.
+// The full breakdown of what's owed (plus the delivery fee, for a
+// delivery order) goes out in the confirmation email, so this just needs
+// to set the right expectation.
+try {
+  const params = new URLSearchParams(location.search);
+  if (params.get('method') === 'cash') {
+    const msg = document.getElementById('confirm-message');
+    const isDelivery = params.get('fulfillment') === 'delivery';
+    if (msg) {
+      msg.textContent = isDelivery
+        ? "Thank you so much! Your order is officially in — just have cash ready when it's delivered (check your email for the exact total, including the delivery fee). I'll be in touch to confirm any final details — can't wait for you to try these!"
+        : "Thank you so much! Your order is officially in — just have cash ready for when you pick it up (check your email for the exact total). I'll be in touch to confirm any final details — can't wait for you to try these!";
+    }
+  }
+} catch (e) { /* ignore, default message still shows */ }
+
 function scatterPageAccents() {
   const sectionSelectors = ['.card'];
   const sections = sectionSelectors
