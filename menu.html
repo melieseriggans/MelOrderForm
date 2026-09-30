@@ -184,8 +184,11 @@
     flex:1; min-width:140px; max-width:200px;
   }
   .box-build-btn:hover{transform:translateY(-2px);}
+  .box-build-btn:focus-visible{outline:2px solid var(--white); outline-offset:2px;}
   .box-build-btn .bb-title{font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.85rem;}
-  .box-build-btn .bb-sub{font-size:0.72rem; opacity:0.9; margin-top:2px;}
+  .box-build-btn .bb-sub{font-size:0.76rem; margin-top:3px;}
+  .box-build-btn .bb-price{font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.86rem;}
+  .box-build-btn .bb-pick{opacity:0.9;}
   .box-build-btn .bb-popular{
     position:absolute; top:-10px; right:8px; background:var(--gold); color:var(--white);
     font-family:'Fredoka', sans-serif; font-size:0.56rem; font-weight:700; text-transform:uppercase;
@@ -203,8 +206,16 @@
     transition:opacity 0.2s, transform 0.2s; display:flex; flex-direction:column; overflow:hidden;
   }
   .box-builder-modal.open{opacity:1; pointer-events:auto; transform:translate(-50%, -50%) scale(1);}
-  .box-builder-header{display:flex; justify-content:space-between; align-items:center; padding:18px 20px; background:var(--white); border-bottom:1px solid var(--border); flex-shrink:0;}
+  .box-builder-header{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:18px 20px; background:var(--white); border-bottom:1px solid var(--border); flex-shrink:0;}
+  .box-builder-header-text{display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-width:0;}
   .box-builder-header h3{font-family:'Fredoka', sans-serif; margin:0; font-size:1.05rem; color:var(--ink);}
+  .box-builder-surprise-btn{
+    background:var(--blush); color:var(--pink-deep); border:1.5px solid var(--pink-hot); border-radius:12px;
+    padding:5px 12px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.72rem;
+    cursor:pointer; transition:transform 0.15s, background 0.15s; white-space:nowrap; flex-shrink:0;
+  }
+  .box-builder-surprise-btn:hover{background:var(--pink-hot); color:var(--white);}
+  .box-builder-surprise-btn:active{transform:scale(0.95);}
   .box-builder-body{padding:18px 20px 22px; overflow-y:auto;}
   .box-builder-progress{font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem; color:#e20376; margin-bottom:14px;}
   .box-builder-progress-track{height:8px; background:var(--blush); border-radius:5px; margin-top:6px; overflow:hidden;}
@@ -316,23 +327,26 @@
   .catering-banner-text{font-size:0.85rem; color:var(--ink); margin-bottom:14px; line-height:1.5;}
   .catering-banner-btn{display:inline-block; background:var(--pink-hot); color:var(--white); text-decoration:none; font-weight:700; font-family:'Fredoka', sans-serif; font-size:0.88rem; padding:11px 20px; border-radius:14px;}
 
-  /* Box tier strip */
-  .box-tier-strip{display:flex; flex-direction:column; gap:4px; max-width:900px; margin:20px auto 0; padding:0 20px;}
-  .box-tier-strip-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
-  .box-tier-card{
-    flex:1; min-width:110px; background:var(--white); border:1.5px solid var(--border); border-radius:16px; padding:14px 10px;
-    text-align:center; position:relative;
+  /* Surprise Me — lives inside the box builder modal itself (see
+     .box-builder-surprise-btn), triggered after the customer has already
+     picked the box size/price, so there's only one set of size buttons
+     on the page and the surprise is just the flavor mix. */
+  .surprise-confetti-fixed{position:fixed; pointer-events:none; overflow:visible; z-index:220; width:1px; height:1px;}
+  .surprise-confetti-fixed span{
+    position:absolute; top:0; left:0; font-size:1.1rem; opacity:0; animation:surpriseFall 1.4s ease-in forwards;
   }
-  .box-tier-card.popular{border-color:#e20376;}
-  .box-tier-card .popular-badge{
-    position:absolute; top:-11px; left:50%; transform:translateX(-50%) rotate(-4deg);
-    background:var(--pink-hot); color:var(--white); font-family:'Fredoka', sans-serif; font-size:0.58rem; font-weight:600;
-    text-transform:uppercase; padding:4px 10px; border-radius:20px; white-space:nowrap;
-    border:2px solid var(--white); box-shadow:0 3px 7px rgba(58,36,48,0.28);
+  @keyframes surpriseFall{
+    0%{opacity:1; transform:translateY(0) rotate(0deg);}
+    100%{opacity:0; transform:translateY(220px) rotate(200deg);}
   }
-  .box-tier-card .count{font-family:'Fredoka', sans-serif; font-weight:700; font-size:1.15rem;}
-  .box-tier-card .label{font-size:0.62rem; color:var(--ink-soft); font-weight:700; text-transform:uppercase; margin:2px 0 6px;}
-  .box-tier-card .price{font-family:'Fredoka', sans-serif; color:#e20376; font-weight:700; font-size:1.02rem;}
+  .surprise-toast{
+    position:fixed; left:50%; bottom:28px; transform:translate(-50%, 20px); z-index:220;
+    background:var(--white); color:var(--ink); border:1.5px solid var(--pink-hot); border-radius:16px;
+    padding:12px 20px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.88rem;
+    box-shadow:var(--shadow-lift); opacity:0; pointer-events:none; transition:opacity 0.25s, transform 0.25s;
+    max-width:88vw; text-align:center;
+  }
+  .surprise-toast.show{opacity:1; transform:translate(-50%, 0);}
 
   /* Cart drawer (same pattern as before) */
   .cart-overlay{position:fixed; inset:0; background:rgba(46,27,36,0.5); opacity:0; pointer-events:none; transition:opacity 0.25s; z-index:90;}
@@ -430,37 +444,97 @@
      again on their next visit. */
   .sticky-note{
     position:fixed; bottom:20px; left:20px; z-index:65;
-    width:250px; max-width:calc(100vw - 40px);
-    background:#fff9c4;
-    box-shadow:3px 5px 14px rgba(0,0,0,0.22);
+    width:210px; max-width:calc(100vw - 40px);
+    background:var(--white);
+    border-radius:20px;
+    box-shadow:0 8px 24px rgba(58,36,48,0.24);
     padding:16px 16px 14px;
-    transform:rotate(-2deg) scale(0.9) translateY(20px);
+    transform:scale(0.9) translateY(20px);
     opacity:0; pointer-events:none;
     transition:opacity 0.3s ease, transform 0.3s ease;
     font-family:'Quicksand', sans-serif;
   }
-  .sticky-note.show{opacity:1; pointer-events:auto; transform:rotate(-2deg) scale(1) translateY(0);}
-  .sticky-note-pin{position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:1.4rem; filter:drop-shadow(0 2px 2px rgba(0,0,0,0.25));}
+  .sticky-note.show{opacity:1; pointer-events:auto; transform:scale(1) translateY(0);}
   .sticky-note-close{
-    position:absolute; top:6px; right:8px; background:none; border:none;
-    color:#8a7a1a; font-size:0.9rem; cursor:pointer; padding:4px; line-height:1;
+    position:absolute; top:8px; right:10px; background:none; border:none;
+    color:var(--ink-soft); font-size:0.9rem; cursor:pointer; padding:4px; line-height:1;
   }
-  .sticky-note-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep, #a8025f); font-size:0.95rem; margin:6px 0 4px;}
-  .sticky-note-text{font-size:0.83rem; color:#5c5320; margin-bottom:10px; line-height:1.4;}
+  .sticky-note-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep, #a8025f); font-size:0.92rem; margin:2px 0 4px; text-align:center;}
+  .sticky-note-text{font-size:0.78rem; color:var(--ink-soft); margin-bottom:8px; line-height:1.4; text-align:center;}
   .sticky-note-text strong{color:var(--pink-hot, #e20376);}
-  .sticky-note-form{display:flex; flex-direction:column; gap:6px;}
-  .sticky-note-form input{
-    padding:9px 10px; border-radius:8px; border:1.5px solid rgba(0,0,0,0.15);
-    font-family:'Quicksand', sans-serif; font-size:0.82rem; background:rgba(255,255,255,0.6);
+  .error{color:#c0025e; font-size:0.8rem; margin-top:8px; display:none; font-weight:600;}
+
+  /* Spin-the-wheel — lives right in the corner note itself (not a separate
+     popup), so it's visible in the same spot the old note used to sit.
+     Kept compact and plain (no paper/pin styling) since the wheel itself
+     is the point of this widget now, not a teaser advertising a click-through. */
+  .wheel-wrap{position:relative; width:110px; height:110px; margin:4px auto 10px;}
+  .wheel-pointer{
+    position:absolute; top:-6px; left:50%; transform:translateX(-50%); z-index:3;
+    font-size:1.15rem; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));
   }
-  .sticky-note-form input:focus{outline:none; border-color:var(--pink-hot, #e20376);}
-  .sticky-note-submit{
-    background:var(--pink-hot, #e20376); color:#fff; border:none; border-radius:8px;
-    padding:9px 10px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.8rem; cursor:pointer;
+  .wheel-disc{
+    width:100%; height:100%; border-radius:50%; position:relative;
+    border:4px solid var(--white); box-shadow:0 6px 16px rgba(226,3,118,0.35), inset 0 0 0 2px rgba(255,255,255,0.5);
+    /* Segments are color-coded by prize so the wheel reads clearly: hot
+       pink = free cookie, white = bonus reward, gold = rare grand prize.
+       Order must match the WHEEL_SEGMENTS array in the script below, and
+       the color key in .wheel-legend below. */
+    background: conic-gradient(from 0deg,
+      var(--pink-hot) 0deg 36deg, var(--white) 36deg 72deg,
+      var(--pink-hot) 72deg 108deg, var(--white) 108deg 144deg,
+      var(--pink-hot) 144deg 180deg, var(--gold) 180deg 216deg,
+      var(--pink-hot) 216deg 252deg, var(--white) 252deg 288deg,
+      var(--pink-hot) 288deg 324deg, var(--white) 324deg 360deg);
+    transition: transform 4.2s cubic-bezier(0.12, 0.72, 0.15, 1);
   }
-  .sticky-note-submit:hover{background:var(--pink-deep, #a8025f);}
-  .sticky-note-submit:disabled{opacity:0.6; cursor:not-allowed;}
-  @media (max-width: 480px){ .sticky-note{left:16px; bottom:80px; width:230px;} }
+  .wheel-disc::after{
+    content:''; position:absolute; inset:0; border-radius:50%; pointer-events:none;
+    background: repeating-conic-gradient(from 0deg, rgba(255,255,255,0.9) 0deg 1.2deg, transparent 1.2deg 36deg);
+  }
+  .wheel-disc-hub{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2;
+    width:22px; height:22px; border-radius:50%; background:var(--pink-hot); border:2px solid var(--white);
+    box-shadow:0 2px 8px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center; font-size:0.6rem;
+  }
+  .wheel-seg-label{
+    position:absolute; top:50%; left:50%; width:0; height:0; font-size:0.62rem;
+    transform-origin:0 0;
+  }
+  .wheel-seg-label span{display:block; transform:translate(-50%,-50%);}
+  /* Readable prize key — the wheel graphic alone (esp. shrunk down and with
+     tiny emoji) doesn't tell a customer what they could actually win, so
+     spell it out in plain text right under the wheel. */
+  .wheel-legend{list-style:none; margin:0 0 10px; padding:0; display:flex; flex-direction:column; gap:4px;}
+  .wheel-legend li{display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--ink-soft); line-height:1.3;}
+  .wheel-legend .wl-swatch{width:10px; height:10px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1);}
+  .wheel-email-row{display:flex; flex-direction:column; gap:6px; margin-bottom:2px;}
+  .wheel-email-row input{
+    padding:8px 10px; border-radius:8px; border:1.5px solid rgba(0,0,0,0.15);
+    font-family:'Quicksand', sans-serif; font-size:0.8rem; background:var(--blush); text-align:center;
+  }
+  .wheel-email-row input:focus{outline:none; border-color:var(--pink-hot, #e20376);}
+  .wheel-spin-btn{
+    width:100%; background:var(--pink-hot, #e20376); color:#fff;
+    border:none; border-radius:8px; padding:9px 10px; font-family:'Fredoka', sans-serif; font-weight:600;
+    font-size:0.8rem; cursor:pointer;
+  }
+  .wheel-spin-btn:hover{background:var(--pink-deep, #a8025f);}
+  .wheel-spin-btn:disabled{opacity:0.65; cursor:default;}
+  .wheel-result{display:none; margin-top:2px; text-align:center;}
+  .wheel-result.show{display:block;}
+  .wheel-result-emoji{font-size:1.8rem; margin-bottom:2px;}
+  .wheel-result-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep, #a8025f); font-size:0.9rem; margin-bottom:4px; line-height:1.3;}
+  .wheel-result-blurb{font-size:0.76rem; color:var(--ink-soft); margin-bottom:8px; line-height:1.4;}
+  .wheel-result-code{
+    font-family:'Fredoka', sans-serif; font-weight:700; letter-spacing:1.2px; font-size:0.95rem;
+    background:var(--blush); color:var(--pink-deep, #a8025f); padding:7px 12px; border-radius:10px; display:inline-block; margin-bottom:8px;
+  }
+  .wheel-result-close{
+    display:block; width:100%; background:var(--blush); color:var(--pink-deep, #a8025f); border:1.5px solid var(--pink-hot, #e20376);
+    border-radius:8px; padding:8px; font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer;
+  }
+  @media (max-width: 480px){ .sticky-note{left:16px; bottom:80px; width:200px;} }
   .error{color:#c0025e; font-size:0.8rem; margin-top:8px; display:none; font-weight:600;}
 
   .sticker-star{
@@ -605,7 +679,7 @@
   "description": "Shop fresh baked cookies and cinnamon rolls from Mel's Treat with secure checkout.",
   "image": "https://melstreat.com/assets/welcome-banner-new.png",
   "url": "https://melstreat.com/menu.html",
-  "areaServed": ["Anniston, AL", "Oxford, AL"],
+  "areaServed": ["Anniston, AL", "Oxford, AL", "Jacksonville, AL"],
   "servesCuisine": "Bakery",
   "priceRange": "$"
 }
@@ -720,7 +794,6 @@
   <div class="box-menu-body">
     <p class="box-menu-desc">Pick a size, choose your flavors, done — box pricing applies automatically either way.</p>
     <div class="box-build-row" id="box-build-row"></div>
-    <div class="box-tier-strip" id="box-tier-strip"></div>
   </div>
 </details>
 
@@ -740,7 +813,10 @@
 <div class="box-builder-overlay" id="box-builder-overlay"></div>
 <div class="box-builder-modal" id="box-builder-modal">
   <div class="box-builder-header">
-    <h3 id="box-builder-title">Build Your Box</h3>
+    <div class="box-builder-header-text">
+      <h3 id="box-builder-title">Build Your Box</h3>
+      <button type="button" class="box-builder-surprise-btn" id="box-builder-surprise-btn">🎲 Surprise Me</button>
+    </div>
     <button type="button" class="cart-close-btn" id="box-builder-close-btn" aria-label="Close">✕</button>
   </div>
   <div class="box-builder-body">
@@ -913,15 +989,36 @@
 
 <div class="sticky-note" id="sticky-note">
   <button type="button" class="sticky-note-close" id="sticky-note-close" aria-label="Close">✕</button>
-  <div class="sticky-note-pin">📌</div>
   <div class="sticky-note-body">
-    <div class="sticky-note-title">New here? 💌</div>
-    <div class="sticky-note-text">Get <strong>$2 off</strong> your first order!</div>
-    <div class="sticky-note-form">
-      <input type="email" id="welcome-email-input" placeholder="you@example.com" aria-label="Email address for $2 off discount" inputmode="email">
-      <button type="button" id="welcome-submit-btn" class="sticky-note-submit">Send Me $2 Off</button>
+    <div id="wheel-spin-stage">
+      <div class="sticky-note-title">Spin To Win! 🎡</div>
+      <div class="sticky-note-text">Enter your email for a <strong>free prize</strong> — every spin wins something!</div>
+      <div class="wheel-wrap">
+        <div class="wheel-pointer">🔻</div>
+        <div class="wheel-disc" id="wheel-disc">
+          <div class="wheel-disc-hub">🎀</div>
+          <div id="wheel-seg-labels"></div>
+        </div>
+      </div>
+      <ul class="wheel-legend">
+        <li><span class="wl-swatch" style="background:var(--pink-hot)"></span>🍪 Free Cookie</li>
+        <li><span class="wl-swatch" style="background:var(--white); border:1px solid #ddd;"></span>🎟️ Early Loyalty Reward</li>
+        <li><span class="wl-swatch" style="background:var(--gold)"></span>🎁 Free Treat Box — rare!</li>
+      </ul>
+      <div class="wheel-email-row">
+        <input type="email" id="wheel-email-input" placeholder="you@example.com" aria-label="Email address" inputmode="email">
+        <button type="button" id="wheel-spin-btn" class="wheel-spin-btn">Spin The Wheel 🎉</button>
+      </div>
+      <div id="wheel-message" class="error"></div>
     </div>
-    <div id="welcome-message" class="drawer-msg"></div>
+
+    <div class="wheel-result" id="wheel-result">
+      <div class="wheel-result-emoji" id="wheel-result-emoji"></div>
+      <div class="wheel-result-title" id="wheel-result-title"></div>
+      <div class="wheel-result-blurb" id="wheel-result-blurb"></div>
+      <div class="wheel-result-code" id="wheel-result-code"></div>
+      <button type="button" class="wheel-result-close" id="wheel-result-close">Yay, Thanks! 💕</button>
+    </div>
   </div>
 </div>
 
@@ -1141,7 +1238,6 @@ async function loadLiveMenuData() {
 
     renderCategoryTiles();
     renderProductGrid();
-    renderBoxTierStrip();
     renderBoxBuildRow();
     updateTotal();
   } catch (err) {
@@ -1186,7 +1282,6 @@ function renderCategoryTiles() {
       renderCategoryTiles();
       renderProductGrid();
       renderBoxBuildRow();
-      renderBoxTierStrip();
       peekBoxMenu(0);
     });
   });
@@ -1344,8 +1439,15 @@ function pulseCartBadge() {
   badge.classList.add('pulse');
 }
 
-function renderBoxTierStrip() {
-  const strip = document.getElementById('box-tier-strip');
+// --- Build A Box: a guided flavor picker for a specific box size, scoped
+// to whichever category is currently active. Adding N items here just
+// adds N to the regular cart — the same automatic box-discount math
+// still applies either way, this is just a faster, focused way to fill a box.
+// (This used to be paired with a second, purely informational row of cards
+// repeating the same count/price — removed so the section doesn't take up
+// double the space showing the same 3 numbers twice.)
+function renderBoxBuildRow() {
+  const row = document.getElementById('box-build-row');
   const category = getCategory(activeCategoryKey);
   const titleEl = document.getElementById('box-menu-title');
   const sectionEl = document.getElementById('box-menu-details');
@@ -1356,49 +1458,58 @@ function renderBoxTierStrip() {
     // "pick a size" flow — hide the whole section rather than show
     // confusing box-building UI with nothing in it.
     if (sectionEl) sectionEl.style.display = 'none';
-    strip.innerHTML = '';
+    row.innerHTML = '';
     return;
   }
   if (sectionEl) sectionEl.style.display = '';
   if (titleEl) titleEl.textContent = `${category.icon} ${category.label} Box Menu`;
   if (descEl) descEl.textContent = 'Pick a size, choose your flavors, done — box pricing applies automatically either way.';
 
-  strip.innerHTML = `<div class="box-tier-strip-row">${category.boxTiers.map((tier, i) => {
-    const isPopular = i === 1;
-    const perItem = (tier.price / tier.count).toFixed(2);
-    return `
-      <div class="box-tier-card ${isPopular ? 'popular' : ''}">
-        ${isPopular ? '<span class="popular-badge">Most Loved</span>' : ''}
-        <div class="count">${tier.count}</div>
-        <div class="label">${category.label}</div>
-        <div class="price">$${tier.price}</div>
-        <div style="font-size:0.62rem; color:var(--ink-soft); margin-top:2px;">$${perItem} each</div>
-      </div>
-    `;
-  }).join('')}</div>`;
-}
-renderBoxTierStrip();
-
-// --- Build A Box: a guided flavor picker for a specific box size, scoped
-// to whichever category is currently active. Adding N items here just
-// adds N to the regular cart — the same automatic box-discount math
-// still applies either way, this is just a faster, focused way to fill a box.
-function renderBoxBuildRow() {
-  const row = document.getElementById('box-build-row');
-  const category = getCategory(activeCategoryKey);
-  if (!category.boxTiers) { row.innerHTML = ''; return; }
   row.innerHTML = `<div class="box-build-row-buttons">${category.boxTiers.map((tier, i) => `
     <button type="button" class="box-build-btn" data-category="${category.key}" data-count="${tier.count}">
       ${i === 1 ? '<span class="bb-popular">Most Loved</span>' : ''}
       <div class="bb-title">Build A ${tier.count}-Count Box</div>
-      <div class="bb-sub">$${tier.price} · pick your flavors</div>
+      <div class="bb-sub"><span class="bb-price">$${tier.price}</span> <span class="bb-pick">· pick your flavors</span></div>
     </button>
   `).join('')}</div>`;
   row.querySelectorAll('.box-build-btn').forEach(btn => {
-    btn.addEventListener('click', () => openBoxBuilder(btn.dataset.category, parseInt(btn.dataset.count)));
+    btn.addEventListener('click', () => openBoxBuilder(btn.dataset.category, parseInt(btn.dataset.count, 10)));
   });
 }
 renderBoxBuildRow();
+
+// --- Surprise Me: picks a random box (size + flavor mix) from whichever
+// categories currently have box tiers, and adds it straight to the cart.
+// Same underlying cart logic as the box builder — this is just a fun,
+// zero-effort shortcut for anyone who can't decide.
+function showSurpriseToast(msg) {
+  const toast = document.getElementById('surprise-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showSurpriseToast._t);
+  showSurpriseToast._t = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+// Confetti bursts from wherever the Surprise Me trigger was clicked, since
+// the trigger now lives inside each box card instead of one fixed widget.
+function launchSurpriseConfetti(originEl) {
+  const rect = originEl ? originEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0 };
+  const wrap = document.createElement('div');
+  wrap.className = 'surprise-confetti-fixed';
+  wrap.style.left = `${rect.left + rect.width / 2}px`;
+  wrap.style.top = `${rect.top}px`;
+  const glyphs = ['🎉', '✨', '💕', '⭐', '🍪'];
+  for (let i = 0; i < 12; i++) {
+    const span = document.createElement('span');
+    span.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    span.style.left = `${(Math.random() * 80) - 40}px`;
+    span.style.animationDelay = `${Math.random() * 0.3}s`;
+    span.style.fontSize = `${0.85 + Math.random() * 0.6}rem`;
+    wrap.appendChild(span);
+  }
+  document.body.appendChild(wrap);
+  setTimeout(() => { wrap.remove(); }, 1800);
+}
 
 let boxBuilderCategoryKey = null;
 let boxBuilderTarget = 0;
@@ -1497,6 +1608,80 @@ document.getElementById('box-builder-add-btn').addEventListener('click', () => {
   closeBoxBuilder();
   openCart();
 });
+
+function showSurpriseToast(msg) {
+  const toast = document.getElementById('surprise-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showSurpriseToast._t);
+  showSurpriseToast._t = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+function launchSurpriseConfetti(originEl) {
+  const rect = originEl ? originEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0 };
+  const wrap = document.createElement('div');
+  wrap.className = 'surprise-confetti-fixed';
+  wrap.style.left = `${rect.left + rect.width / 2}px`;
+  wrap.style.top = `${rect.top}px`;
+  const glyphs = ['🎉', '✨', '💕', '⭐', '🍪'];
+  for (let i = 0; i < 12; i++) {
+    const span = document.createElement('span');
+    span.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    span.style.left = `${(Math.random() * 80) - 40}px`;
+    span.style.animationDelay = `${Math.random() * 0.3}s`;
+    span.style.fontSize = `${0.85 + Math.random() * 0.6}rem`;
+    wrap.appendChild(span);
+  }
+  document.body.appendChild(wrap);
+  setTimeout(() => { wrap.remove(); }, 1800);
+}
+
+// Surprise Me now lives inside the box builder itself (after the customer
+// has already picked the size/price they want) — it randomly fills in the
+// flavor picks for that box, respecting the same stock limits the manual
+// +/- steppers use, so a customer can hit it once and check out, or use it
+// as a starting point and still adjust individual flavors by hand.
+function surpriseFillBoxBuilder() {
+  const category = getCategory(boxBuilderCategoryKey);
+  if (!category) return;
+  const target = boxBuilderTarget;
+  const btn = document.getElementById('box-builder-surprise-btn');
+
+  category.products.forEach(p => { boxBuilderSelections[p.key] = 0; });
+
+  // Never let one flavor fill more than ~half the box, and never pick more
+  // of an item than is actually in stock.
+  const maxPerFlavor = Math.max(1, Math.ceil(target * 0.5));
+  const caps = category.products.map(p => {
+    const stock = stockData[p.name];
+    const outOfStock = !isPreorderMode && stock && (stock.in_stock === false || stock.stock_count <= 0);
+    const already = qty[p.key] || 0;
+    const remainingStock = (stock && !isPreorderMode) ? Math.max(0, stock.stock_count - already) : Infinity;
+    return { key: p.key, cap: outOfStock ? 0 : Math.min(maxPerFlavor, remainingStock) };
+  });
+
+  let filled = 0;
+  let guard = 0;
+  while (filled < target && guard < target * 25) {
+    guard++;
+    const options = caps.filter(c => boxBuilderSelections[c.key] < c.cap);
+    if (!options.length) break;
+    const pick = options[Math.floor(Math.random() * options.length)];
+    boxBuilderSelections[pick.key]++;
+    filled++;
+  }
+
+  renderBoxBuilderList();
+  updateBoxBuilderProgress();
+  launchSurpriseConfetti(btn);
+
+  if (filled < target) {
+    showSurpriseToast("Picked what we could — limited stock on some flavors right now. Feel free to finish it off yourself!");
+  } else {
+    showSurpriseToast('🎲 Flavors picked for you — tap Add Box To Cart, or tweak them first!');
+  }
+}
+document.getElementById('box-builder-surprise-btn')?.addEventListener('click', surpriseFillBoxBuilder);
 
 // --- Cart drawer ---
 const cartOverlay = document.getElementById('cart-overlay');
@@ -1894,10 +2079,55 @@ document.getElementById('sticky-note-close')?.addEventListener('click', () => {
   try { localStorage.setItem('mels_welcome_dismissed', '1'); } catch (e) {}
 });
 
-async function submitWelcomeSignup() {
-  const input = document.getElementById('welcome-email-input');
-  const msg = document.getElementById('welcome-message');
-  const btn = document.getElementById('welcome-submit-btn');
+// --- Spin The Wheel ---
+// 10 equal 36°-wide segments around the dial, matching the prize odds the
+// server actually uses (5 cookie / 4 bonus-reward / 1 free-box — see the
+// spin-wheel edge function). The server always decides the real prize;
+// this array is only used to pick which matching segment to visually land
+// the pointer on, for variety.
+const WHEEL_SEGMENTS = [
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'free_box', emoji: '🎁' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+];
+const WHEEL_PRIZE_META = {
+  free_cookie: { emoji: '🍪', title: 'A Free Cookie!' },
+  bonus_reward: { emoji: '🎟️', title: 'An Early Loyalty Reward!' },
+  free_box: { emoji: '🎁', title: 'The Grand Prize — A Free Treat Box!' },
+  legacy_2_off: { emoji: '💸', title: '$2 Off!' },
+};
+
+function renderWheelSegmentLabels() {
+  const wrap = document.getElementById('wheel-seg-labels');
+  if (!wrap || wrap.children.length) return;
+  const segAngle = 360 / WHEEL_SEGMENTS.length;
+  WHEEL_SEGMENTS.forEach((seg, i) => {
+    const angle = segAngle * i + segAngle / 2;
+    const label = document.createElement('div');
+    label.className = 'wheel-seg-label';
+    label.style.transform = `rotate(${angle}deg) translate(37px)`;
+    label.innerHTML = `<span style="transform-origin:0 0; display:inline-block;">${seg.emoji}</span>`;
+    wrap.appendChild(label);
+  });
+}
+renderWheelSegmentLabels();
+
+document.getElementById('wheel-result-close')?.addEventListener('click', () => {
+  document.getElementById('sticky-note')?.classList.remove('show');
+});
+
+let wheelRotation = 0;
+async function submitWheelSpin() {
+  const input = document.getElementById('wheel-email-input');
+  const msg = document.getElementById('wheel-message');
+  const btn = document.getElementById('wheel-spin-btn');
   const email = input.value.trim();
 
   msg.style.display = 'none';
@@ -1910,32 +2140,46 @@ async function submitWelcomeSignup() {
   }
 
   btn.disabled = true;
-  btn.textContent = 'Sending...';
+  input.disabled = true;
+  btn.textContent = 'Spinning...';
   try {
     const supabase = await getSupabase();
-    const { data, error } = await supabase.functions.invoke('signup-welcome-discount', { body: { email } });
+    const { data, error } = await supabase.functions.invoke('spin-wheel', { body: { email } });
     if (error) throw error;
-    if (!data.success) throw new Error(data.message || 'Could not sign up right now.');
+    if (!data.success) throw new Error(data.message || 'Could not spin right now.');
 
-    msg.textContent = `Sent! Check your email for code ${data.code} 💕`;
-    msg.style.color = 'var(--pink-deep)';
-    msg.style.display = 'block';
-    input.value = '';
-    btn.textContent = 'Sent! 🎉';
+    // Land the pointer on a random segment matching the prize we actually won.
+    const matches = WHEEL_SEGMENTS.map((s, i) => ({ ...s, i })).filter(s => s.type === data.prizeType);
+    const landOn = (matches.length ? matches : WHEEL_SEGMENTS.map((s, i) => ({ ...s, i })))[Math.floor(Math.random() * (matches.length || WHEEL_SEGMENTS.length))];
+    const segAngle = 360 / WHEEL_SEGMENTS.length;
+    const segCenter = segAngle * landOn.i + segAngle / 2;
+    wheelRotation += 5 * 360 + ((360 - segCenter) % 360);
+    document.getElementById('wheel-disc').style.transform = `rotate(${wheelRotation}deg)`;
+
     try { localStorage.setItem('mels_welcome_claimed', '1'); } catch (e) {}
-    setTimeout(() => { document.getElementById('sticky-note').classList.remove('show'); }, 2500);
+
+    setTimeout(() => {
+      const meta = WHEEL_PRIZE_META[data.prizeType] || WHEEL_PRIZE_META.free_cookie;
+      document.getElementById('wheel-result-emoji').textContent = meta.emoji;
+      document.getElementById('wheel-result-title').textContent = data.alreadySpun ? `You already won: ${data.prizeLabel || meta.title}` : `You Won ${meta.title}`;
+      document.getElementById('wheel-result-blurb').textContent = data.blurb || 'Check your email for the code!';
+      document.getElementById('wheel-result-code').textContent = data.code;
+      document.getElementById('wheel-spin-stage').style.display = 'none';
+      document.getElementById('wheel-result').classList.add('show');
+    }, 4300);
   } catch (err) {
     console.error(err);
     msg.textContent = err.message || 'Something went wrong. Please try again.';
     msg.style.color = '#c0025e';
     msg.style.display = 'block';
     btn.disabled = false;
-    btn.textContent = 'Send Me $2 Off';
+    input.disabled = false;
+    btn.textContent = 'Spin The Wheel 🎉';
   }
 }
-document.getElementById('welcome-submit-btn')?.addEventListener('click', submitWelcomeSignup);
-document.getElementById('welcome-email-input')?.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') submitWelcomeSignup();
+document.getElementById('wheel-spin-btn')?.addEventListener('click', submitWheelSpin);
+document.getElementById('wheel-email-input')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitWheelSpin();
 });
 
 // Shows progress toward the surprise 3rd-order reward (the actual reward
@@ -2565,6 +2809,8 @@ window.addEventListener('load', () => {
     <a href="#checkout-btn" class="mini-cart-checkout-btn" id="mini-cart-checkout-btn">Go To Checkout →</a>
   </div>
 </div>
+
+<div class="surprise-toast" id="surprise-toast"></div>
 
 <!-- Small "open in browser" button — installed-app mode hides the
      address bar on purpose; this gives a one-tap way to pop into the real

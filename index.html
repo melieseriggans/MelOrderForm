@@ -298,10 +298,9 @@
   .sticker-badge.gold{background:var(--gold);}
 
   .hero h1{
-    font-family:'Baloo 2', cursive; font-weight:800; font-size:clamp(2rem, 6vw, 3rem); color:var(--pink-hot);
-    margin:0 0 16px; line-height:1.2; position:relative; display:inline-block;
-    -webkit-text-stroke:1.5px var(--white);
-    text-shadow:2px 2px 0 var(--white), -1px -1px 0 var(--white), 0 0 18px var(--pink-glow);
+    font-family:'Baloo 2', cursive; font-weight:800; font-size:clamp(2rem, 6vw, 3rem); color:var(--pink-deep);
+    margin:0 0 16px; line-height:1.3; position:relative; display:inline-block;
+    text-shadow:0 2px 3px rgba(58,36,48,0.12);
   }
   .hero-sub{font-size:1.03rem; color:var(--ink-soft); max-width:460px; margin:0 auto 30px; line-height:1.65;}
   .catering-promo-bar{
@@ -320,23 +319,23 @@
   /* Sticky-note style welcome popup — small, non-blocking, dismissible */
   .sticky-note{
     position:fixed; bottom:20px; left:20px; z-index:65;
-    width:250px; max-width:calc(100vw - 40px);
-    background:#fff9c4;
-    box-shadow:3px 5px 14px rgba(0,0,0,0.22);
+    width:210px; max-width:calc(100vw - 40px);
+    background:var(--white);
+    border-radius:20px;
+    box-shadow:0 8px 24px rgba(58,36,48,0.24);
     padding:16px 16px 14px;
-    transform:rotate(-2deg) scale(0.9) translateY(20px);
+    transform:scale(0.9) translateY(20px);
     opacity:0; pointer-events:none;
     transition:opacity 0.3s ease, transform 0.3s ease;
     font-family:'Quicksand', sans-serif;
   }
-  .sticky-note.show{opacity:1; pointer-events:auto; transform:rotate(-2deg) scale(1) translateY(0);}
-  .sticky-note-pin{position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:1.4rem; filter:drop-shadow(0 2px 2px rgba(0,0,0,0.25));}
+  .sticky-note.show{opacity:1; pointer-events:auto; transform:scale(1) translateY(0);}
   .sticky-note-close{
-    position:absolute; top:6px; right:8px; background:none; border:none;
-    color:#8a7a1a; font-size:0.9rem; cursor:pointer; padding:4px; line-height:1;
+    position:absolute; top:8px; right:10px; background:none; border:none;
+    color:var(--ink-soft); font-size:0.9rem; cursor:pointer; padding:4px; line-height:1;
   }
-  .sticky-note-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep); font-size:0.95rem; margin:6px 0 4px;}
-  .sticky-note-text{font-size:0.83rem; color:#5c5320; margin-bottom:10px; line-height:1.4;}
+  .sticky-note-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep); font-size:0.92rem; margin:2px 0 4px; text-align:center;}
+  .sticky-note-text{font-size:0.78rem; color:var(--ink-soft); margin-bottom:8px; line-height:1.4; text-align:center;}
   .sticky-note-text strong{color:var(--pink-hot);}
   .sticky-note-form{display:flex; flex-direction:column; gap:6px;}
   .sticky-note-form input[type=text]{
@@ -350,7 +349,78 @@
   }
   .sticky-note-submit:hover{background:var(--pink-deep);}
   .sticky-note-submit:disabled{opacity:0.6; cursor:not-allowed;}
-  @media (max-width: 480px){ .sticky-note{left:16px; bottom:80px; width:230px;} }
+
+  /* Spin-the-wheel — lives right in the corner note itself (not a separate
+     popup), so it's visible in the same spot the old note used to sit.
+     Kept compact and plain (no paper/pin styling) since the wheel itself
+     is the point of this widget now, not a teaser advertising a click-through. */
+  .wheel-wrap{position:relative; width:110px; height:110px; margin:4px auto 10px;}
+  .wheel-pointer{
+    position:absolute; top:-6px; left:50%; transform:translateX(-50%); z-index:3;
+    font-size:1.15rem; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+  }
+  .wheel-disc{
+    width:100%; height:100%; border-radius:50%; position:relative;
+    border:4px solid var(--white); box-shadow:0 6px 16px rgba(226,3,118,0.35), inset 0 0 0 2px rgba(255,255,255,0.5);
+    /* Segments are color-coded by prize so the wheel reads clearly: hot
+       pink = free cookie, white = bonus reward, gold = rare grand prize.
+       Order must match the WHEEL_SEGMENTS array in the script below, and
+       the color key in .wheel-legend below. */
+    background: conic-gradient(from 0deg,
+      var(--pink-hot) 0deg 36deg, var(--white) 36deg 72deg,
+      var(--pink-hot) 72deg 108deg, var(--white) 108deg 144deg,
+      var(--pink-hot) 144deg 180deg, var(--gold) 180deg 216deg,
+      var(--pink-hot) 216deg 252deg, var(--white) 252deg 288deg,
+      var(--pink-hot) 288deg 324deg, var(--white) 324deg 360deg);
+    transition: transform 4.2s cubic-bezier(0.12, 0.72, 0.15, 1);
+  }
+  .wheel-disc::after{
+    content:''; position:absolute; inset:0; border-radius:50%; pointer-events:none;
+    background: repeating-conic-gradient(from 0deg, rgba(255,255,255,0.9) 0deg 1.2deg, transparent 1.2deg 36deg);
+  }
+  .wheel-disc-hub{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2;
+    width:22px; height:22px; border-radius:50%; background:var(--pink-hot); border:2px solid var(--white);
+    box-shadow:0 2px 8px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center; font-size:0.6rem;
+  }
+  .wheel-seg-label{
+    position:absolute; top:50%; left:50%; width:0; height:0; font-size:0.62rem;
+    transform-origin:0 0;
+  }
+  .wheel-seg-label span{display:block; transform:translate(-50%,-50%);}
+  /* Readable prize key — the wheel graphic alone (esp. shrunk down and with
+     tiny emoji) doesn't tell a customer what they could actually win, so
+     spell it out in plain text right under the wheel. */
+  .wheel-legend{list-style:none; margin:0 0 10px; padding:0; display:flex; flex-direction:column; gap:4px;}
+  .wheel-legend li{display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--ink-soft); line-height:1.3;}
+  .wheel-legend .wl-swatch{width:10px; height:10px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1);}
+  .wheel-email-row{display:flex; flex-direction:column; gap:6px; margin-bottom:2px;}
+  .wheel-email-row input{
+    padding:8px 10px; border-radius:8px; border:1.5px solid rgba(0,0,0,0.15);
+    font-family:'Quicksand', sans-serif; font-size:0.8rem; background:var(--blush); text-align:center;
+  }
+  .wheel-email-row input:focus{outline:none; border-color:var(--pink-hot);}
+  .wheel-spin-btn{
+    width:100%; background:var(--pink-hot); color:var(--white);
+    border:none; border-radius:8px; padding:9px 10px; font-family:'Fredoka', sans-serif; font-weight:600;
+    font-size:0.8rem; cursor:pointer;
+  }
+  .wheel-spin-btn:hover{background:var(--pink-deep);}
+  .wheel-spin-btn:disabled{opacity:0.65; cursor:default;}
+  .wheel-result{display:none; margin-top:2px; text-align:center;}
+  .wheel-result.show{display:block;}
+  .wheel-result-emoji{font-size:1.8rem; margin-bottom:2px;}
+  .wheel-result-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep); font-size:0.9rem; margin-bottom:4px; line-height:1.3;}
+  .wheel-result-blurb{font-size:0.76rem; color:var(--ink-soft); margin-bottom:8px; line-height:1.4;}
+  .wheel-result-code{
+    font-family:'Fredoka', sans-serif; font-weight:700; letter-spacing:1.2px; font-size:0.95rem;
+    background:var(--blush); color:var(--pink-deep); padding:7px 12px; border-radius:10px; display:inline-block; margin-bottom:8px;
+  }
+  .wheel-result-close{
+    display:block; width:100%; background:var(--blush); color:var(--pink-deep); border:1.5px solid var(--pink-hot);
+    border-radius:8px; padding:8px; font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer;
+  }
+  @media (max-width: 480px){ .sticky-note{left:16px; bottom:80px; width:200px;} }
 
   .drawer-msg{font-size:0.78rem; margin-top:8px;}
   .hidden{display:none;}
@@ -492,6 +562,22 @@
   /* About */
 
   .mini-faq-section{background:var(--white); padding:30px 24px; position:relative; overflow:hidden;}
+
+  .delivery-map-section{background:var(--white); padding:30px 24px; position:relative; overflow:hidden;}
+  .delivery-map-frame{
+    width:100%; max-width:340px; margin:0 auto; aspect-ratio:16/10; border-radius:18px; overflow:hidden;
+    border:2px solid var(--border); box-shadow:var(--shadow); background:var(--blush);
+  }
+  .delivery-map-frame iframe{width:100%; height:100%; border:0; display:block;}
+  .delivery-area-chips{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:500px; margin:16px auto 0;
+  }
+  .delivery-area-chip{
+    display:inline-flex; align-items:center; gap:5px; background:var(--blush); color:var(--pink-deep);
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.8rem; padding:7px 14px; border-radius:20px;
+    border:1.5px solid var(--border);
+  }
+  .delivery-map-note{text-align:center; color:var(--ink-soft); font-size:0.78rem; margin:12px auto 0; max-width:440px; line-height:1.5;}
   .mini-faq{max-width:560px; margin:24px auto 0;}
   .mini-faq-item{border:1.5px dashed var(--pink-hot); background:var(--blush); border-radius:14px; padding:14px 16px; margin-bottom:10px;}
   .mini-faq-q{
@@ -566,7 +652,7 @@
   "description": "A tiny, ultra-pink bakery serving up gooey, sparkly treats — cookies, cinnamon rolls, and more, baked fresh in small batches.",
   "image": "https://melstreat.com/assets/welcome-banner-new.png",
   "url": "https://melstreat.com/shop.html",
-  "areaServed": ["Anniston, AL", "Oxford, AL"],
+  "areaServed": ["Anniston, AL", "Oxford, AL", "Jacksonville, AL"],
   "servesCuisine": "Bakery",
   "priceRange": "$"
 }
@@ -755,21 +841,42 @@
     <div class="trust-item"><span class="icon">🎀</span> Giftable Boxes</div>
     <div class="trust-item"><span class="icon">🔒</span> Secure Checkout</div>
   </div>
-  <div class="service-area">📍 Pickup in Oxford &amp; Anniston, AL · Local Delivery Available</div>
+  <div class="service-area">📍 Pickup in Oxford &amp; Anniston, AL · Delivering To Oxford, Anniston &amp; Jacksonville</div>
 </div>
 </div>
 
 <div class="sticky-note" id="sticky-note">
   <button type="button" class="sticky-note-close" id="sticky-note-close" aria-label="Close">✕</button>
-  <div class="sticky-note-pin">📌</div>
   <div class="sticky-note-body">
-    <div class="sticky-note-title">New here? 💌</div>
-    <div class="sticky-note-text">Get <strong>$2 off</strong> your first order!</div>
-    <div class="sticky-note-form">
-      <input type="email" id="welcome-email-input" placeholder="you@example.com" aria-label="Email address for $2 off discount" inputmode="email">
-      <button type="button" id="welcome-submit-btn" class="sticky-note-submit">Send Me $2 Off</button>
+    <div id="wheel-spin-stage">
+      <div class="sticky-note-title">Spin To Win! 🎡</div>
+      <div class="sticky-note-text">Enter your email for a <strong>free prize</strong> — every spin wins something!</div>
+      <div class="wheel-wrap">
+        <div class="wheel-pointer">🔻</div>
+        <div class="wheel-disc" id="wheel-disc">
+          <div class="wheel-disc-hub">🎀</div>
+          <div id="wheel-seg-labels"></div>
+        </div>
+      </div>
+      <ul class="wheel-legend">
+        <li><span class="wl-swatch" style="background:var(--pink-hot)"></span>🍪 Free Cookie</li>
+        <li><span class="wl-swatch" style="background:var(--white); border:1px solid #ddd;"></span>🎟️ Early Loyalty Reward</li>
+        <li><span class="wl-swatch" style="background:var(--gold)"></span>🎁 Free Treat Box — rare!</li>
+      </ul>
+      <div class="wheel-email-row">
+        <input type="email" id="wheel-email-input" placeholder="you@example.com" aria-label="Email address" inputmode="email">
+        <button type="button" id="wheel-spin-btn" class="wheel-spin-btn">Spin The Wheel 🎉</button>
+      </div>
+      <div id="wheel-message" class="drawer-msg"></div>
     </div>
-    <div id="welcome-message" class="drawer-msg"></div>
+
+    <div class="wheel-result" id="wheel-result">
+      <div class="wheel-result-emoji" id="wheel-result-emoji"></div>
+      <div class="wheel-result-title" id="wheel-result-title"></div>
+      <div class="wheel-result-blurb" id="wheel-result-blurb"></div>
+      <div class="wheel-result-code" id="wheel-result-code"></div>
+      <button type="button" class="wheel-result-close" id="wheel-result-close">Yay, Thanks! 💕</button>
+    </div>
   </div>
 </div>
 
@@ -812,6 +919,23 @@
     </div>
     <a href="about.html" class="hero-btn glossy-btn">My Story →</a>
   </div>
+</div>
+
+<div class="delivery-map-section reveal">
+  <div class="section-head">
+    <span class="section-tag">Where We Deliver</span>
+    <h2>Pickup &amp; <span class="accent">Delivery Area</span></h2>
+    <p class="section-desc">Serving Oxford, Anniston &amp; Jacksonville, AL — and everywhere in between.</p>
+  </div>
+  <div class="delivery-map-frame">
+    <iframe src="https://maps.google.com/maps?q=Anniston,AL&z=10&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mel's Treat delivery area map — Oxford, Anniston & Jacksonville, AL"></iframe>
+  </div>
+  <div class="delivery-area-chips">
+    <span class="delivery-area-chip">📍 Oxford, AL</span>
+    <span class="delivery-area-chip">📍 Anniston, AL</span>
+    <span class="delivery-area-chip">📍 Jacksonville, AL</span>
+  </div>
+  <p class="delivery-map-note">Local delivery available across this area for a small fee, or pick up at one of our regular spots — pick "Delivery" or "Pickup" at checkout.</p>
 </div>
 
 <div class="leopard-strip"></div>
@@ -1116,10 +1240,55 @@ document.getElementById('sticky-note-close').addEventListener('click', () => {
   try { localStorage.setItem('mels_welcome_dismissed', '1'); } catch (e) {}
 });
 
-async function submitWelcomeSignup() {
-  const input = document.getElementById('welcome-email-input');
-  const msg = document.getElementById('welcome-message');
-  const btn = document.getElementById('welcome-submit-btn');
+// --- Spin The Wheel ---
+// 10 equal 36°-wide segments around the dial, matching the prize odds the
+// server actually uses (5 cookie / 4 bonus-reward / 1 free-box — see the
+// spin-wheel edge function). The server always decides the real prize;
+// this array is only used to pick which matching segment to visually land
+// the pointer on, for variety.
+const WHEEL_SEGMENTS = [
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'free_box', emoji: '🎁' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+];
+const WHEEL_PRIZE_META = {
+  free_cookie: { emoji: '🍪', title: 'A Free Cookie!' },
+  bonus_reward: { emoji: '🎟️', title: 'An Early Loyalty Reward!' },
+  free_box: { emoji: '🎁', title: 'The Grand Prize — A Free Treat Box!' },
+  legacy_2_off: { emoji: '💸', title: '$2 Off!' },
+};
+
+function renderWheelSegmentLabels() {
+  const wrap = document.getElementById('wheel-seg-labels');
+  if (!wrap || wrap.children.length) return;
+  const segAngle = 360 / WHEEL_SEGMENTS.length;
+  WHEEL_SEGMENTS.forEach((seg, i) => {
+    const angle = segAngle * i + segAngle / 2;
+    const label = document.createElement('div');
+    label.className = 'wheel-seg-label';
+    label.style.transform = `rotate(${angle}deg) translate(37px)`;
+    label.innerHTML = `<span style="transform-origin:0 0; display:inline-block;">${seg.emoji}</span>`;
+    wrap.appendChild(label);
+  });
+}
+renderWheelSegmentLabels();
+
+document.getElementById('wheel-result-close')?.addEventListener('click', () => {
+  document.getElementById('sticky-note')?.classList.remove('show');
+});
+
+let wheelRotation = 0;
+async function submitWheelSpin() {
+  const input = document.getElementById('wheel-email-input');
+  const msg = document.getElementById('wheel-message');
+  const btn = document.getElementById('wheel-spin-btn');
   const email = input.value.trim();
 
   msg.style.display = 'none';
@@ -1132,32 +1301,45 @@ async function submitWelcomeSignup() {
   }
 
   btn.disabled = true;
-  btn.textContent = 'Sending...';
+  input.disabled = true;
+  btn.textContent = 'Spinning...';
   try {
     const supabase = await getSupabase();
-    const { data, error } = await supabase.functions.invoke('signup-welcome-discount', { body: { email } });
+    const { data, error } = await supabase.functions.invoke('spin-wheel', { body: { email } });
     if (error) throw error;
-    if (!data.success) throw new Error(data.message || 'Could not sign up right now.');
+    if (!data.success) throw new Error(data.message || 'Could not spin right now.');
 
-    msg.textContent = `Sent! Check your email for code ${data.code} 💕`;
-    msg.style.color = 'var(--pink-deep)';
-    msg.style.display = 'block';
-    input.value = '';
-    btn.textContent = 'Sent! 🎉';
+    const matches = WHEEL_SEGMENTS.map((s, i) => ({ ...s, i })).filter(s => s.type === data.prizeType);
+    const landOn = (matches.length ? matches : WHEEL_SEGMENTS.map((s, i) => ({ ...s, i })))[Math.floor(Math.random() * (matches.length || WHEEL_SEGMENTS.length))];
+    const segAngle = 360 / WHEEL_SEGMENTS.length;
+    const segCenter = segAngle * landOn.i + segAngle / 2;
+    wheelRotation += 5 * 360 + ((360 - segCenter) % 360);
+    document.getElementById('wheel-disc').style.transform = `rotate(${wheelRotation}deg)`;
+
     try { localStorage.setItem('mels_welcome_claimed', '1'); } catch (e) {}
-    setTimeout(() => { document.getElementById('sticky-note').classList.remove('show'); }, 2500);
+
+    setTimeout(() => {
+      const meta = WHEEL_PRIZE_META[data.prizeType] || WHEEL_PRIZE_META.free_cookie;
+      document.getElementById('wheel-result-emoji').textContent = meta.emoji;
+      document.getElementById('wheel-result-title').textContent = data.alreadySpun ? `You already won: ${data.prizeLabel || meta.title}` : `You Won ${meta.title}`;
+      document.getElementById('wheel-result-blurb').textContent = data.blurb || 'Check your email for the code!';
+      document.getElementById('wheel-result-code').textContent = data.code;
+      document.getElementById('wheel-spin-stage').style.display = 'none';
+      document.getElementById('wheel-result').classList.add('show');
+    }, 4300);
   } catch (err) {
     console.error(err);
     msg.textContent = err.message || 'Something went wrong. Please try again.';
     msg.style.color = '#c0025e';
     msg.style.display = 'block';
     btn.disabled = false;
-    btn.textContent = 'Send Me $2 Off';
+    input.disabled = false;
+    btn.textContent = 'Spin The Wheel 🎉';
   }
 }
-document.getElementById('welcome-submit-btn').addEventListener('click', submitWelcomeSignup);
-document.getElementById('welcome-email-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') submitWelcomeSignup();
+document.getElementById('wheel-spin-btn')?.addEventListener('click', submitWheelSpin);
+document.getElementById('wheel-email-input')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitWheelSpin();
 });
 
 // --- Real rating badge — pulls your actual average, never hardcoded ---
