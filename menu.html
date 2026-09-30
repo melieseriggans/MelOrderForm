@@ -1,0 +1,2832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#e20376" />
+<title>Shop The Menu — Mel's Treat</title>
+<meta name="description" content="Shop fresh baked cookies and cinnamon rolls from Mel's Treat with secure checkout.">
+<meta property="og:title" content="Shop The Menu — Mel's Treat">
+<meta property="og:description" content="Shop fresh baked cookies and cinnamon rolls from Mel's Treat with secure checkout.">
+<meta property="og:image" content="https://melstreat.com/assets/welcome-banner-new.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<!-- Add-to-Home-Screen / PWA setup — lets the whole site install as one
+     app (see manifest.json) so it opens full-screen without the browser's
+     address bar, same as Quick Pay / App Payments. -->
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mel's Treat">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#fedde4;
+    --pink-mid:#ffcfe0;
+    --pink-hot:#e20376;
+    --pink-deep:#a8025f;
+    --pink-glow:#ff6fb0;
+    --plum:#2e1b24;
+    --ink:#3a2430;
+    --ink-soft:#8a6b78;
+    --cream:#fffaf6;
+    --white:#ffffff;
+    --gold:#c8912f;
+    --gold-text:#8a611c;
+    --gold-light:#f8e8c8;
+    --border:#f7c3d6;
+    --shadow: 0 6px 20px rgba(226,3,118,0.10);
+    --shadow-lift: 0 16px 36px rgba(226,3,118,0.20);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    position:relative;margin:0; background:var(--blush); font-family:'Quicksand', sans-serif; color:var(--ink);
+    background-image: linear-gradient(rgba(254,221,228,0.6), rgba(254,221,228,0.6)), url('assets/about-leopard-recolor.jpg');
+    background-size: cover, 200px auto;
+    background-attachment: fixed, fixed;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  .seal{position:relative; display:inline-block; border-radius:50%;}
+
+  /* Nav */
+  .top-nav{position:sticky; top:0; z-index:50; background:linear-gradient(180deg, #fff5fa, #ffe0ee); border-bottom:2px solid var(--pink-hot); box-shadow:0 2px 10px rgba(226,3,118,0.08);}
+  .nav-inner{max-width:1100px; margin:0 auto; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px;}
+  .nav-brand{display:flex; align-items:center; gap:8px; text-decoration:none; flex-shrink:0;}
+  .nav-brand img{width:52px; height:52px; object-fit:cover;}
+  .nav-brand .wordmark{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--ink); font-size:1rem; display:none;}
+  @media (min-width: 480px){ .nav-brand .wordmark{display:inline;} }
+  .nav-back{text-decoration:none; font-weight:600; font-size:0.72rem; color:var(--ink-soft); white-space:nowrap; display:inline-flex; align-items:center; padding:13px 0; margin:-13px 0;}
+  .nav-back:hover{color:#e20376;}
+  .nav-right{display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+  a.desktop-link{display:none !important;}
+  @media (min-width: 720px){ a.desktop-link{display:inline-flex !important;} }
+
+  .nav-menu-btn{
+    background:var(--blush); border:none; width:36px; height:36px; border-radius:50%;
+    font-size:1rem; color:#e20376; cursor:pointer; flex-shrink:0;
+  }
+  @media (min-width: 720px){ .nav-menu-btn{display:none;} }
+
+  .nav-dropdown-overlay{position:fixed; inset:0; background:rgba(46,27,36,0.4); opacity:0; pointer-events:none; transition:opacity 0.2s; z-index:109;}
+  .nav-dropdown-overlay.open{opacity:1; pointer-events:auto;}
+  .nav-dropdown{
+    position:fixed; top:0; right:0; bottom:0; width:min(280px, 80vw);
+    background:var(--white); box-shadow:-6px 0 24px rgba(0,0,0,0.2); z-index:110;
+    transform:translateX(100%); transition:transform 0.25s cubic-bezier(.2,.8,.2,1);
+    padding:0; display:flex; flex-direction:column; border-radius:22px 0 0 22px; overflow:hidden;
+  }
+  .nav-dropdown.open{transform:translateX(0);}
+  .nav-dropdown-header{
+    background:linear-gradient(135deg, var(--pink-hot), #ff5fa8); padding:26px 20px 22px; position:relative;
+    display:flex; align-items:center; gap:12px; flex-shrink:0;
+  }
+  .nav-dropdown-header img{width:46px; height:46px; border-radius:50%; object-fit:cover; border:2.5px solid rgba(255,255,255,0.85); flex-shrink:0;}
+  .nav-dropdown-header .brand-text{color:#fff; font-family:'Fredoka', sans-serif; font-weight:700; font-size:1.02rem;}
+  .nav-dropdown-close{
+    position:absolute; top:14px; right:14px; background:rgba(255,255,255,0.25); border:none; color:#fff;
+    width:30px; height:30px; border-radius:50%; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .nav-dropdown-links{padding:14px; display:flex; flex-direction:column; gap:3px; overflow-y:auto;}
+  .nav-dropdown a{
+    text-decoration:none; color:var(--ink); font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.92rem;
+    padding:13px 14px; border-radius:14px; transition:background 0.15s; display:flex; align-items:center; gap:10px;
+  }
+  .nav-dropdown a:hover{background:var(--blush);}
+  @media (min-width: 720px){ .nav-dropdown, .nav-dropdown-overlay{display:none;} }
+
+  .cart-btn{
+    position:relative; background:var(--pink-hot); color:var(--white); border:none;
+    width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:1.1rem;
+  }
+  .cart-badge{
+    position:absolute; top:-4px; right:-4px; background:var(--gold); color:var(--white);
+    font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.66rem;
+    min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 4px;
+    border:2px solid var(--white);
+  }
+  .cart-badge.hidden{display:none;}
+  .cart-badge.pulse{animation:badgePulse 0.4s ease;}
+  @keyframes badgePulse{0%{transform:scale(1);} 40%{transform:scale(1.35);} 100%{transform:scale(1);}}
+
+  /* Page header */
+  .page-header{
+    max-width:860px; width:calc(100% - 40px); margin:20px auto 0; padding:28px 20px 4px; text-align:center; position:relative; box-sizing:border-box;
+    background:var(--white); border-radius:22px 22px 0 0; box-shadow:var(--shadow); border:1.5px solid var(--border); border-bottom:none;
+  }
+  .page-header h1{position:relative; display:inline-block;}
+  .hero-star-accent{position:absolute; width:30px; height:30px; animation:starSpin 7s linear infinite;}
+  @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  @media (prefers-reduced-motion: reduce){ .hero-star-accent{animation:none;} }
+
+  .sparkle{
+    position:absolute; color:#c8912f; pointer-events:none; z-index:2;
+    text-shadow:0 0 6px #fff, 0 0 10px var(--pink-glow);
+    animation:sparkle-twinkle 2.2s ease-in-out infinite;
+  }
+  @keyframes sparkle-twinkle{ 0%,100%{opacity:0.25; transform:scale(0.8);} 50%{opacity:1; transform:scale(1.15);} }
+  .sparkle.drift{ animation:sparkle-drift 6s ease-in infinite, sparkle-twinkle 1.8s ease-in-out infinite; }
+  @keyframes sparkle-drift{
+    0%{transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:1;} 90%{opacity:0.8;}
+    100%{transform:translateY(-90px) translateX(10px) rotate(25deg); opacity:0;}
+  }
+  .sparkle.sway{ animation:sparkle-sway 4.5s ease-in-out infinite; }
+  @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
+  .page-eyebrow{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Fredoka', sans-serif; font-size:0.72rem; font-weight:600; color:#e20376;
+    letter-spacing:1.2px; text-transform:uppercase; margin-bottom:8px;
+  }
+  .page-eyebrow::before, .page-eyebrow::after{content:'✦'; color:#c8912f; font-size:0.65rem;}
+  .page-header h1{font-family:'Baloo 2', cursive; font-weight:800; color:#e20376; font-size:clamp(1.6rem, 5.2vw, 2.1rem); margin:0 0 6px;}
+  .page-header p{color:var(--ink-soft); font-size:0.9rem; margin:0;}
+  .rating-badge{
+    display:inline-flex; align-items:center; gap:6px; background:var(--white); border:1.5px solid var(--gold);
+    border-radius:20px; padding:6px 14px; margin-top:10px; font-size:0.8rem; font-weight:700; color:var(--ink);
+  }
+  .rating-stars{color:var(--gold-text); letter-spacing:1px; font-size:0.85rem;}
+
+  /* Category pills */
+  .box-menu-section{background:var(--cream); margin-top:12px; border-top:1.5px solid var(--border); border-bottom:1.5px solid var(--border);}
+  .box-menu-summary{
+    max-width:900px; margin:0 auto; padding:20px 20px; cursor:pointer; list-style:none;
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  .box-menu-summary::-webkit-details-marker{display:none;}
+  .box-menu-summary h2{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--ink); font-size:1.25rem; margin:4px 0 0;}
+  .box-menu-chevron{font-size:1.4rem; color:#e20376; transition:transform 0.2s; flex-shrink:0;}
+  #box-menu-details[open] .box-menu-chevron{transform:rotate(90deg);}
+  .box-menu-body{max-width:900px; margin:0 auto; padding:0 20px 32px;}
+  .box-menu-desc{color:var(--ink-soft); font-size:0.86rem; margin:0 0 18px; text-align:center;}
+
+  .box-build-row-cat-label{
+    width:100%; text-align:left; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.78rem;
+    color:#e20376; text-transform:uppercase; letter-spacing:0.4px; margin:14px 0 4px;
+  }
+  .box-build-row-cat-label:first-child{margin-top:0;}
+
+  /* Build A Box quick-action buttons */
+  .box-build-row{display:flex; flex-direction:column; gap:4px; max-width:900px; margin:0 auto; padding:0 20px;}
+  .box-build-row-buttons{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+  .box-build-btn{
+    position:relative; background:linear-gradient(180deg, var(--pink-glow), var(--pink-hot)); color:var(--white);
+    border:none; border-radius:16px; padding:12px 18px; cursor:pointer; text-align:left;
+    box-shadow:inset 0 2px 3px rgba(255,255,255,0.45), var(--shadow); transition:transform 0.15s;
+    flex:1; min-width:140px; max-width:200px;
+  }
+  .box-build-btn:hover{transform:translateY(-2px);}
+  .box-build-btn:focus-visible{outline:2px solid var(--white); outline-offset:2px;}
+  .box-build-btn .bb-title{font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.85rem;}
+  .box-build-btn .bb-sub{font-size:0.76rem; margin-top:3px;}
+  .box-build-btn .bb-price{font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.86rem;}
+  .box-build-btn .bb-pick{opacity:0.9;}
+  .box-build-btn .bb-popular{
+    position:absolute; top:-10px; right:8px; background:var(--gold); color:var(--white);
+    font-family:'Fredoka', sans-serif; font-size:0.56rem; font-weight:700; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; border:2px solid var(--white); box-shadow:0 3px 7px rgba(58,36,48,0.28);
+    transform:rotate(4deg);
+  }
+
+  /* Box builder modal */
+  .box-builder-overlay{position:fixed; inset:0; background:rgba(46,27,36,0.55); opacity:0; pointer-events:none; transition:opacity 0.25s; z-index:95;}
+  .box-builder-overlay.open{opacity:1; pointer-events:auto;}
+  .box-builder-modal{
+    position:fixed; left:50%; top:50%; transform:translate(-50%, -46%) scale(0.96);
+    width:min(420px, 92vw); max-height:85vh; background:var(--cream); border-radius:22px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.25); z-index:96; opacity:0; pointer-events:none;
+    transition:opacity 0.2s, transform 0.2s; display:flex; flex-direction:column; overflow:hidden;
+  }
+  .box-builder-modal.open{opacity:1; pointer-events:auto; transform:translate(-50%, -50%) scale(1);}
+  .box-builder-header{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:18px 20px; background:var(--white); border-bottom:1px solid var(--border); flex-shrink:0;}
+  .box-builder-header-text{display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-width:0;}
+  .box-builder-header h3{font-family:'Fredoka', sans-serif; margin:0; font-size:1.05rem; color:var(--ink);}
+  .box-builder-surprise-btn{
+    background:var(--blush); color:var(--pink-deep); border:1.5px solid var(--pink-hot); border-radius:12px;
+    padding:5px 12px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.72rem;
+    cursor:pointer; transition:transform 0.15s, background 0.15s; white-space:nowrap; flex-shrink:0;
+  }
+  .box-builder-surprise-btn:hover{background:var(--pink-hot); color:var(--white);}
+  .box-builder-surprise-btn:active{transform:scale(0.95);}
+  .box-builder-body{padding:18px 20px 22px; overflow-y:auto;}
+  .box-builder-progress{font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem; color:#e20376; margin-bottom:14px;}
+  .box-builder-progress-track{height:8px; background:var(--blush); border-radius:5px; margin-top:6px; overflow:hidden;}
+  .box-builder-progress-fill{height:100%; background:var(--pink-hot); border-radius:5px; width:0%; transition:width 0.2s;}
+  .box-builder-row{display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);}
+  .box-builder-row:last-child{border-bottom:none;}
+  .box-builder-row img, .box-builder-row .box-builder-img{width:48px; height:48px; border-radius:11px; object-fit:cover; flex-shrink:0;}
+  .box-builder-row-info{flex:1; min-width:0;}
+  .box-builder-row-name{font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem;}
+
+  .cat-pill-row{
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; max-width:860px; width:calc(100% - 40px); margin:0 auto; padding:12px 20px 20px; box-sizing:border-box;
+    background:var(--white); border-radius:0 0 22px 22px; box-shadow:var(--shadow); border:1.5px solid var(--border); border-top:none;
+  }
+  .cat-pill{
+    background:var(--white); border:1.5px solid var(--border); color:var(--ink-soft);
+    border-radius:999px; padding:8px 16px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.82rem; cursor:pointer; transition:0.15s;
+    display:flex; align-items:center; gap:6px;
+  }
+  .cat-pill.active{background:var(--pink-hot); color:var(--white); border-color:#e20376; box-shadow:var(--shadow);}
+  .cat-pill.disabled{opacity:0.55; cursor:default;}
+  .cat-pill:hover:not(.active):not(.disabled){border-color:#e20376; color:#e20376;}
+
+  /* Compact tap-to-add grid — the whole point: everything visible, no per-item scrolling.
+     Gets its own solid card background (like the Box Menu section above it) so it reads
+     as its own section instead of floating directly on the page's leopard-print background. */
+  .menu-wrap{
+    max-width:900px; margin:14px auto 0; padding:20px 20px 24px;
+    background:var(--cream); border-top:1.5px solid var(--border); border-bottom:1.5px solid var(--border);
+  }
+  .menu-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;}
+  @media (min-width: 640px){ .menu-grid{grid-template-columns:repeat(5, 1fr);} }
+  @media (max-width: 380px){ .menu-grid{grid-template-columns:repeat(2, 1fr);} }
+
+  .menu-tile{
+    position:relative; background:var(--white); border:1.5px solid var(--border); border-radius:18px;
+    overflow:hidden; cursor:pointer; transition:transform 0.12s, box-shadow 0.12s; text-align:center;
+  }
+  .menu-tile:hover{box-shadow:var(--shadow-lift); transform:translateY(-2px);}
+  .menu-tile:active{transform:scale(0.95);}
+  .menu-tile.sold-out{opacity:0.5; cursor:default;}
+  .menu-tile.sold-out:hover{transform:none; box-shadow:none;}
+  .menu-tile-img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;}
+  .placeholder-tile{background:linear-gradient(135deg, var(--blush), var(--pink-mid)); display:flex; align-items:center; justify-content:center;}
+  .placeholder-tile span{font-size:1.8rem;}
+  .menu-tile-img.placeholder-tile span{font-size:2.4rem;}
+  .box-builder-img.placeholder-tile span, .cart-item-img.placeholder-tile span{font-size:1.3rem;}
+  .menu-tile-info{padding:8px 6px 10px;}
+  .menu-tile-name{font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.72rem; line-height:1.25; margin-bottom:3px; min-height:1.85em;}
+  .menu-tile-price{font-family:'Fredoka', sans-serif; font-weight:700; color:#e20376; font-size:0.8rem;}
+  .menu-tile-allergens{display:flex; gap:3px; justify-content:center; padding:4px 6px 0; flex-wrap:wrap;}
+  .allergen-icon{font-size:0.75rem; cursor:help; opacity:0.85; line-height:1;}
+  .menu-tile-qty{
+    position:absolute; top:6px; right:6px; background:var(--pink-hot); color:var(--white);
+    font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.72rem;
+    min-width:22px; height:22px; border-radius:11px; display:none; align-items:center; justify-content:center;
+    border:2px solid var(--white); box-shadow:0 2px 6px rgba(0,0,0,0.15); padding:0 5px;
+  }
+  .menu-tile-qty.show{display:flex;}
+  .menu-tile-stock-tag{
+    position:absolute; top:6px; left:6px; font-size:0.58rem; font-weight:700; padding:2px 6px; border-radius:7px;
+  }
+  .menu-tile-stock-tag.low{background:var(--gold-light); color:#8a5a00;}
+  .menu-tile-stock-tag.out{background:#f0d0d8; color:#c0025e;}
+  .menu-tile-stock-tag.ready{background:#d7f0dc; color:#2e7d4f;}
+
+  .zoom-btn{
+    position:absolute; bottom:8px; right:8px; z-index:2;
+    background:rgba(255,255,255,0.92); border:1px solid var(--border); border-radius:50%;
+    width:26px; height:26px; font-size:0.72rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 6px rgba(0,0,0,0.12);
+  }
+  .zoom-btn:hover{background:var(--white); transform:scale(1.08);}
+
+  .allergen-chip{
+    display:inline-block; background:var(--blush); color:var(--pink-deep);
+    font-size:0.74rem; font-weight:700; padding:4px 10px; border-radius:9px; margin:0 6px 6px 0;
+  }
+
+  /* Product detail lightbox */
+  .lightbox-overlay{position:fixed; inset:0; background:rgba(46,27,36,0.6); opacity:0; pointer-events:none; transition:opacity 0.25s; z-index:105;}
+  .lightbox-overlay.open{opacity:1; pointer-events:auto;}
+  .lightbox-modal{
+    position:fixed; left:50%; top:50%; transform:translate(-50%, -46%) scale(0.96);
+    width:min(380px, 92vw); max-height:88vh; background:var(--white); border-radius:22px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.28); z-index:106; opacity:0; pointer-events:none;
+    transition:opacity 0.2s, transform 0.2s; overflow-y:auto;
+  }
+  .lightbox-modal.open{opacity:1; pointer-events:auto; transform:translate(-50%, -50%) scale(1);}
+  .lightbox-close{position:absolute; top:14px; right:14px; z-index:2; background:rgba(255,255,255,0.9);}
+  .lightbox-img-wrap{width:100%; aspect-ratio:1.1/1;}
+  .lightbox-img{width:100%; height:100%; object-fit:cover; display:block;}
+  .lightbox-img.placeholder-tile{border-radius:0;}
+  .lightbox-img.placeholder-tile span{font-size:4.5rem;}
+  .lightbox-body{padding:20px 22px 26px;}
+  .lightbox-top{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:10px;}
+  .lightbox-top h3{font-family:'Fredoka', sans-serif; font-size:1.2rem; margin:0; color:var(--ink);}
+  .lightbox-price{font-family:'Fredoka', sans-serif; font-weight:700; color:#e20376; font-size:1.1rem; flex-shrink:0;}
+  .lightbox-desc{color:var(--ink-soft); font-size:0.9rem; line-height:1.6; margin:0 0 14px;}
+  .lightbox-allergens{margin-bottom:18px;}
+  .tap-hint{text-align:center; font-size:0.78rem; color:var(--ink-soft); margin:14px 0 0;}
+
+  .catering-banner{
+    background:var(--white); border:1.5px solid var(--pink-hot); border-radius:16px;
+    padding:18px 20px; text-align:center; margin:20px 0; display:none; max-width:900px; margin-left:auto; margin-right:auto;
+  }
+  .catering-banner.show{display:block;}
+  .catering-banner-title{font-family:'Fredoka', sans-serif; font-weight:700; color:#e20376; font-size:1.05rem; margin-bottom:6px;}
+  .catering-banner-text{font-size:0.85rem; color:var(--ink); margin-bottom:14px; line-height:1.5;}
+  .catering-banner-btn{display:inline-block; background:var(--pink-hot); color:var(--white); text-decoration:none; font-weight:700; font-family:'Fredoka', sans-serif; font-size:0.88rem; padding:11px 20px; border-radius:14px;}
+
+  /* Surprise Me — lives inside the box builder modal itself (see
+     .box-builder-surprise-btn), triggered after the customer has already
+     picked the box size/price, so there's only one set of size buttons
+     on the page and the surprise is just the flavor mix. */
+  .surprise-confetti-fixed{position:fixed; pointer-events:none; overflow:visible; z-index:220; width:1px; height:1px;}
+  .surprise-confetti-fixed span{
+    position:absolute; top:0; left:0; font-size:1.1rem; opacity:0; animation:surpriseFall 1.4s ease-in forwards;
+  }
+  @keyframes surpriseFall{
+    0%{opacity:1; transform:translateY(0) rotate(0deg);}
+    100%{opacity:0; transform:translateY(220px) rotate(200deg);}
+  }
+  .surprise-toast{
+    position:fixed; left:50%; bottom:28px; transform:translate(-50%, 20px); z-index:220;
+    background:var(--white); color:var(--ink); border:1.5px solid var(--pink-hot); border-radius:16px;
+    padding:12px 20px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.88rem;
+    box-shadow:var(--shadow-lift); opacity:0; pointer-events:none; transition:opacity 0.25s, transform 0.25s;
+    max-width:88vw; text-align:center;
+  }
+  .surprise-toast.show{opacity:1; transform:translate(-50%, 0);}
+
+  /* Cart drawer (same pattern as before) */
+  .cart-overlay{position:fixed; inset:0; background:rgba(46,27,36,0.5); opacity:0; pointer-events:none; transition:opacity 0.25s; z-index:90;}
+  .cart-overlay.open{opacity:1; pointer-events:auto;}
+  .cart-drawer{
+    position:fixed; top:0; right:0; bottom:0; width:min(420px, 100vw); background:var(--cream);
+    box-shadow:-8px 0 30px rgba(0,0,0,0.15); transform:translateX(100%);
+    transition:transform 0.3s cubic-bezier(.2,.8,.2,1); z-index:100; display:flex; flex-direction:column;
+  }
+  .cart-drawer.open{transform:translateX(0);}
+  .cart-drawer-header{display:flex; justify-content:space-between; align-items:center; padding:20px 22px; border-bottom:1px solid var(--border); background:var(--white); flex-shrink:0;}
+  .cart-drawer-header h3{font-family:'Fredoka', sans-serif; margin:0; font-size:1.1rem; color:var(--ink);}
+  .cart-drawer-header span{color:#e20376; font-size:0.85rem;}
+  .cart-close-btn{background:var(--blush); border:none; width:32px; height:32px; border-radius:50%; font-size:0.95rem; cursor:pointer; color:var(--ink);}
+  .cart-drawer-body{flex:1; overflow-y:auto; padding:20px 22px 32px;}
+  .cart-empty{text-align:center; padding:60px 20px; color:var(--ink-soft);}
+  .cart-empty-icon{font-size:2.5rem; margin-bottom:10px;}
+
+  .cart-item{display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);}
+  .cart-item img, .cart-item .cart-item-img{width:52px; height:52px; border-radius:12px; object-fit:cover; flex-shrink:0;}
+  .cart-item-info{flex:1; min-width:0;}
+  .cart-item-name{font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.86rem;}
+  .cart-item-price{font-size:0.78rem; color:var(--ink-soft);}
+  .qty-stepper{display:flex; align-items:center; background:var(--blush); border-radius:11px; overflow:hidden; flex-shrink:0;}
+  .qty-stepper button{background:none; border:none; width:28px; height:28px; font-size:1rem; color:#e20376; cursor:pointer; font-weight:700;}
+  .qty-stepper button:hover{background:rgba(226,3,118,0.12);}
+  .qty-stepper span{min-width:20px; text-align:center; font-weight:700; font-family:'Fredoka', sans-serif; font-size:0.85rem;}
+
+  .drawer-section{margin:18px 0;}
+  .drawer-divider{border-top:1px solid var(--border); margin:8px 0;}
+  .total-bar{display:flex; justify-content:space-between; align-items:center; font-family:'Fredoka', sans-serif; font-weight:700; font-size:1.05rem; color:#e20376; padding:5px 0;}
+  .total-bar .minor{font-family:'Quicksand', sans-serif; font-weight:600; font-size:0.86rem; color:var(--ink-soft);}
+
+  .drawer-details{border:1px solid var(--border); border-radius:14px; margin:12px 0; background:var(--white); overflow:hidden;}
+  .drawer-details summary{padding:13px 16px; cursor:pointer; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.88rem; list-style:none;}
+  .drawer-details summary::-webkit-details-marker{display:none;}
+  .drawer-details-body{padding:0 16px 16px;}
+  .drawer-msg{font-size:0.8rem; margin-top:8px;}
+  .mini-btn{background:var(--pink-hot); color:var(--white); border:none; border-radius:11px; padding:0 16px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem; cursor:pointer;}
+  .mini-btn:hover{background:var(--pink-deep);}
+
+  .tip-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .tip-btn{
+    background:var(--white); border:1.5px solid var(--border); color:var(--ink);
+    border-radius:11px; padding:8px 12px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.8rem; cursor:pointer; flex:1; min-width:54px;
+  }
+  .tip-btn.selected{background:var(--pink-hot); color:var(--white); border-color:#e20376;}
+  .tip-btn:hover:not(.selected){border-color:#e20376;}
+
+  label{display:block; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem; margin:14px 0 7px; color:var(--ink);}
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=date], input[type=number], select, textarea{
+    width:100%; padding:11px 13px; border-radius:12px; border:1.5px solid var(--border);
+    font-family:'Quicksand', sans-serif; font-size:0.9rem; background:var(--white); color:var(--ink); transition:border-color 0.15s;
+  }
+  textarea{min-height:64px; resize:vertical;}
+  input:focus, select:focus, textarea:focus{outline:none; border-color:#e20376; box-shadow:0 0 0 3px rgba(226,3,118,0.1);}
+  .choice-group{display:flex; gap:8px; margin-top:6px;}
+  .choice-card{
+    flex:1; border:1.5px solid var(--border); border-radius:13px; padding:11px 10px;
+    cursor:pointer; transition:0.15s; text-align:center; font-weight:700; font-family:'Fredoka', sans-serif; font-size:0.82rem;
+  }
+  .choice-card:hover{border-color:#e20376;}
+  .choice-card.selected{border-color:#e20376; background:var(--blush); color:var(--pink-deep);}
+  .drawer-section-title{
+    font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.78rem; text-transform:uppercase;
+    letter-spacing:0.04em; color:#e20376; margin:0 0 4px; display:flex; align-items:center; gap:6px;
+  }
+  .drawer-section-title:not(:first-child){margin-top:4px;}
+  .drawer-subdivider{border-top:1px dashed var(--border); margin:20px 0 16px;}
+  .hidden{display:none;}
+  .checkout-btn{
+    width:100%; background:linear-gradient(180deg, var(--pink-glow), var(--pink-hot)); color:var(--white); border:none; border-radius:15px;
+    padding:16px; font-family:'Fredoka', sans-serif; font-size:1rem; font-weight:600; cursor:pointer;
+    box-shadow:inset 0 2px 3px rgba(255,255,255,0.5), var(--shadow); transition:transform 0.15s; margin-top:8px;
+  }
+  .checkout-btn:disabled{opacity:0.6; cursor:not-allowed;}
+  .checkout-btn:hover:not(:disabled){transform:translateY(-2px);}
+  .checkout-note{font-size:0.74rem; color:var(--ink-soft); text-align:center; margin-top:10px; line-height:1.5;}
+  .loyalty-banner{
+    margin:8px 0 14px; padding:9px 12px; background:var(--blush, #fedde4); border:1.5px dashed #e20376;
+    border-radius:10px; font-size:0.8rem; font-weight:600; color:#a8025f; text-align:center; line-height:1.4;
+  }
+  .remember-me-row{
+    display:flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:600; color:var(--ink-soft, #8a6b78);
+    margin:10px 0 0; cursor:pointer;
+  }
+  .remember-me-row input{width:auto; margin:0;}
+
+  /* Sticky-note style welcome popup — same widget as shop.html, ported
+     here since this is the page people actually check out from. Small,
+     non-blocking, dismissible, and (unlike shop.html's version) a close
+     or a claim sticks permanently for that browser, not just the tab
+     session — a customer who closes it once shouldn't see it pop up
+     again on their next visit. */
+  .sticky-note{
+    position:fixed; bottom:20px; left:20px; z-index:65;
+    width:210px; max-width:calc(100vw - 40px);
+    background:var(--white);
+    border-radius:20px;
+    box-shadow:0 8px 24px rgba(58,36,48,0.24);
+    padding:16px 16px 14px;
+    transform:scale(0.9) translateY(20px);
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s ease, transform 0.3s ease;
+    font-family:'Quicksand', sans-serif;
+  }
+  .sticky-note.show{opacity:1; pointer-events:auto; transform:scale(1) translateY(0);}
+  .sticky-note-close{
+    position:absolute; top:8px; right:10px; background:none; border:none;
+    color:var(--ink-soft); font-size:0.9rem; cursor:pointer; padding:4px; line-height:1;
+  }
+  .sticky-note-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep, #a8025f); font-size:0.92rem; margin:2px 0 4px; text-align:center;}
+  .sticky-note-text{font-size:0.78rem; color:var(--ink-soft); margin-bottom:8px; line-height:1.4; text-align:center;}
+  .sticky-note-text strong{color:var(--pink-hot, #e20376);}
+  .error{color:#c0025e; font-size:0.8rem; margin-top:8px; display:none; font-weight:600;}
+
+  /* Spin-the-wheel — lives right in the corner note itself (not a separate
+     popup), so it's visible in the same spot the old note used to sit.
+     Kept compact and plain (no paper/pin styling) since the wheel itself
+     is the point of this widget now, not a teaser advertising a click-through. */
+  .wheel-wrap{position:relative; width:110px; height:110px; margin:4px auto 10px;}
+  .wheel-pointer{
+    position:absolute; top:-6px; left:50%; transform:translateX(-50%); z-index:3;
+    font-size:1.15rem; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+  }
+  .wheel-disc{
+    width:100%; height:100%; border-radius:50%; position:relative;
+    border:4px solid var(--white); box-shadow:0 6px 16px rgba(226,3,118,0.35), inset 0 0 0 2px rgba(255,255,255,0.5);
+    /* Segments are color-coded by prize so the wheel reads clearly: hot
+       pink = free cookie, white = bonus reward, gold = rare grand prize.
+       Order must match the WHEEL_SEGMENTS array in the script below, and
+       the color key in .wheel-legend below. */
+    background: conic-gradient(from 0deg,
+      var(--pink-hot) 0deg 36deg, var(--white) 36deg 72deg,
+      var(--pink-hot) 72deg 108deg, var(--white) 108deg 144deg,
+      var(--pink-hot) 144deg 180deg, var(--gold) 180deg 216deg,
+      var(--pink-hot) 216deg 252deg, var(--white) 252deg 288deg,
+      var(--pink-hot) 288deg 324deg, var(--white) 324deg 360deg);
+    transition: transform 4.2s cubic-bezier(0.12, 0.72, 0.15, 1);
+  }
+  .wheel-disc::after{
+    content:''; position:absolute; inset:0; border-radius:50%; pointer-events:none;
+    background: repeating-conic-gradient(from 0deg, rgba(255,255,255,0.9) 0deg 1.2deg, transparent 1.2deg 36deg);
+  }
+  .wheel-disc-hub{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2;
+    width:22px; height:22px; border-radius:50%; background:var(--pink-hot); border:2px solid var(--white);
+    box-shadow:0 2px 8px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center; font-size:0.6rem;
+  }
+  .wheel-seg-label{
+    position:absolute; top:50%; left:50%; width:0; height:0; font-size:0.62rem;
+    transform-origin:0 0;
+  }
+  .wheel-seg-label span{display:block; transform:translate(-50%,-50%);}
+  /* Readable prize key — the wheel graphic alone (esp. shrunk down and with
+     tiny emoji) doesn't tell a customer what they could actually win, so
+     spell it out in plain text right under the wheel. */
+  .wheel-legend{list-style:none; margin:0 0 10px; padding:0; display:flex; flex-direction:column; gap:4px;}
+  .wheel-legend li{display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--ink-soft); line-height:1.3;}
+  .wheel-legend .wl-swatch{width:10px; height:10px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1);}
+  .wheel-email-row{display:flex; flex-direction:column; gap:6px; margin-bottom:2px;}
+  .wheel-email-row input{
+    padding:8px 10px; border-radius:8px; border:1.5px solid rgba(0,0,0,0.15);
+    font-family:'Quicksand', sans-serif; font-size:0.8rem; background:var(--blush); text-align:center;
+  }
+  .wheel-email-row input:focus{outline:none; border-color:var(--pink-hot, #e20376);}
+  .wheel-spin-btn{
+    width:100%; background:var(--pink-hot, #e20376); color:#fff;
+    border:none; border-radius:8px; padding:9px 10px; font-family:'Fredoka', sans-serif; font-weight:600;
+    font-size:0.8rem; cursor:pointer;
+  }
+  .wheel-spin-btn:hover{background:var(--pink-deep, #a8025f);}
+  .wheel-spin-btn:disabled{opacity:0.65; cursor:default;}
+  .wheel-result{display:none; margin-top:2px; text-align:center;}
+  .wheel-result.show{display:block;}
+  .wheel-result-emoji{font-size:1.8rem; margin-bottom:2px;}
+  .wheel-result-title{font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep, #a8025f); font-size:0.9rem; margin-bottom:4px; line-height:1.3;}
+  .wheel-result-blurb{font-size:0.76rem; color:var(--ink-soft); margin-bottom:8px; line-height:1.4;}
+  .wheel-result-code{
+    font-family:'Fredoka', sans-serif; font-weight:700; letter-spacing:1.2px; font-size:0.95rem;
+    background:var(--blush); color:var(--pink-deep, #a8025f); padding:7px 12px; border-radius:10px; display:inline-block; margin-bottom:8px;
+  }
+  .wheel-result-close{
+    display:block; width:100%; background:var(--blush); color:var(--pink-deep, #a8025f); border:1.5px solid var(--pink-hot, #e20376);
+    border-radius:8px; padding:8px; font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer;
+  }
+  @media (max-width: 480px){ .sticky-note{left:16px; bottom:80px; width:200px;} }
+  .error{color:#c0025e; font-size:0.8rem; margin-top:8px; display:none; font-weight:600;}
+
+  .sticker-star{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+  }
+  .sticker-gem{
+    position:absolute; pointer-events:none; z-index:2;
+    filter:drop-shadow(0 3px 5px rgba(58,36,48,0.25));
+    animation:gem-pulse 3s ease-in-out infinite;
+  }
+  @keyframes gem-pulse{ 0%,100%{opacity:0.85; transform:scale(1);} 50%{opacity:1; transform:scale(1.06);} }
+  @media (prefers-reduced-motion: reduce){ .sticker-gem{animation:none;} }
+  .oos-modal-overlay{
+    display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.72);
+    align-items:center; justify-content:center; padding:20px; overflow-y:auto;
+  }
+  .oos-modal-overlay.show{display:flex;}
+  .oos-modal-card{
+    background:#fff; border-radius:26px; padding:32px 26px; max-width:380px; width:100%;
+    text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.4); position:relative;
+  }
+  .oos-modal-logo{width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:8px;}
+  .oos-modal-emoji{font-size:2rem; margin-bottom:6px;}
+  .oos-modal-card h2{font-family:'Fredoka', sans-serif; font-weight:700; color:#e20376; font-size:1.5rem; margin:0 0 10px;}
+  .oos-modal-card p{color:var(--ink-soft); font-size:0.9rem; line-height:1.55; margin:0 0 20px;}
+  .oos-modal-choices{display:flex; flex-direction:column; gap:10px; margin-bottom:4px;}
+  .oos-choice-btn{
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.9rem; border-radius:16px; padding:13px; cursor:pointer; border:1.5px solid var(--pink-hot);
+  }
+  .oos-choice-btn.primary{background:linear-gradient(180deg, var(--pink-glow), var(--pink-hot)); color:#fff; border:none; box-shadow:0 6px 16px rgba(226,3,118,0.3);}
+  .oos-choice-btn:not(.primary){background:#fff; color:var(--pink-hot);}
+  .oos-notify-form{display:none; text-align:left; margin-top:16px;}
+  .oos-notify-form.show{display:block;}
+  .oos-notify-form label{font-size:0.8rem; font-weight:600; color:var(--ink); display:block; margin-bottom:6px;}
+  .oos-notify-form input{width:100%; box-sizing:border-box; padding:11px 14px; border-radius:12px; border:1.5px solid var(--border); font-size:0.9rem; margin-bottom:8px;}
+  .oos-error{color:#c0025e; font-size:0.8rem; display:none; margin-bottom:8px;}
+  .oos-success-msg{color:#1a8f4c; font-size:0.8rem; display:none; margin-bottom:8px;}
+  .oos-submit-btn{
+    width:100%; background:var(--pink-hot); color:#fff; border:none; border-radius:14px; padding:12px;
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.88rem; cursor:pointer;
+  }
+  .mini-cart{position:fixed; top:auto; bottom:90px; right:6px; transform:none; z-index:65;}
+  .floating-preorder-btn{
+    display:none; position:fixed; bottom:90px; right:6px; z-index:65;
+    background:linear-gradient(180deg, var(--pink-glow), var(--pink-hot)); color:#fff; border:none;
+    border-radius:20px; padding:12px 16px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.82rem; cursor:pointer;
+    box-shadow:-2px 4px 12px rgba(226,3,118,0.35);
+  }
+  .floating-preorder-btn.show{display:block;}
+  .mini-cart-badge{
+    background:linear-gradient(180deg, var(--pink-glow), var(--pink-hot)); color:#fff; border:none;
+    clip-path:url(#heartClip); width:48px; height:46px; font-size:0.95rem; cursor:pointer; padding-top:5px;
+    box-shadow:-2px 4px 12px rgba(226,3,118,0.35); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    position:relative;
+  }
+  .mini-cart-count{
+    font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.72rem; background:#fff; color:var(--pink-hot);
+    border-radius:10px; padding:0 6px; min-width:16px; line-height:1.5;
+  }
+  .mini-cart-panel{
+    display:none; position:absolute; bottom:calc(100% + 10px); right:0;
+    width:min(230px, 66vw); max-height:55vh; overflow-y:auto; background:#fff; border-radius:16px;
+    box-shadow:0 12px 32px rgba(58,36,48,0.28); border:1.5px solid var(--border); padding:13px;
+  }
+  .mini-cart.open .mini-cart-panel{display:block;}
+  .mini-cart-header{display:flex; justify-content:space-between; align-items:center; font-family:'Fredoka', sans-serif; font-weight:700; color:var(--ink); font-size:0.95rem; margin-bottom:10px;}
+  .mini-cart-close{background:var(--blush); border:none; width:26px; height:26px; border-radius:50%; color:var(--pink-hot); font-size:0.8rem; cursor:pointer;}
+  .mini-cart-items{display:flex; flex-direction:column; gap:8px; margin-bottom:12px; max-height:40vh; overflow-y:auto;}
+  .mini-cart-item{display:flex; justify-content:space-between; gap:8px; font-size:0.82rem; color:var(--ink); line-height:1.4;}
+  .mini-cart-item .item-name{color:var(--ink-soft);}
+  .mini-cart-empty{font-size:0.82rem; color:var(--ink-soft); text-align:center; padding:8px 0;}
+  .mini-cart-total{display:flex; justify-content:space-between; font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-hot); font-size:0.95rem; border-top:1.5px dashed var(--border); padding-top:10px; margin-bottom:12px;}
+  .mini-cart-checkout-btn{
+    display:block; text-align:center; background:linear-gradient(180deg, var(--pink-glow), var(--pink-hot)); color:#fff;
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem; text-decoration:none; padding:11px; border-radius:14px;
+  }
+  @media (max-width: 480px){
+    .mini-cart{top:auto; bottom:90px; right:6px; transform:none;}
+    .mini-cart-badge{width:44px; height:42px; font-size:0.85rem;}
+    .mini-cart-panel{bottom:calc(100% + 10px); right:0; width:min(210px, 62vw);}
+  }
+#splash-screen{
+    position:fixed; inset:0; z-index:9999;
+    background:linear-gradient(160deg, var(--pink-hot), #ff5fa8 60%, var(--pink-deep));
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    transition:opacity 0.5s ease, visibility 0.5s ease;
+  }
+  #splash-screen.hide{opacity:0; visibility:hidden; pointer-events:none;}
+  .splash-content{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; text-align:center;}
+  .splash-logo{
+    width:120px; height:120px; border-radius:50%; object-fit:cover;
+    border:4px solid rgba(255,255,255,0.85); box-shadow:0 8px 30px rgba(0,0,0,0.25);
+    animation:splashLogoIn 0.7s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .splash-word{
+    font-family:'Baloo 2', cursive; font-weight:800; color:#fff; font-size:1.7rem;
+    margin-top:16px; letter-spacing:0.5px;
+    animation:splashFadeUp 0.6s ease 0.35s both;
+  }
+  .splash-tagline{
+    font-family:'Quicksand', sans-serif; font-weight:600; color:rgba(255,255,255,0.9); font-size:0.9rem;
+    margin-top:6px; animation:splashFadeUp 0.6s ease 0.55s both;
+  }
+  .splash-dots span{animation:splashDotBlink 1.4s infinite; opacity:0;}
+  .splash-dots span:nth-child(2){animation-delay:0.2s;}
+  .splash-dots span:nth-child(3){animation-delay:0.4s;}
+  .splash-decor{position:absolute; inset:0; overflow:hidden;}
+  .splash-decor svg{position:absolute; color:rgba(255,255,255,0.8); animation:splashFloat 3.5s ease-in-out infinite;}
+  .splash-decor .s1{width:28px; top:18%; left:14%; animation-delay:0s;}
+  .splash-decor .s2{width:34px; top:22%; right:12%; animation-delay:0.4s; color:rgba(255,255,255,0.7);}
+  .splash-decor .s3{width:22px; bottom:24%; left:20%; animation-delay:0.8s;}
+  .splash-decor .s4{width:26px; bottom:20%; right:18%; animation-delay:1.1s; color:rgba(255,255,255,0.7);}
+  .splash-decor .s5{width:20px; top:45%; left:8%; animation-delay:1.5s;}
+  @keyframes splashLogoIn{
+    0%{transform:scale(0.3) rotate(-15deg); opacity:0;}
+    100%{transform:scale(1) rotate(0deg); opacity:1;}
+  }
+  @keyframes splashFadeUp{
+    0%{transform:translateY(10px); opacity:0;}
+    100%{transform:translateY(0); opacity:1;}
+  }
+  @keyframes splashDotBlink{
+    0%, 80%, 100%{opacity:0;}
+    40%{opacity:1;}
+  }
+  @keyframes splashFloat{
+    0%, 100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-14px) rotate(8deg);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    #splash-screen{transition:none;}
+    .splash-logo, .splash-word, .splash-tagline{animation:none; opacity:1;}
+    .splash-decor svg{animation:none;}
+  }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Bakery",
+  "name": "Mel's Treat",
+  "description": "Shop fresh baked cookies and cinnamon rolls from Mel's Treat with secure checkout.",
+  "image": "https://melstreat.com/assets/welcome-banner-new.png",
+  "url": "https://melstreat.com/menu.html",
+  "areaServed": ["Anniston, AL", "Oxford, AL", "Jacksonville, AL"],
+  "servesCuisine": "Bakery",
+  "priceRange": "$"
+}
+</script>
+</head>
+<body>
+<div id="splash-screen">
+  <div class="splash-decor">
+    <svg class="splash-star s1" viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg>
+    <svg class="splash-heart s2" viewBox="0 0 100 90"><use href="#gemHeartShape"/></svg>
+    <svg class="splash-star s3" viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg>
+    <svg class="splash-heart s4" viewBox="0 0 100 90"><use href="#gemHeartShape"/></svg>
+    <svg class="splash-star s5" viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg>
+  </div>
+  <div class="splash-content">
+    <img src="assets/logo.png" alt="Mel's Treat" class="splash-logo">
+    <div class="splash-word">Mel's Treat</div>
+    <div class="splash-tagline">picking out your treats<span class="splash-dots"><span>.</span><span>.</span><span>.</span></span></div>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
+      <path d="M0.5,0.25 C0.35,-0.05 -0.05,0.05 0,0.35 C0.05,0.6 0.3,0.75 0.5,0.95 C0.7,0.75 0.95,0.6 1,0.35 C1.05,0.05 0.65,-0.05 0.5,0.25 Z"/>
+    </clipPath>
+  </defs>
+</svg>
+
+<svg style="display:none;">
+  <symbol id="stickerStarShape" viewBox="0 0 100 100">
+    <path d="M50 4 L61 36 L96 36 L67 56 L78 90 L50 70 L22 90 L33 56 L4 36 L39 36 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+  </symbol>
+  <symbol id="gemHeartShape" viewBox="0 0 100 90">
+    <path d="M50 88 C20 62 4 42 4 24 C4 8 16 0 30 0 C40 0 47 6 50 14 C53 6 60 0 70 0 C84 0 96 8 96 24 C96 42 80 62 50 88 Z" fill="currentColor" stroke="#fff" stroke-width="4"/>
+    <path d="M50 14 L50 82 M20 30 L80 30" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+  </symbol>
+</svg>
+
+
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="shop.html" class="nav-brand">
+      <span class="seal"><img src="assets/logo.png" alt="Mel's Treat"></span>
+      <span class="wordmark">Mel's Treat</span>
+    </a>
+    <div class="nav-right">
+      <a href="shop.html" class="nav-back desktop-link">Home</a>
+      <a href="about.html" class="nav-back desktop-link">About</a>
+      <a href="testimonials.html" class="nav-back desktop-link">Reviews</a>
+      <a href="faq.html" class="nav-back desktop-link">FAQ</a>
+      <button type="button" class="cart-btn" id="cart-open-btn" aria-label="Open cart">
+        🛍️
+        <span class="cart-badge hidden" id="cart-badge">0</span>
+      </button>
+      <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<div class="nav-dropdown-overlay" id="nav-dropdown-overlay"></div>
+<div class="nav-dropdown" id="nav-dropdown">
+  <div class="nav-dropdown-header">
+    <img src="assets/logo.png" alt="Mel's Treat" loading="lazy">
+    <span class="brand-text">Mel's Treat</span>
+    <button type="button" class="nav-dropdown-close" id="nav-dropdown-close" aria-label="Close menu">✕</button>
+  </div>
+  <div class="nav-dropdown-links">
+    <a href="shop.html">🏠 Home</a>
+    <a href="menu.html">🍪 Shop The Menu</a>
+    <a href="about.html">💗 About Me</a>
+    <a href="testimonials.html">⭐ Reviews</a>
+    <a href="faq.html">❓ FAQ</a>
+    <a href="catering.html">🎉 Catering</a>
+    <a href="links.html">🔗 All Links</a>
+  </div>
+</div>
+
+<div class="page-header">
+
+  <div class="page-eyebrow">Secure Checkout · Powered By Stripe</div>
+  <h1>The Menu ♡
+    <svg class="hero-star-accent" viewBox="0 0 100 100" style="top:-14px; right:-30px;" aria-hidden="true">
+      <defs>
+        <linearGradient id="starGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff8fc4"/>
+          <stop offset="55%" stop-color="#e20376"/>
+          <stop offset="100%" stop-color="#a8025f"/>
+        </linearGradient>
+      </defs>
+      <path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="url(#starGrad2)" stroke="#fff" stroke-width="2"/>
+      <ellipse cx="40" cy="30" rx="9" ry="5" fill="#ffffff" opacity="0.55" transform="rotate(-30 40 30)"/>
+    </svg>
+  </h1>
+  <p>Tap what you want, adjust in your cart, check out when ready.</p>
+  <div class="page-eyebrow" style="background:var(--blush); color:var(--pink-deep); border-radius:14px; padding:8px 14px; display:inline-block; text-transform:none; letter-spacing:normal; font-size:0.78rem; margin-top:8px;">⏰ Cookies need 1 day notice · Cinnamon rolls need 2 days</div>
+  <div class="rating-badge" id="rating-badge" style="display:none;">
+    <span class="rating-stars">★★★★★</span> <span id="rating-text"></span>
+  </div>
+</div>
+
+<div class="cat-pill-row" id="category-tiles"></div>
+
+<details class="box-menu-section" id="box-menu-details" open>
+  <summary class="box-menu-summary">
+    <div>
+      <div class="page-eyebrow">Save By The Box</div>
+      <h2 id="box-menu-title">🎁 Box Menu</h2>
+    </div>
+    <span class="box-menu-chevron">›</span>
+  </summary>
+  <div class="box-menu-body">
+    <p class="box-menu-desc">Pick a size, choose your flavors, done — box pricing applies automatically either way.</p>
+    <div class="box-build-row" id="box-build-row"></div>
+  </div>
+</details>
+
+<div class="menu-wrap">
+  <p style="font-size:0.78rem; color:var(--ink-soft); text-align:center; margin:0 0 12px;">🔍 Tap any treat for ingredients &amp; allergen info — most items contain dairy, eggs &amp; gluten.</p>
+  <div class="menu-grid" id="product-grid"></div>
+  <p class="tap-hint">Tap a treat to add it — view or edit your cart anytime with the 🛍️ button above.</p>
+</div>
+
+<div class="catering-banner" id="catering-prompt">
+  <div class="catering-banner-title">Need More Than 3 Dozen? 🎉</div>
+  <div class="catering-banner-text">Shop checkout is capped at 36 cookies. For bigger events, place a catering request instead!</div>
+  <a href="catering.html" class="catering-banner-btn">Place A Catering Request</a>
+</div>
+
+<!-- Box builder modal -->
+<div class="box-builder-overlay" id="box-builder-overlay"></div>
+<div class="box-builder-modal" id="box-builder-modal">
+  <div class="box-builder-header">
+    <div class="box-builder-header-text">
+      <h3 id="box-builder-title">Build Your Box</h3>
+      <button type="button" class="box-builder-surprise-btn" id="box-builder-surprise-btn">🎲 Surprise Me</button>
+    </div>
+    <button type="button" class="cart-close-btn" id="box-builder-close-btn" aria-label="Close">✕</button>
+  </div>
+  <div class="box-builder-body">
+    <div class="box-builder-progress">
+      <span id="box-builder-count">0</span> of <span id="box-builder-target">6</span> picked
+      <div class="box-builder-progress-track"><div class="box-builder-progress-fill" id="box-builder-progress-fill"></div></div>
+    </div>
+    <div id="box-builder-list"></div>
+    <button type="button" class="checkout-btn" id="box-builder-add-btn" disabled>Add Box To Cart</button>
+  </div>
+</div>
+
+<!-- Product detail lightbox -->
+<div class="lightbox-overlay" id="lightbox-overlay"></div>
+<div class="lightbox-modal" id="lightbox-modal">
+  <button type="button" class="cart-close-btn lightbox-close" id="lightbox-close-btn" aria-label="Close">✕</button>
+  <div id="lightbox-img-wrap" class="lightbox-img-wrap"></div>
+  <div class="lightbox-body">
+    <div class="lightbox-top">
+      <h3 id="lightbox-name"></h3>
+      <span id="lightbox-price" class="lightbox-price"></span>
+    </div>
+    <p id="lightbox-desc" class="lightbox-desc"></p>
+    <div id="lightbox-allergens" class="lightbox-allergens"></div>
+    <button type="button" class="checkout-btn" id="lightbox-add-btn">Add To Cart 🎀</button>
+  </div>
+</div>
+
+<!-- Cart drawer -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer-header">
+    <h3>Your Cart <span id="cart-drawer-count"></span></h3>
+    <button type="button" class="cart-close-btn" id="cart-close-btn" aria-label="Close cart">✕</button>
+  </div>
+
+  <div class="cart-drawer-body">
+    <div id="cart-empty-state" class="cart-empty">
+      <div class="cart-empty-icon">🍪</div>
+      <p>Your cart's empty — tap a treat to get started!</p>
+    </div>
+
+    <div id="cart-items-list"></div>
+
+    <div id="cart-checkout-flow" class="hidden">
+      <div class="drawer-section">
+        <div class="total-bar hidden" id="box-savings-row" style="color:#c8912f;"><span class="minor" style="color:#c8912f;">🎀 Box Savings</span><span class="minor" style="color:#c8912f; font-weight:700;" id="box-savings-display">$0.00</span></div>
+        <div class="total-bar" id="subtotal-row"><span class="minor">Subtotal</span><span class="minor" id="subtotal-display">$0.00</span></div>
+        <div class="total-bar hidden" id="discount-row"><span class="minor">Discount</span><span class="minor" id="discount-amount-display">−$0.00</span></div>
+        <div class="total-bar hidden" id="tip-row"><span class="minor">Tip 💕</span><span class="minor" id="tip-amount-display">$0.00</span></div>
+        <div class="drawer-divider"></div>
+        <div class="total-bar"><span>Total</span><span id="total-display">$0.00</span></div>
+      </div>
+
+      <details class="drawer-details">
+        <summary>Discount Code</summary>
+        <div class="drawer-details-body">
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="discount_code_input" placeholder="Enter code" aria-label="Discount code" style="flex:1;">
+            <button type="button" id="apply-discount-btn" class="mini-btn">Apply</button>
+          </div>
+          <div id="discount-message" class="drawer-msg"></div>
+        </div>
+      </details>
+
+      <details class="drawer-details">
+        <summary>Add A Tip 💕</summary>
+        <div class="drawer-details-body">
+          <div class="tip-row">
+            <button type="button" class="tip-btn" data-tip="2">$2</button>
+            <button type="button" class="tip-btn" data-tip="5">$5</button>
+            <button type="button" class="tip-btn" data-tip="10">$10</button>
+            <button type="button" class="tip-btn" data-tip="custom">Custom</button>
+            <button type="button" class="tip-btn selected" data-tip="0">None</button>
+          </div>
+          <input type="number" id="tip-custom-input" min="0" step="0.01" placeholder="Enter amount" aria-label="Custom tip amount" class="hidden" style="margin-top:10px;" inputmode="decimal">
+        </div>
+      </details>
+
+      <div class="drawer-section">
+        <div class="drawer-section-title">📇 Contact Info</div>
+
+        <label for="customer_full_name">Full Name *</label>
+        <input type="text" id="customer_full_name" placeholder="Your name" autocomplete="name">
+
+        <label for="customer_email">Email *</label>
+        <input type="email" id="customer_email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+        <div class="loyalty-banner" id="loyalty-banner">🎁 Every 3rd order unlocks a surprise treat on me!</div>
+
+        <label for="preferred_contact">Best Way To Reach You? *</label>
+        <select id="preferred_contact">
+          <option value="Text">Text</option>
+          <option value="Phone Call">Phone Call</option>
+          <option value="Email">Email</option>
+          <option value="Social Media">Social Media (no phone number)</option>
+        </select>
+
+        <div id="contact_phone_wrap">
+          <label for="contact_phone" id="contact_phone_label">Phone Number *</label>
+          <input type="tel" id="contact_phone" placeholder="For day-of updates, e.g. running late" autocomplete="tel" inputmode="tel">
+        </div>
+
+        <div id="contact_social_wrap" class="hidden">
+          <label for="social_platform">Which Platform?</label>
+          <select id="social_platform">
+            <option value="">Select…</option>
+            <option>Instagram</option>
+            <option>Facebook</option>
+            <option>TikTok</option>
+          </select>
+          <label for="social_handle">Your Handle *</label>
+          <input type="text" id="social_handle" placeholder="@yourhandle">
+        </div>
+
+        <label class="remember-me-row" for="remember_me_checkbox">
+          <input type="checkbox" id="remember_me_checkbox" checked>
+          Remember my info for next time
+        </label>
+
+        <div class="drawer-subdivider"></div>
+        <div class="drawer-section-title">🚚 Fulfillment Details</div>
+
+        <label>Pickup Or Delivery</label>
+        <div class="choice-group">
+          <div class="choice-card selected" data-fulfillment="pickup">Pickup</div>
+          <div class="choice-card" data-fulfillment="delivery">Delivery</div>
+        </div>
+
+        <label>Payment Method</label>
+        <div class="choice-group">
+          <div class="choice-card selected" data-payment="card">💳 Card</div>
+          <div class="choice-card" data-payment="cash" id="cash-payment-card">💵 Cash On Pickup</div>
+        </div>
+        <div id="cash-pickup-note" class="hidden" style="font-size:0.78rem; color:var(--ink-soft); margin-top:6px; line-height:1.4;">You'll pay Meliese in cash when you pick up — your order still gets submitted and confirmed by email.</div>
+
+        <label for="pickup_location">Pickup Location</label>
+        <select id="pickup_location">
+          <option value="">Select A Location…</option>
+          <option>Oxford, AL Walmart</option>
+          <option>Anniston, AL Walmart</option>
+          <option>Other (Enter Below)</option>
+        </select>
+        <input type="text" id="pickup_location_other" placeholder="Enter your preferred public pickup spot" aria-label="Custom pickup location" class="hidden" style="margin-top:10px;">
+
+        <div id="delivery_fields" class="hidden">
+          <label for="delivery_address">Delivery Address</label>
+          <div style="position:relative;">
+            <input type="text" id="delivery_address" placeholder="123 Main St, Anniston, AL" autocomplete="street-address" />
+          </div>
+          <div id="delivery-fee-note" style="display:none; font-size:0.8rem; color:var(--pink-hot); font-weight:600; margin-top:4px;"></div>
+        </div>
+
+        <label for="preferred_date">Preferred Date</label>
+        <input type="date" id="preferred_date" />
+        <div id="date-lead-time-note" style="display:none; color:var(--pink-hot); font-weight:600; margin-top:4px; font-size:0.85rem;"></div>
+
+        <label for="pickup_time">Pickup Time (7:30am – 6pm)</label>
+        <select id="pickup_time"><option value="">Select A Time…</option></select>
+
+        <label for="special_instructions">Special Instructions</label>
+        <textarea id="special_instructions" placeholder="Allergies, gift notes, etc."></textarea>
+      </div>
+
+      <div id="form-error" class="error"></div>
+      <button type="button" class="checkout-btn" id="checkout-btn">Checkout With Stripe 🔒</button>
+      <div class="checkout-note">You'll confirm your info and pay securely on Stripe's checkout page.</div>
+    </div>
+  </div>
+</div>
+
+<div class="sticky-note" id="sticky-note">
+  <button type="button" class="sticky-note-close" id="sticky-note-close" aria-label="Close">✕</button>
+  <div class="sticky-note-body">
+    <div id="wheel-spin-stage">
+      <div class="sticky-note-title">Spin To Win! 🎡</div>
+      <div class="sticky-note-text">Enter your email for a <strong>free prize</strong> — every spin wins something!</div>
+      <div class="wheel-wrap">
+        <div class="wheel-pointer">🔻</div>
+        <div class="wheel-disc" id="wheel-disc">
+          <div class="wheel-disc-hub">🎀</div>
+          <div id="wheel-seg-labels"></div>
+        </div>
+      </div>
+      <ul class="wheel-legend">
+        <li><span class="wl-swatch" style="background:var(--pink-hot)"></span>🍪 Free Cookie</li>
+        <li><span class="wl-swatch" style="background:var(--white); border:1px solid #ddd;"></span>🎟️ Early Loyalty Reward</li>
+        <li><span class="wl-swatch" style="background:var(--gold)"></span>🎁 Free Treat Box — rare!</li>
+      </ul>
+      <div class="wheel-email-row">
+        <input type="email" id="wheel-email-input" placeholder="you@example.com" aria-label="Email address" inputmode="email">
+        <button type="button" id="wheel-spin-btn" class="wheel-spin-btn">Spin The Wheel 🎉</button>
+      </div>
+      <div id="wheel-message" class="error"></div>
+    </div>
+
+    <div class="wheel-result" id="wheel-result">
+      <div class="wheel-result-emoji" id="wheel-result-emoji"></div>
+      <div class="wheel-result-title" id="wheel-result-title"></div>
+      <div class="wheel-result-blurb" id="wheel-result-blurb"></div>
+      <div class="wheel-result-code" id="wheel-result-code"></div>
+      <button type="button" class="wheel-result-close" id="wheel-result-close">Yay, Thanks! 💕</button>
+    </div>
+  </div>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+let stockData = {};
+// Mel now runs a made-to-order model — she bakes fresh for whatever date
+// a customer picks, rather than selling from same-day on-hand stock. So
+// ordering is never blocked by current stock; "stockData" below is only
+// used to show an optional "ready today" badge, not to gate the cart.
+let isPreorderMode = true;
+
+const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
+
+let _supabaseClient = null;
+async function waitForSupabase(timeoutMs) {
+  const start = Date.now();
+  while (!window.supabase) {
+    if (Date.now() - start > timeoutMs) return false;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return true;
+}
+async function getSupabase() {
+  if (!_supabaseClient) {
+    const loaded = await waitForSupabase(6000);
+    if (!loaded) throw new Error('Could not connect to checkout. Please check your connection and try again.');
+    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return _supabaseClient;
+}
+
+(async function checkStockOnLoad() {
+  // Stock is now purely informational (a "ready today" badge) — orders
+  // are never blocked by it, so this just fetches the data to display,
+  // no more "shop is sold out" modal state to check for.
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.from('inventory').select('cookie_name, in_stock, stock_count');
+    if (error || !data || data.length === 0) return;
+    data.forEach(item => { stockData[item.cookie_name] = item; });
+    if (typeof renderProductGrid === 'function') renderProductGrid();
+  } catch (err) {
+    console.error('Stock check failed, showing shop as normal:', err);
+  }
+})();
+
+// Real rating badge — pulls your actual average, never hardcoded.
+async function loadRatingBadge() {
+  const badge = document.getElementById('rating-badge');
+  const textEl = document.getElementById('rating-text');
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.from('reviews').select('rating').eq('approved', true);
+    if (error || !data || data.length === 0) return; // stay hidden until there's real data to show
+    const avg = data.reduce((sum, r) => sum + r.rating, 0) / data.length;
+    textEl.textContent = `${avg.toFixed(1)} · ${data.length} Review${data.length === 1 ? '' : 's'}`;
+    badge.style.display = 'inline-flex';
+  } catch (err) {
+    console.error('Could not load rating badge:', err);
+  }
+}
+loadRatingBadge();
+
+// This hardcoded list is a SAFE FALLBACK only — the real, editable source
+// of truth is the database (managed from the admin dashboard's Menu tab).
+// The page renders this immediately so it's never blank, then upgrades to
+// live data moments later once the fetch below completes. If that fetch
+// ever fails, the page keeps working fine on this fallback.
+let CATEGORIES = [
+  {
+    key: 'cookies', label: 'Cookies', icon: '🍪', unitPrice: 3,
+    boxTiers: [ { count: 4, price: 10 }, { count: 6, price: 15 }, { count: 12, price: 28 } ],
+    maxPerOrder: 36,
+    products: [
+      { key: 'chocolate_chip', img: 'assets/cookie-chocolate-chip.png', name: 'The Classic Chocolate Chip', desc: 'Soft, buttery, loaded with delicious chocolate chips.', allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'mm', img: 'assets/cookie-mm.png', name: "M&M Rainbow Crunch", desc: "Packed with colorful melty M&M's in every bite.", allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'cookie_monster', img: 'assets/cookie-monster.png', name: 'Blue Cookie Monster Mash', desc: 'Thick, chewy, loaded with milk & white chocolate.', allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'red_velvet', img: 'assets/cookie-red-velvet.png', name: 'Oreo Red Velvet Dream', desc: 'White chocolate drizzle with Oreo chunks.', allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'smores', img: 'assets/cookie-smores.png', name: "Toasty Campfire S'mores", desc: 'Gooey marshmallow, chocolate & graham crackers.', allergens: ['dairy','eggs','gluten','soy'] },
+    ],
+  },
+  {
+    key: 'cinnamon_rolls', label: 'Cinnamon Rolls', icon: '🥐', unitPrice: 5,
+    boxTiers: [ { count: 4, price: 17 }, { count: 8, price: 32 }, { count: 12, price: 45 } ],
+    maxPerOrder: 24,
+    // Placeholder flavor lineup — swap in real photos and adjust as Mel's actual recipes come together.
+    products: [
+      { key: 'classic_cinnamon', placeholder: '🥐', name: 'Classic Cinnamon', desc: 'The OG — warm cinnamon swirl with rich cream cheese icing.', allergens: ['dairy','eggs','gluten'] },
+      { key: 'brown_sugar_caramel', placeholder: '🍮', name: 'Brown Sugar Caramel', desc: 'Deep brown sugar swirl finished with a caramel drizzle.', allergens: ['dairy','eggs','gluten'] },
+      { key: 'cookies_and_cream_roll', placeholder: '🍪', name: 'Cookies & Cream', desc: 'Cinnamon swirl loaded with crushed Oreo & vanilla icing.', allergens: ['dairy','eggs','gluten','soy'] },
+      { key: 'smores_roll', placeholder: '🔥', name: "S'mores Roll", desc: 'Chocolate, marshmallow & graham crumble on a cinnamon base.', allergens: ['dairy','eggs','gluten','soy'] },
+    ],
+  },
+  {
+    key: 'theme_boxes', label: 'Theme Boxes', icon: '🎁', unitPrice: 15,
+    maxPerOrder: 6,
+    isThemeBox: true,
+    products: [
+      { key: 'sweetheart_box', placeholder: '💕', name: 'Sweetheart Box', desc: "A little love note in cookie form — 2 Oreo Red Velvet Dream, 2 M&M Rainbow Crunch, 2 The Classic Chocolate Chip, gift-wrapped.", allergens: ['dairy','eggs','gluten','soy'],
+        contents: { 'Oreo Red Velvet Dream': 2, 'M&M Rainbow Crunch': 2, 'The Classic Chocolate Chip': 2 } },
+      { key: 'party_box', placeholder: '🎉', name: 'Party Box', desc: "The crowd-pleaser lineup — 2 Blue Cookie Monster Mash, 2 M&M Rainbow Crunch, 2 Toasty Campfire S'mores, gift-wrapped.", allergens: ['dairy','eggs','gluten','soy'],
+        contents: { 'Blue Cookie Monster Mash': 2, 'M&M Rainbow Crunch': 2, "Toasty Campfire S'mores": 2 } },
+      { key: 'cinnamon_lovers_box', placeholder: '🥐', name: 'Cinnamon Lovers Box', desc: 'A taste of three cinnamon roll flavors — Classic, Brown Sugar Caramel, and Cookies & Cream.', allergens: ['dairy','eggs','gluten','soy'],
+        contents: { 'Classic Cinnamon': 1, 'Brown Sugar Caramel': 1, 'Cookies & Cream': 1 } },
+    ],
+  },
+];
+const CINNAMON_ROLLS_ARE_PLACEHOLDER = true; // flip to false once real photos/recipes are in
+
+let ACTIVE_CATEGORIES = [];
+let COMING_SOON_CATEGORIES = [];
+let ALL_PRODUCTS = [];
+function rebuildDerivedCategoryData() {
+  ACTIVE_CATEGORIES = CATEGORIES.filter(c => !c.comingSoon);
+  COMING_SOON_CATEGORIES = CATEGORIES.filter(c => c.comingSoon);
+  ALL_PRODUCTS = ACTIVE_CATEGORIES.flatMap(cat => cat.products.map(p => ({ ...p, categoryKey: cat.key })));
+}
+rebuildDerivedCategoryData();
+
+// Upgrades the page from the safe hardcoded fallback above to live data
+// from the database (managed via the admin dashboard's Menu tab) — this
+// is what makes flavors, prices, and box deals editable without a code
+// change. Failure here just leaves the fallback in place; it never
+// breaks the page.
+async function loadLiveMenuData() {
+  try {
+    const supabase = await getSupabase();
+    const [invRes, settingsRes, themeRes] = await Promise.all([
+      supabase.from('inventory').select('*').eq('active', true).order('sort_order', { ascending: true }),
+      supabase.from('settings').select('key, value').in('key', ['box_tiers_cookie', 'box_tiers_cinnamon_roll', 'category_visibility']),
+      supabase.from('theme_boxes').select('*').eq('active', true).order('sort_order', { ascending: true }),
+    ]);
+    if (invRes.error || !invRes.data || invRes.data.length === 0) return; // keep fallback
+
+    const settingsMap = {};
+    (settingsRes.data || []).forEach(s => { settingsMap[s.key] = s.value; });
+    let cookieTiers = CATEGORIES.find(c => c.key === 'cookies')?.boxTiers || [];
+    let cinnamonTiers = CATEGORIES.find(c => c.key === 'cinnamon_rolls')?.boxTiers || [];
+    try { if (settingsMap.box_tiers_cookie) cookieTiers = JSON.parse(settingsMap.box_tiers_cookie); } catch (e) {}
+    try { if (settingsMap.box_tiers_cinnamon_roll) cinnamonTiers = JSON.parse(settingsMap.box_tiers_cinnamon_roll); } catch (e) {}
+
+    // Lets Mel hide an entire category from the shop (e.g. "Cinnamon Rolls")
+    // without touching individual flavors — a category with no explicit
+    // `false` here is treated as visible, so this stays backward-compatible
+    // with sites that never set the setting at all.
+    let categoryVisibility = {};
+    try { if (settingsMap.category_visibility) categoryVisibility = JSON.parse(settingsMap.category_visibility); } catch (e) {}
+    const isCategoryVisible = (key) => categoryVisibility[key] !== false;
+
+    const cookieItems = invRes.data.filter(i => i.product_type === 'cookie');
+    const cinnamonItems = invRes.data.filter(i => i.product_type === 'cinnamon_roll');
+    if (cookieItems.length === 0 && cinnamonItems.length === 0) return; // keep fallback
+
+    const toProduct = (item) => ({
+      key: item.id,
+      img: item.img_url || null,
+      placeholder: item.placeholder_emoji || '🍽️',
+      name: item.cookie_name,
+      desc: item.description || '',
+      allergens: Array.isArray(item.allergens) ? item.allergens : [],
+      onHandCount: item.on_hand_count || 0,
+    });
+
+    const newCategories = [];
+    if (cookieItems.length > 0 && isCategoryVisible('cookies')) {
+      newCategories.push({
+        key: 'cookies', label: 'Cookies', icon: '🍪',
+        unitPrice: Number(cookieItems[0].price) || 3,
+        boxTiers: cookieTiers, maxPerOrder: 36,
+        products: cookieItems.map(toProduct),
+      });
+    }
+    if (cinnamonItems.length > 0 && isCategoryVisible('cinnamon_rolls')) {
+      newCategories.push({
+        key: 'cinnamon_rolls', label: 'Cinnamon Rolls', icon: '🥐',
+        unitPrice: Number(cinnamonItems[0].price) || 5,
+        boxTiers: cinnamonTiers, maxPerOrder: 24,
+        products: cinnamonItems.map(toProduct),
+      });
+    }
+    if (themeRes.data && themeRes.data.length > 0 && isCategoryVisible('theme_boxes')) {
+      newCategories.push({
+        key: 'theme_boxes', label: 'Theme Boxes', icon: '🎁',
+        unitPrice: Number(themeRes.data[0].price) || 15,
+        maxPerOrder: 6, isThemeBox: true,
+        products: themeRes.data.map(box => ({
+          key: box.id, img: box.img_url || null, placeholder: box.placeholder_emoji || '🎁', name: box.name,
+          desc: box.description || '', allergens: [], contents: box.contents || {},
+        })),
+      });
+    }
+    // If every category got hidden (or there's simply nothing left to
+    // show), fall back to the hardcoded data rather than leaving the
+    // customer looking at a totally empty shop.
+    if (newCategories.length === 0) return;
+
+    const previousActiveKey = activeCategoryKey;
+
+    // If the customer already started adding things during the brief
+    // window before this fetch resolved, don't swap the underlying
+    // product keys out from under their cart — safer to keep the
+    // fallback data for the rest of this session than risk silently
+    // orphaning what they've already picked.
+    const cartHasItems = Object.values(qty).some(q => q > 0);
+    if (cartHasItems) return;
+
+    CATEGORIES = newCategories;
+    rebuildDerivedCategoryData();
+    // The cart was confirmed empty above, but qty still needs a real 0
+    // (not undefined) for every new live-data key — otherwise a never-
+    // touched item's quantity check (qty[key] <= 0) silently fails since
+    // undefined <= 0 is false in JS, letting it leak into order notes.
+    ALL_PRODUCTS.forEach(p => { if (qty[p.key] === undefined) qty[p.key] = 0; });
+    activeCategoryKey = ACTIVE_CATEGORIES.find(c => c.key === previousActiveKey) ? previousActiveKey : ACTIVE_CATEGORIES[0].key;
+
+    renderCategoryTiles();
+    renderProductGrid();
+    renderBoxBuildRow();
+    updateTotal();
+  } catch (err) {
+    console.error('Could not load live menu data, using fallback:', err);
+  }
+}
+loadLiveMenuData();
+
+
+// Cart persists across pages (home <-> menu) via localStorage
+const qty = {};
+ALL_PRODUCTS.forEach(p => qty[p.key] = 0);
+try {
+  const saved = JSON.parse(localStorage.getItem('mels_cart') || '{}');
+  Object.keys(saved).forEach(k => { if (k in qty) qty[k] = saved[k]; });
+} catch (e) { /* ignore corrupt cart data */ }
+
+function persistCart() {
+  try { localStorage.setItem('mels_cart', JSON.stringify(qty)); } catch (e) { /* storage unavailable, cart just won't persist */ }
+}
+
+let activeCategoryKey = ACTIVE_CATEGORIES[0].key;
+function getCategory(key) { return CATEGORIES.find(c => c.key === key); }
+function categoryCount(categoryKey) {
+  const cat = getCategory(categoryKey);
+  if (!cat) return 0;
+  return cat.products.reduce((sum, p) => sum + (qty[p.key] || 0), 0);
+}
+function totalItemCount() { return Object.values(qty).reduce((a, b) => a + b, 0); }
+function getProduct(key) { return ALL_PRODUCTS.find(p => p.key === key); }
+
+const gridEl = document.getElementById('product-grid');
+const tilesEl = document.getElementById('category-tiles');
+
+function renderCategoryTiles() {
+  const activeTiles = ACTIVE_CATEGORIES.map(cat => `<button type="button" class="cat-pill ${cat.key === activeCategoryKey ? 'active' : ''}" data-category="${cat.key}">${cat.icon} ${cat.label}</button>`).join('');
+  const comingSoonTiles = COMING_SOON_CATEGORIES.map(cat => `<button type="button" class="cat-pill disabled" disabled>${cat.icon} ${cat.label} · Soon</button>`).join('');
+  tilesEl.innerHTML = activeTiles + comingSoonTiles;
+  tilesEl.querySelectorAll('.cat-pill[data-category]').forEach(tile => {
+    tile.addEventListener('click', () => {
+      activeCategoryKey = tile.dataset.category;
+      renderCategoryTiles();
+      renderProductGrid();
+      renderBoxBuildRow();
+      peekBoxMenu(0);
+    });
+  });
+}
+renderCategoryTiles();
+
+// Keep the Box Menu open so customers can always see the box options.
+function peekBoxMenu(delay) {
+  const boxMenuDetails = document.getElementById('box-menu-details');
+  if (!boxMenuDetails) return;
+  boxMenuDetails.open = true;
+}
+peekBoxMenu(700);
+
+// Shared image renderer: real photo if we have one, otherwise a soft
+// placeholder tile (used for products that don't have real photos yet).
+function productImageHtml(p, sizeClass) {
+  if (p.img) return `<img class="${sizeClass}" src="${p.img}" alt="${p.name}" loading="lazy">`;
+  return `<div class="${sizeClass} placeholder-tile"><span>${p.placeholder || '🍽️'}</span></div>`;
+}
+
+// Small allergen icon row under each photo — the emoji itself is a quick
+// visual flag, and the native title attribute shows the full name on
+// hover/tap-and-hold without needing any extra JS or a tooltip library.
+const ALLERGEN_ICONS = { dairy: '🥛', eggs: '🥚', gluten: '🌾', soy: '🫘', nuts: '🥜' };
+const ALLERGEN_NAMES = { dairy: 'Dairy', eggs: 'Eggs', gluten: 'Gluten', soy: 'Soy', nuts: 'Tree Nuts' };
+function allergenIconsHtml(allergens) {
+  if (!Array.isArray(allergens) || allergens.length === 0) return '';
+  return `<div class="menu-tile-allergens">${allergens.map(a =>
+    `<span class="allergen-icon" title="Contains ${ALLERGEN_NAMES[a] || a}">${ALLERGEN_ICONS[a] || '⚠️'}</span>`
+  ).join('')}</div>`;
+}
+
+function renderProductGrid() {
+  const category = getCategory(activeCategoryKey);
+  gridEl.innerHTML = category.products.map(p => {
+    // Ready-today badge is a nice bonus for anyone who'd love it same-day
+    // — it never blocks ordering, since everything else is still made
+    // fresh to order regardless of this count.
+    const onHandCount = p.onHandCount || 0;
+    const stockTag = onHandCount > 0 ? `<span class="menu-tile-stock-tag ready">🎉 Ready Today</span>` : '';
+    const outOfStock = false;
+    const currentQty = qty[p.key];
+    return `
+      <div class="menu-tile ${outOfStock ? 'sold-out' : ''}" data-key="${p.key}" ${outOfStock ? '' : 'role="button" tabindex="0"'}>
+        <span class="menu-tile-qty ${currentQty > 0 ? 'show' : ''}" id="tileqty-${p.key}">${currentQty}</span>
+        ${stockTag}
+        <button type="button" class="zoom-btn" data-zoom-key="${p.key}" aria-label="View details">🔍</button>
+        ${productImageHtml(p, 'menu-tile-img')}
+        ${allergenIconsHtml(p.allergens)}
+        <div class="menu-tile-info">
+          <div class="menu-tile-name">${p.name}</div>
+          <div class="menu-tile-price">$${category.unitPrice.toFixed(2)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  gridEl.querySelectorAll('.menu-tile:not(.sold-out)').forEach(tile => {
+    tile.addEventListener('click', (e) => {
+      if (e.target.closest('.zoom-btn')) return;
+      updateQty(tile.dataset.key, qty[tile.dataset.key] + 1);
+    });
+  });
+  gridEl.querySelectorAll('.zoom-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProductLightbox(btn.dataset.zoomKey);
+    });
+  });
+}
+renderProductGrid();
+
+// One-time cute intro on first visit this session — tap-to-skip, never
+// blocks the real page from being usable underneath, and never repeats
+// mid-session (e.g. navigating back here from another page).
+(function initSplash() {
+  const splash = document.getElementById('splash-screen');
+  if (!splash) return;
+  if (sessionStorage.getItem('mels_splash_shown')) {
+    splash.style.display = 'none';
+    return;
+  }
+  sessionStorage.setItem('mels_splash_shown', '1');
+  const dismiss = () => splash.classList.add('hide');
+  splash.addEventListener('click', dismiss);
+  setTimeout(dismiss, 1900);
+  setTimeout(() => { splash.style.display = 'none'; }, 2500);
+})();
+
+const ALLERGEN_LABELS = { dairy: '🥛 Dairy', eggs: '🥚 Eggs', gluten: '🌾 Gluten', soy: '🫘 Soy', nuts: '🥜 Tree Nuts' };
+
+function openProductLightbox(key) {
+  const p = getProduct(key);
+  const category = getCategory(p.categoryKey);
+  const stock = stockData[p.name];
+  const outOfStock = !isPreorderMode && stock && (stock.in_stock === false || stock.stock_count <= 0);
+
+  document.getElementById('lightbox-img-wrap').innerHTML = productImageHtml(p, 'lightbox-img');
+  document.getElementById('lightbox-name').textContent = p.name;
+  document.getElementById('lightbox-price').textContent = `$${category.unitPrice.toFixed(2)}`;
+  document.getElementById('lightbox-desc').textContent = p.desc;
+  document.getElementById('lightbox-allergens').innerHTML = (p.allergens || [])
+    .map(a => `<span class="allergen-chip">${ALLERGEN_LABELS[a] || a}</span>`).join('');
+
+  const addBtn = document.getElementById('lightbox-add-btn');
+  addBtn.disabled = outOfStock;
+  addBtn.textContent = outOfStock ? 'Sold Out' : 'Add To Cart 🎀';
+  addBtn.onclick = () => {
+    updateQty(key, qty[key] + 1);
+    closeLightbox();
+  };
+
+  document.getElementById('lightbox-overlay').classList.add('open');
+  document.getElementById('lightbox-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox-overlay').classList.remove('open');
+  document.getElementById('lightbox-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('lightbox-close-btn').addEventListener('click', closeLightbox);
+document.getElementById('lightbox-overlay').addEventListener('click', closeLightbox);
+
+function showCateringPrompt() { document.getElementById('catering-prompt').classList.add('show'); }
+
+function updateQty(key, newVal) {
+  const product = getProduct(key);
+  const category = getCategory(product.categoryKey);
+  const clamped = Math.max(0, newVal);
+  const delta = clamped - qty[key];
+
+  if (delta > 0 && !isPreorderMode) {
+    const stock = stockData[product.name];
+    if (stock && clamped > stock.stock_count) { renderProductGrid(); return; }
+  }
+  if (delta > 0 && category.maxPerOrder) {
+    if (categoryCount(category.key) + delta > category.maxPerOrder) { showCateringPrompt(); return; }
+  }
+
+  qty[key] = clamped;
+  persistCart();
+  renderProductGrid();
+  updateTotal();
+  renderCartItems();
+  if (delta > 0) pulseCartBadge();
+}
+
+function pulseCartBadge() {
+  const badge = document.getElementById('cart-badge');
+  badge.classList.remove('pulse');
+  void badge.offsetWidth;
+  badge.classList.add('pulse');
+}
+
+// --- Build A Box: a guided flavor picker for a specific box size, scoped
+// to whichever category is currently active. Adding N items here just
+// adds N to the regular cart — the same automatic box-discount math
+// still applies either way, this is just a faster, focused way to fill a box.
+// (This used to be paired with a second, purely informational row of cards
+// repeating the same count/price — removed so the section doesn't take up
+// double the space showing the same 3 numbers twice.)
+function renderBoxBuildRow() {
+  const row = document.getElementById('box-build-row');
+  const category = getCategory(activeCategoryKey);
+  const titleEl = document.getElementById('box-menu-title');
+  const sectionEl = document.getElementById('box-menu-details');
+  const descEl = document.querySelector('.box-menu-desc');
+
+  if (!category.boxTiers) {
+    // Theme Boxes (and any other non-tiered category) don't have a
+    // "pick a size" flow — hide the whole section rather than show
+    // confusing box-building UI with nothing in it.
+    if (sectionEl) sectionEl.style.display = 'none';
+    row.innerHTML = '';
+    return;
+  }
+  if (sectionEl) sectionEl.style.display = '';
+  if (titleEl) titleEl.textContent = `${category.icon} ${category.label} Box Menu`;
+  if (descEl) descEl.textContent = 'Pick a size, choose your flavors, done — box pricing applies automatically either way.';
+
+  row.innerHTML = `<div class="box-build-row-buttons">${category.boxTiers.map((tier, i) => `
+    <button type="button" class="box-build-btn" data-category="${category.key}" data-count="${tier.count}">
+      ${i === 1 ? '<span class="bb-popular">Most Loved</span>' : ''}
+      <div class="bb-title">Build A ${tier.count}-Count Box</div>
+      <div class="bb-sub"><span class="bb-price">$${tier.price}</span> <span class="bb-pick">· pick your flavors</span></div>
+    </button>
+  `).join('')}</div>`;
+  row.querySelectorAll('.box-build-btn').forEach(btn => {
+    btn.addEventListener('click', () => openBoxBuilder(btn.dataset.category, parseInt(btn.dataset.count, 10)));
+  });
+}
+renderBoxBuildRow();
+
+// --- Surprise Me: picks a random box (size + flavor mix) from whichever
+// categories currently have box tiers, and adds it straight to the cart.
+// Same underlying cart logic as the box builder — this is just a fun,
+// zero-effort shortcut for anyone who can't decide.
+function showSurpriseToast(msg) {
+  const toast = document.getElementById('surprise-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showSurpriseToast._t);
+  showSurpriseToast._t = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+// Confetti bursts from wherever the Surprise Me trigger was clicked, since
+// the trigger now lives inside each box card instead of one fixed widget.
+function launchSurpriseConfetti(originEl) {
+  const rect = originEl ? originEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0 };
+  const wrap = document.createElement('div');
+  wrap.className = 'surprise-confetti-fixed';
+  wrap.style.left = `${rect.left + rect.width / 2}px`;
+  wrap.style.top = `${rect.top}px`;
+  const glyphs = ['🎉', '✨', '💕', '⭐', '🍪'];
+  for (let i = 0; i < 12; i++) {
+    const span = document.createElement('span');
+    span.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    span.style.left = `${(Math.random() * 80) - 40}px`;
+    span.style.animationDelay = `${Math.random() * 0.3}s`;
+    span.style.fontSize = `${0.85 + Math.random() * 0.6}rem`;
+    wrap.appendChild(span);
+  }
+  document.body.appendChild(wrap);
+  setTimeout(() => { wrap.remove(); }, 1800);
+}
+
+let boxBuilderCategoryKey = null;
+let boxBuilderTarget = 0;
+let boxBuilderSelections = {};
+
+function openBoxBuilder(categoryKey, target) {
+  boxBuilderCategoryKey = categoryKey;
+  boxBuilderTarget = target;
+  const category = getCategory(categoryKey);
+  boxBuilderSelections = {};
+  category.products.forEach(p => { boxBuilderSelections[p.key] = 0; });
+
+  document.getElementById('box-builder-title').textContent = `Build Your ${target}-Count ${category.label} Box`;
+  document.getElementById('box-builder-target').textContent = target;
+  renderBoxBuilderList();
+
+  document.getElementById('box-builder-overlay').classList.add('open');
+  document.getElementById('box-builder-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBoxBuilder() {
+  document.getElementById('box-builder-overlay').classList.remove('open');
+  document.getElementById('box-builder-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('box-builder-close-btn').addEventListener('click', closeBoxBuilder);
+document.getElementById('box-builder-overlay').addEventListener('click', closeBoxBuilder);
+
+function boxBuilderSelectedCount() {
+  return Object.values(boxBuilderSelections).reduce((a, b) => a + b, 0);
+}
+
+function renderBoxBuilderList() {
+  const category = getCategory(boxBuilderCategoryKey);
+  const list = document.getElementById('box-builder-list');
+  const selected = boxBuilderSelectedCount();
+
+  list.innerHTML = category.products.map(p => {
+    const stock = stockData[p.name];
+    const outOfStock = !isPreorderMode && stock && (stock.in_stock === false || stock.stock_count <= 0);
+    const already = qty[p.key] || 0;
+    const remainingStock = (stock && !isPreorderMode) ? Math.max(0, stock.stock_count - already) : Infinity;
+    const count = boxBuilderSelections[p.key];
+    const atBoxLimit = selected >= boxBuilderTarget;
+    const atStockLimit = count >= remainingStock;
+    return `
+      <div class="box-builder-row">
+        ${productImageHtml(p, "box-builder-img")}
+        <div class="box-builder-row-info">
+          <div class="box-builder-row-name">${p.name}</div>
+          ${outOfStock ? '<div style="font-size:0.72rem; color:#c0025e; font-weight:700;">Sold Out</div>' : ''}
+        </div>
+        <div class="qty-stepper">
+          <button type="button" data-action="dec" data-key="${p.key}" aria-label="Decrease ${p.name} quantity" ${count === 0 ? 'disabled' : ''}>−</button>
+          <span>${count}</span>
+          <button type="button" data-action="inc" data-key="${p.key}" aria-label="Increase ${p.name} quantity" ${(outOfStock || atBoxLimit || atStockLimit) ? 'disabled' : ''}>+</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key;
+      if (btn.dataset.action === 'inc') boxBuilderSelections[key]++;
+      if (btn.dataset.action === 'dec') boxBuilderSelections[key]--;
+      renderBoxBuilderList();
+      updateBoxBuilderProgress();
+    });
+  });
+
+  updateBoxBuilderProgress();
+}
+
+function updateBoxBuilderProgress() {
+  const selected = boxBuilderSelectedCount();
+  document.getElementById('box-builder-count').textContent = selected;
+  document.getElementById('box-builder-progress-fill').style.width = `${Math.min(100, (selected / boxBuilderTarget) * 100)}%`;
+  const addBtn = document.getElementById('box-builder-add-btn');
+  addBtn.disabled = selected !== boxBuilderTarget;
+  addBtn.textContent = selected === boxBuilderTarget ? 'Add Box To Cart 🎀' : `Add Box To Cart (${selected}/${boxBuilderTarget})`;
+}
+
+document.getElementById('box-builder-add-btn').addEventListener('click', () => {
+  Object.entries(boxBuilderSelections).forEach(([key, count]) => {
+    if (count > 0) {
+      qty[key] = (qty[key] || 0) + count;
+    }
+  });
+  persistCart();
+  renderProductGrid();
+  updateTotal();
+  renderCartItems();
+  pulseCartBadge();
+  closeBoxBuilder();
+  openCart();
+});
+
+function showSurpriseToast(msg) {
+  const toast = document.getElementById('surprise-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showSurpriseToast._t);
+  showSurpriseToast._t = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+function launchSurpriseConfetti(originEl) {
+  const rect = originEl ? originEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0 };
+  const wrap = document.createElement('div');
+  wrap.className = 'surprise-confetti-fixed';
+  wrap.style.left = `${rect.left + rect.width / 2}px`;
+  wrap.style.top = `${rect.top}px`;
+  const glyphs = ['🎉', '✨', '💕', '⭐', '🍪'];
+  for (let i = 0; i < 12; i++) {
+    const span = document.createElement('span');
+    span.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    span.style.left = `${(Math.random() * 80) - 40}px`;
+    span.style.animationDelay = `${Math.random() * 0.3}s`;
+    span.style.fontSize = `${0.85 + Math.random() * 0.6}rem`;
+    wrap.appendChild(span);
+  }
+  document.body.appendChild(wrap);
+  setTimeout(() => { wrap.remove(); }, 1800);
+}
+
+// Surprise Me now lives inside the box builder itself (after the customer
+// has already picked the size/price they want) — it randomly fills in the
+// flavor picks for that box, respecting the same stock limits the manual
+// +/- steppers use, so a customer can hit it once and check out, or use it
+// as a starting point and still adjust individual flavors by hand.
+function surpriseFillBoxBuilder() {
+  const category = getCategory(boxBuilderCategoryKey);
+  if (!category) return;
+  const target = boxBuilderTarget;
+  const btn = document.getElementById('box-builder-surprise-btn');
+
+  category.products.forEach(p => { boxBuilderSelections[p.key] = 0; });
+
+  // Never let one flavor fill more than ~half the box, and never pick more
+  // of an item than is actually in stock.
+  const maxPerFlavor = Math.max(1, Math.ceil(target * 0.5));
+  const caps = category.products.map(p => {
+    const stock = stockData[p.name];
+    const outOfStock = !isPreorderMode && stock && (stock.in_stock === false || stock.stock_count <= 0);
+    const already = qty[p.key] || 0;
+    const remainingStock = (stock && !isPreorderMode) ? Math.max(0, stock.stock_count - already) : Infinity;
+    return { key: p.key, cap: outOfStock ? 0 : Math.min(maxPerFlavor, remainingStock) };
+  });
+
+  let filled = 0;
+  let guard = 0;
+  while (filled < target && guard < target * 25) {
+    guard++;
+    const options = caps.filter(c => boxBuilderSelections[c.key] < c.cap);
+    if (!options.length) break;
+    const pick = options[Math.floor(Math.random() * options.length)];
+    boxBuilderSelections[pick.key]++;
+    filled++;
+  }
+
+  renderBoxBuilderList();
+  updateBoxBuilderProgress();
+  launchSurpriseConfetti(btn);
+
+  if (filled < target) {
+    showSurpriseToast("Picked what we could — limited stock on some flavors right now. Feel free to finish it off yourself!");
+  } else {
+    showSurpriseToast('🎲 Flavors picked for you — tap Add Box To Cart, or tweak them first!');
+  }
+}
+document.getElementById('box-builder-surprise-btn')?.addEventListener('click', surpriseFillBoxBuilder);
+
+// --- Cart drawer ---
+const cartOverlay = document.getElementById('cart-overlay');
+const cartDrawer = document.getElementById('cart-drawer');
+function openCart() { cartOverlay.classList.add('open'); cartDrawer.classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeCart() { cartOverlay.classList.remove('open'); cartDrawer.classList.remove('open'); document.body.style.overflow = ''; }
+document.getElementById('cart-open-btn').addEventListener('click', openCart);
+
+// Mobile nav dropdown — gives full site access from the shop page without
+// needing to scroll to a footer (there isn't one here) or go back Home first.
+const navMenuBtn = document.getElementById('nav-menu-btn');
+const navDropdown = document.getElementById('nav-dropdown');
+const navDropdownOverlay = document.getElementById('nav-dropdown-overlay');
+const navDropdownClose = document.getElementById('nav-dropdown-close');
+if (navMenuBtn) {
+  function closeNavDropdown() {
+    navDropdown.classList.remove('open');
+    navDropdownOverlay.classList.remove('open');
+  }
+  navMenuBtn.addEventListener('click', () => {
+    navDropdown.classList.toggle('open');
+    navDropdownOverlay.classList.toggle('open');
+  });
+  navDropdownOverlay.addEventListener('click', closeNavDropdown);
+  if (navDropdownClose) navDropdownClose.addEventListener('click', closeNavDropdown);
+}
+document.getElementById('cart-close-btn').addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', closeCart);
+
+function renderCartItems() {
+  const itemsInCart = ALL_PRODUCTS.filter(p => qty[p.key] > 0);
+  const list = document.getElementById('cart-items-list');
+  const emptyState = document.getElementById('cart-empty-state');
+  const checkoutFlow = document.getElementById('cart-checkout-flow');
+  const badge = document.getElementById('cart-badge');
+  const drawerCount = document.getElementById('cart-drawer-count');
+  const count = totalItemCount();
+
+  badge.textContent = count;
+  badge.classList.toggle('hidden', count === 0);
+  drawerCount.textContent = count > 0 ? `(${count})` : '';
+
+  if (itemsInCart.length === 0) {
+    emptyState.style.display = 'block'; list.innerHTML = ''; checkoutFlow.classList.add('hidden'); return;
+  }
+  emptyState.style.display = 'none';
+  checkoutFlow.classList.remove('hidden');
+
+  list.innerHTML = itemsInCart.map(p => {
+    const cat = getCategory(p.categoryKey);
+    return `
+      <div class="cart-item">
+        ${productImageHtml(p, "cart-item-img")}
+        <div class="cart-item-info">
+          <div class="cart-item-name">${p.name}</div>
+          <div class="cart-item-price">$${cat.unitPrice.toFixed(2)} each</div>
+        </div>
+        <div class="qty-stepper">
+          <button type="button" data-action="dec" data-key="${p.key}" aria-label="Decrease ${p.name} quantity">−</button>
+          <span>${qty[p.key]}</span>
+          <button type="button" data-action="inc" data-key="${p.key}" aria-label="Increase ${p.name} quantity">+</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key;
+      if (btn.dataset.action === 'inc') updateQty(key, qty[key] + 1);
+      if (btn.dataset.action === 'dec') updateQty(key, qty[key] - 1);
+    });
+  });
+}
+renderCartItems();
+
+function computePurchasePlan(category, totalCount) {
+  if (totalCount === 0) return { boxes: {}, singles: 0, price: 0 };
+  const memo = new Array(totalCount + 1).fill(Infinity);
+  const choice = new Array(totalCount + 1).fill(null);
+  memo[0] = 0;
+  for (let i = 1; i <= totalCount; i++) {
+    memo[i] = memo[i-1] + category.unitPrice;
+    choice[i] = 'single';
+    (category.boxTiers || []).forEach(tier => {
+      if (i >= tier.count && memo[i - tier.count] + tier.price < memo[i]) { memo[i] = memo[i - tier.count] + tier.price; choice[i] = tier.count; }
+    });
+  }
+  let i = totalCount;
+  const plan = { boxes: {}, singles: 0 };
+  while (i > 0) {
+    const c = choice[i];
+    if (c === 'single') { plan.singles++; i -= 1; } else { plan.boxes[c] = (plan.boxes[c] || 0) + 1; i -= c; }
+  }
+  plan.price = memo[totalCount];
+  return plan;
+}
+
+let fulfillment = 'pickup';
+document.querySelectorAll('[data-fulfillment]').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('[data-fulfillment]').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    fulfillment = card.dataset.fulfillment;
+    document.getElementById('delivery_fields').classList.toggle('hidden', fulfillment !== 'delivery');
+    if (fulfillment === 'delivery') {
+      // Show right away, before they've even typed an address, so the
+      // distance-based pricing isn't a surprise once they do — this gets
+      // replaced with the actual calculated fee once updateDeliveryFee
+      // resolves for whatever they type.
+      const noteEl = document.getElementById('delivery-fee-note');
+      if (!document.getElementById('delivery_address').value.trim()) {
+        noteEl.textContent = '📍 Delivery fee is based on distance — enter your address for an exact quote.';
+        noteEl.style.display = 'block';
+      }
+      updateDeliveryFee();
+    }
+    updatePaymentMethodUI();
+    updateTotal();
+    persistCheckoutFields();
+  });
+});
+document.getElementById('pickup_location').addEventListener('change', (e) => {
+  document.getElementById('pickup_location_other').classList.toggle('hidden', e.target.value !== 'Other (Enter Below)');
+});
+
+// Payment method — Card (Stripe) or Cash. Cash works for both Pickup and
+// Delivery, but what it actually means (and the exact backend value it's
+// saved as — cash_on_pickup vs cash_on_delivery) depends on which
+// fulfillment is currently selected, so the card's label/note and the
+// value used at submit time both track `fulfillment` live.
+let paymentMethod = 'card';
+function cashPaymentMethodValue() {
+  return fulfillment === 'delivery' ? 'cash_on_delivery' : 'cash_on_pickup';
+}
+function setPaymentMethod(method) {
+  paymentMethod = method;
+  document.querySelectorAll('[data-payment]').forEach(c => c.classList.toggle('selected', c.dataset.payment === method));
+  document.getElementById('cash-pickup-note').classList.toggle('hidden', method !== 'cash');
+  updatePaymentMethodLabels();
+}
+function updatePaymentMethodLabels() {
+  const isDelivery = fulfillment === 'delivery';
+  const cashCard = document.getElementById('cash-payment-card');
+  cashCard.textContent = isDelivery ? '💵 Cash On Delivery' : '💵 Cash On Pickup';
+  const note = document.getElementById('cash-pickup-note');
+  note.textContent = isDelivery
+    ? `You'll pay Meliese in cash when your order is delivered (total includes the $${currentDeliveryFee.toFixed(2)} delivery fee) — your order still gets submitted and confirmed by email.`
+    : `You'll pay Meliese in cash when you pick up — your order still gets submitted and confirmed by email.`;
+  const btn = document.getElementById('checkout-btn');
+  if (btn) btn.textContent = paymentMethod === 'cash'
+    ? (isDelivery ? 'Place Order — Pay Cash On Delivery 💵' : 'Place Order — Pay Cash On Pickup 💵')
+    : 'Checkout With Stripe 🔒';
+}
+function updatePaymentMethodUI() {
+  updatePaymentMethodLabels();
+}
+document.querySelectorAll('[data-payment]').forEach(card => {
+  card.addEventListener('click', () => {
+    setPaymentMethod(card.dataset.payment);
+    persistCheckoutFields();
+  });
+});
+updatePaymentMethodUI();
+
+let tipAmount = 0;
+let appliedDiscount = null;
+document.querySelectorAll('.tip-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    const customInput = document.getElementById('tip-custom-input');
+    if (btn.dataset.tip === 'custom') {
+      customInput.classList.remove('hidden'); customInput.focus(); tipAmount = parseFloat(customInput.value) || 0;
+    } else {
+      customInput.classList.add('hidden'); tipAmount = parseFloat(btn.dataset.tip);
+    }
+    updateTotal();
+  });
+});
+document.getElementById('tip-custom-input').addEventListener('input', (e) => { tipAmount = parseFloat(e.target.value) || 0; updateTotal(); });
+
+// Save everything typed into the checkout form (not just the cart items)
+// so a reload, an accidental swipe-back, or backing out of Stripe's page
+// doesn't wipe out a customer's name/contact/fulfillment info and force
+// them to start over. Cleared out automatically once an order actually
+// goes through.
+const CHECKOUT_FIELDS_KEY = 'mels_checkout_fields';
+const CHECKOUT_FIELD_IDS = [
+  'customer_full_name', 'customer_email', 'contact_phone',
+  'pickup_location', 'pickup_location_other', 'delivery_address',
+  'preferred_date', 'pickup_time', 'special_instructions',
+];
+function persistCheckoutFields() {
+  try {
+    const data = { fulfillment, paymentMethod };
+    CHECKOUT_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) data[id] = el.value;
+    });
+    localStorage.setItem(CHECKOUT_FIELDS_KEY, JSON.stringify(data));
+  } catch (e) { /* storage unavailable, form just won't persist */ }
+}
+function restoreCheckoutFields() {
+  try {
+    const raw = localStorage.getItem(CHECKOUT_FIELDS_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    CHECKOUT_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && data[id] !== undefined) el.value = data[id];
+    });
+    if (data.fulfillment === 'delivery') {
+      const deliveryCard = document.querySelector('[data-fulfillment="delivery"]');
+      if (deliveryCard) deliveryCard.click();
+    }
+    if (data.paymentMethod === 'cash') setPaymentMethod('cash');
+    // Re-run the field-dependent visibility toggles now that values are
+    // restored, same as if the customer had just interacted with them.
+    document.getElementById('pickup_location_other').classList.toggle(
+      'hidden', document.getElementById('pickup_location').value !== 'Other (Enter Below)'
+    );
+  } catch (e) { /* ignore corrupt saved data */ }
+}
+CHECKOUT_FIELD_IDS.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', persistCheckoutFields);
+});
+
+function clearSavedCheckoutFields() {
+  try { localStorage.removeItem(CHECKOUT_FIELDS_KEY); } catch (e) {}
+}
+
+// "Remember my info" — separate from the draft-in-progress autosave above,
+// which gets wiped the moment checkout succeeds. This one is opt-in (via
+// the checkbox) and sticks around across orders, so a returning customer's
+// name/email/phone are already filled in next time, instead of typing them
+// from scratch every order.
+const REMEMBERED_CONTACT_KEY = 'mels_remembered_contact';
+const REMEMBERED_CONTACT_FIELD_IDS = ['customer_full_name', 'customer_email', 'contact_phone', 'preferred_contact', 'social_platform', 'social_handle'];
+function saveRememberedContact() {
+  try {
+    const data = {};
+    REMEMBERED_CONTACT_FIELD_IDS.forEach(id => { data[id] = document.getElementById(id).value; });
+    localStorage.setItem(REMEMBERED_CONTACT_KEY, JSON.stringify(data));
+  } catch (e) { /* storage unavailable */ }
+}
+function clearRememberedContact() {
+  try { localStorage.removeItem(REMEMBERED_CONTACT_KEY); } catch (e) {}
+}
+function prefillRememberedContact() {
+  try {
+    const raw = localStorage.getItem(REMEMBERED_CONTACT_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    REMEMBERED_CONTACT_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && data[id]) el.value = data[id];
+    });
+  } catch (e) { /* ignore corrupt saved data */ }
+}
+
+// Someone without a phone (or who just prefers not to give one out) can
+// pick "Social Media" instead and leave us a handle to reach them on —
+// swaps which fields are shown/required rather than forcing a phone
+// number on everyone.
+function updateContactMethodUI() {
+  const method = document.getElementById('preferred_contact').value;
+  const isSocial = method === 'Social Media';
+  document.getElementById('contact_social_wrap').classList.toggle('hidden', !isSocial);
+  document.getElementById('contact_phone_label').textContent = isSocial ? 'Phone Number (optional)' : 'Phone Number *';
+}
+document.getElementById('preferred_contact').addEventListener('change', updateContactMethodUI);
+
+function calcSubtotal() {
+  let subtotal = 0;
+  ACTIVE_CATEGORIES.forEach(cat => { subtotal += computePurchasePlan(cat, categoryCount(cat.key)).price; });
+  if (fulfillment === 'delivery') subtotal += currentDeliveryFee;
+  return subtotal;
+}
+
+// Distance-based delivery pricing — a customer a few minutes away
+// shouldn't pay the same as one 25 miles out. Calculated server-side
+// (the function keeps Mel's home address private) with debouncing so it
+// doesn't fire on every keystroke, and a safe $3 fallback if the lookup
+// fails or hasn't run yet, so checkout is never blocked by this.
+let currentDeliveryFee = 3;
+let deliveryFeeDebounceTimer = null;
+async function updateDeliveryFee() {
+  const address = document.getElementById('delivery_address').value.trim();
+  if (!address || fulfillment !== 'delivery') return;
+  const noteEl = document.getElementById('delivery-fee-note');
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('calculate-delivery-fee', { body: { address } });
+    if (error || !data?.success) return; // keep whatever fee was already showing
+    currentDeliveryFee = data.fee;
+    if (noteEl) {
+      noteEl.textContent = data.distanceKnown ? `📍 Delivery fee: $${data.fee} for this address` : `📍 Delivery fee: $${data.fee} (estimated)`;
+      noteEl.style.display = 'block';
+    }
+    updateTotal();
+  } catch (err) {
+    console.error('Delivery fee lookup failed, using fallback:', err);
+  }
+}
+document.getElementById('delivery_address').addEventListener('input', () => {
+  clearTimeout(deliveryFeeDebounceTimer);
+  deliveryFeeDebounceTimer = setTimeout(updateDeliveryFee, 900);
+});
+
+// Address autocomplete — as you type, real matching addresses (from
+// OpenStreetMap's free Nominatim search, the same service that already
+// prices delivery distance) show up in a dropdown to click, so it's rare
+// to accidentally submit a typo'd or made-up address. Purely a
+// convenience — typing your own address and ignoring the list still
+// works exactly like before.
+function addrEscapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+function attachAddressAutocomplete(input) {
+  const wrapper = input.parentElement;
+  if (getComputedStyle(wrapper).position === 'static') wrapper.style.position = 'relative';
+  const list = document.createElement('div');
+  list.className = 'addr-suggest-list';
+  list.style.cssText = 'display:none; position:absolute; top:100%; left:0; right:0; z-index:50; background:#fff; border:1.5px solid var(--border,#f7c3d6); border-radius:12px; margin-top:4px; max-height:220px; overflow-y:auto; box-shadow:0 6px 20px rgba(0,0,0,0.12);';
+  wrapper.appendChild(list);
+
+  let debounceTimer = null;
+  function hideList() { list.style.display = 'none'; list.innerHTML = ''; }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const q = input.value.trim();
+    if (q.length < 5) { hideList(); return; }
+    debounceTimer = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({ format: 'json', addressdetails: '1', limit: '5', countrycodes: 'us', q });
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data || data.length === 0) { hideList(); return; }
+        list.innerHTML = data.map((r, i) => `<div class="addr-suggest-item" data-idx="${i}" style="padding:10px 12px; cursor:pointer; font-size:0.9rem; border-bottom:1px solid #f4e3ea;">${addrEscapeHtml(r.display_name)}</div>`).join('');
+        list.style.display = 'block';
+        list.querySelectorAll('.addr-suggest-item').forEach(el => {
+          el.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // fires before the input's blur, so the click still registers
+            const chosen = data[parseInt(el.dataset.idx, 10)];
+            input.value = chosen.display_name;
+            hideList();
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          });
+          el.addEventListener('mouseenter', () => { el.style.background = '#fff5f8'; });
+          el.addEventListener('mouseleave', () => { el.style.background = ''; });
+        });
+      } catch (e) { /* suggestions are a nice-to-have, never block typing */ }
+    }, 400);
+  });
+  input.addEventListener('blur', () => { setTimeout(hideList, 150); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideList(); });
+}
+attachAddressAutocomplete(document.getElementById('delivery_address'));
+
+// Fill in remembered name/email/phone first (baseline for a returning
+// customer), then layer the in-progress draft on top if there is one —
+// runs after currentDeliveryFee/updateDeliveryFee exist above, since
+// restoring a saved "delivery" selection can trigger that same code path.
+prefillRememberedContact();
+updateContactMethodUI();
+restoreCheckoutFields();
+
+// Welcome-offer sticky note — only for genuinely first-time visitors.
+// Stays hidden for anyone who's already claimed the offer, already
+// closed the note before (permanently, not just this tab), or who
+// already has remembered contact info saved (meaning they've ordered
+// here before and aren't "new" regardless of the other two flags).
+try {
+  const alreadyClaimed = localStorage.getItem('mels_welcome_claimed');
+  const alreadyDismissed = localStorage.getItem('mels_welcome_dismissed');
+  const isReturningCustomer = !!localStorage.getItem(REMEMBERED_CONTACT_KEY);
+  if (!alreadyClaimed && !alreadyDismissed && !isReturningCustomer) {
+    setTimeout(() => {
+      document.getElementById('sticky-note')?.classList.add('show');
+    }, 2200);
+  }
+} catch (e) {
+  // Storage unavailable — err on the side of not showing an unpromptable
+  // popup rather than risk it showing repeatedly with no way to persist a dismiss.
+}
+
+document.getElementById('sticky-note-close')?.addEventListener('click', () => {
+  document.getElementById('sticky-note').classList.remove('show');
+  try { localStorage.setItem('mels_welcome_dismissed', '1'); } catch (e) {}
+});
+
+// --- Spin The Wheel ---
+// 10 equal 36°-wide segments around the dial, matching the prize odds the
+// server actually uses (5 cookie / 4 bonus-reward / 1 free-box — see the
+// spin-wheel edge function). The server always decides the real prize;
+// this array is only used to pick which matching segment to visually land
+// the pointer on, for variety.
+const WHEEL_SEGMENTS = [
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'free_box', emoji: '🎁' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+  { type: 'free_cookie', emoji: '🍪' },
+  { type: 'bonus_reward', emoji: '🎟️' },
+];
+const WHEEL_PRIZE_META = {
+  free_cookie: { emoji: '🍪', title: 'A Free Cookie!' },
+  bonus_reward: { emoji: '🎟️', title: 'An Early Loyalty Reward!' },
+  free_box: { emoji: '🎁', title: 'The Grand Prize — A Free Treat Box!' },
+  legacy_2_off: { emoji: '💸', title: '$2 Off!' },
+};
+
+function renderWheelSegmentLabels() {
+  const wrap = document.getElementById('wheel-seg-labels');
+  if (!wrap || wrap.children.length) return;
+  const segAngle = 360 / WHEEL_SEGMENTS.length;
+  WHEEL_SEGMENTS.forEach((seg, i) => {
+    const angle = segAngle * i + segAngle / 2;
+    const label = document.createElement('div');
+    label.className = 'wheel-seg-label';
+    label.style.transform = `rotate(${angle}deg) translate(37px)`;
+    label.innerHTML = `<span style="transform-origin:0 0; display:inline-block;">${seg.emoji}</span>`;
+    wrap.appendChild(label);
+  });
+}
+renderWheelSegmentLabels();
+
+document.getElementById('wheel-result-close')?.addEventListener('click', () => {
+  document.getElementById('sticky-note')?.classList.remove('show');
+});
+
+let wheelRotation = 0;
+async function submitWheelSpin() {
+  const input = document.getElementById('wheel-email-input');
+  const msg = document.getElementById('wheel-message');
+  const btn = document.getElementById('wheel-spin-btn');
+  const email = input.value.trim();
+
+  msg.style.display = 'none';
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailPattern.test(email)) {
+    msg.textContent = 'Please enter a valid email.';
+    msg.style.color = '#c0025e';
+    msg.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  input.disabled = true;
+  btn.textContent = 'Spinning...';
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('spin-wheel', { body: { email } });
+    if (error) throw error;
+    if (!data.success) throw new Error(data.message || 'Could not spin right now.');
+
+    // Land the pointer on a random segment matching the prize we actually won.
+    const matches = WHEEL_SEGMENTS.map((s, i) => ({ ...s, i })).filter(s => s.type === data.prizeType);
+    const landOn = (matches.length ? matches : WHEEL_SEGMENTS.map((s, i) => ({ ...s, i })))[Math.floor(Math.random() * (matches.length || WHEEL_SEGMENTS.length))];
+    const segAngle = 360 / WHEEL_SEGMENTS.length;
+    const segCenter = segAngle * landOn.i + segAngle / 2;
+    wheelRotation += 5 * 360 + ((360 - segCenter) % 360);
+    document.getElementById('wheel-disc').style.transform = `rotate(${wheelRotation}deg)`;
+
+    try { localStorage.setItem('mels_welcome_claimed', '1'); } catch (e) {}
+
+    setTimeout(() => {
+      const meta = WHEEL_PRIZE_META[data.prizeType] || WHEEL_PRIZE_META.free_cookie;
+      document.getElementById('wheel-result-emoji').textContent = meta.emoji;
+      document.getElementById('wheel-result-title').textContent = data.alreadySpun ? `You already won: ${data.prizeLabel || meta.title}` : `You Won ${meta.title}`;
+      document.getElementById('wheel-result-blurb').textContent = data.blurb || 'Check your email for the code!';
+      document.getElementById('wheel-result-code').textContent = data.code;
+      document.getElementById('wheel-spin-stage').style.display = 'none';
+      document.getElementById('wheel-result').classList.add('show');
+    }, 4300);
+  } catch (err) {
+    console.error(err);
+    msg.textContent = err.message || 'Something went wrong. Please try again.';
+    msg.style.color = '#c0025e';
+    msg.style.display = 'block';
+    btn.disabled = false;
+    input.disabled = false;
+    btn.textContent = 'Spin The Wheel 🎉';
+  }
+}
+document.getElementById('wheel-spin-btn')?.addEventListener('click', submitWheelSpin);
+document.getElementById('wheel-email-input')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitWheelSpin();
+});
+
+// Shows progress toward the surprise 3rd-order reward (the actual reward
+// itself is decided and sent server-side in stripe-webhook — this is just
+// a friendly, coarse read of where a given email stands, via a public
+// lookup endpoint that returns nothing but a count).
+const loyaltyBannerEl = document.getElementById('loyalty-banner');
+const LOYALTY_DEFAULT_TEXT = "🎁 Every 3rd order unlocks a surprise treat on me!";
+let loyaltyDebounceTimer = null;
+async function checkLoyaltyStatus() {
+  const email = document.getElementById('customer_email').value.trim();
+  if (!loyaltyBannerEl) return;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { loyaltyBannerEl.textContent = LOYALTY_DEFAULT_TEXT; return; }
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('loyalty-status', { body: { email } });
+    if (error || !data?.success) { loyaltyBannerEl.textContent = LOYALTY_DEFAULT_TEXT; return; }
+    if (data.rewardUnlocked) {
+      loyaltyBannerEl.textContent = "🎉 You've unlocked a surprise reward — check your email!";
+    } else if (data.ordersUntilReward === 1) {
+      loyaltyBannerEl.textContent = "🎁 Just 1 more order until your surprise reward!";
+    } else if (data.ordersUntilReward === 2) {
+      loyaltyBannerEl.textContent = "🎁 2 more orders until your surprise reward!";
+    } else {
+      loyaltyBannerEl.textContent = LOYALTY_DEFAULT_TEXT;
+    }
+  } catch (e) {
+    loyaltyBannerEl.textContent = LOYALTY_DEFAULT_TEXT;
+  }
+}
+document.getElementById('customer_email')?.addEventListener('input', () => {
+  clearTimeout(loyaltyDebounceTimer);
+  loyaltyDebounceTimer = setTimeout(checkLoyaltyStatus, 700);
+});
+// Runs once on load too (moved down here from up near the other
+// checkout-restore calls, since it needs loyaltyBannerEl/checkLoyaltyStatus
+// to exist first) so a remembered email already shows real loyalty
+// progress immediately, not just after the next keystroke.
+checkLoyaltyStatus();
+
+function calcDiscountAmount(subtotal) {
+  if (!appliedDiscount) return 0;
+  let amount = 0;
+  if (appliedDiscount.percent_off) amount += subtotal * (appliedDiscount.percent_off / 100);
+  if (appliedDiscount.flat_off) amount += appliedDiscount.flat_off;
+  return Math.min(amount, subtotal);
+}
+
+document.getElementById('apply-discount-btn').addEventListener('click', async () => {
+  const discountInput = document.getElementById('discount_code_input');
+  const discountMsg = document.getElementById('discount-message');
+  const code = discountInput.value.trim();
+  discountMsg.style.display = 'none';
+  if (!code) return;
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('validate-discount-code', { body: { code } });
+    if (error) throw error;
+    if (data.valid) {
+      appliedDiscount = { code: data.code, percent_off: data.percent_off, flat_off: data.flat_off };
+      discountMsg.textContent = `"${data.code}" applied! 🎉`; discountMsg.style.color = 'var(--pink-hot)';
+    } else {
+      appliedDiscount = null;
+      discountMsg.textContent = data.message || 'That code is not valid.'; discountMsg.style.color = '#c0025e';
+    }
+    discountMsg.style.display = 'block';
+    updateTotal();
+  } catch (err) {
+    console.error(err);
+    discountMsg.textContent = 'Could not check that code right now. Please try again.';
+    discountMsg.style.color = '#c0025e'; discountMsg.style.display = 'block';
+  }
+});
+
+function calcBoxSavings() {
+  let savings = 0;
+  ACTIVE_CATEGORIES.forEach(cat => {
+    const count = categoryCount(cat.key);
+    if (count === 0) return;
+    const boxPrice = computePurchasePlan(cat, count).price;
+    const individualPrice = count * cat.unitPrice;
+    savings += Math.max(0, individualPrice - boxPrice);
+  });
+  return savings;
+}
+
+// Cinnamon rolls need more lead time to prep than cookies do, so the
+// earliest selectable pickup/delivery date moves out to 2 days from now
+// the moment one is in the cart — enforced both as a hard floor on the
+// date picker itself and as a fallback check at checkout, in case a
+// customer picked a date before adding a cinnamon roll to their cart.
+function formatDateInput(d) {
+  return d.toISOString().split('T')[0];
+}
+
+// Mel's prep day effectively ends when her last pickup slot does (6pm
+// Central) — an order placed after that has zero real prep time left
+// today, so it shouldn't be allowed to land as "tomorrow" with no notice.
+// Checked in America/Chicago regardless of the customer's own device
+// timezone, since it's Mel's business hours that matter here.
+const BUSINESS_CLOSE_HOUR = 18; // 6pm
+function isAfterBusinessHoursChicago() {
+  const hourStr = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', hour: 'numeric', hour12: false }).format(new Date());
+  return parseInt(hourStr, 10) >= BUSINESS_CLOSE_HOUR;
+}
+
+function updateDateConstraints() {
+  const dateInput = document.getElementById('preferred_date');
+  const hasCinnamonRolls = categoryCount('cinnamon_rolls') > 0;
+  const hasThemeBoxes = categoryCount('theme_boxes') > 0;
+
+  // Same-day is only possible when EVERY cookie in the cart can be fully
+  // covered by what's actually baked and on hand right now — cinnamon
+  // rolls and theme boxes always need normal lead time regardless, since
+  // they're never drawn from an "on hand today" pool.
+  const cookieCategory = getCategory('cookies');
+  const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && cookieCategory &&
+    cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
+    categoryCount('cookies') > 0;
+
+  const afterHours = isAfterBusinessHoursChicago();
+  const leadDays = (cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1)) + (afterHours ? 1 : 0);
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + leadDays);
+  const minDateStr = formatDateInput(minDate);
+  dateInput.min = minDateStr;
+
+  const noteEl = document.getElementById('date-lead-time-note');
+  if (afterHours) {
+    noteEl.textContent = "🌙 It's after hours for today, so the earliest available date has moved out a day to give enough time to prep.";
+    noteEl.style.display = 'block';
+  } else if (cartCoveredByOnHand) {
+    noteEl.textContent = '🎉 Everything in your cart is baked and ready — same-day pickup or delivery available!';
+    noteEl.style.display = 'block';
+  } else if (hasCinnamonRolls) {
+    noteEl.textContent = '🥐 Cinnamon rolls need at least 2 days notice to prep — earliest date shown below.';
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  // If a date was already picked and it's now too soon (e.g. a cinnamon
+  // roll was just added to a cart that already had a date selected),
+  // bump it forward automatically rather than leaving an invalid date
+  // silently sitting in the field.
+  if (dateInput.value && dateInput.value < minDateStr) {
+    dateInput.value = minDateStr;
+  }
+}
+
+function updateTotal() {
+  updateDateConstraints();
+  const subtotal = calcSubtotal();
+  const discountAmount = calcDiscountAmount(subtotal);
+  const total = subtotal - discountAmount + tipAmount;
+  const boxSavings = calcBoxSavings();
+
+  document.getElementById('box-savings-display').textContent = `$${boxSavings.toFixed(2)}`;
+  document.getElementById('box-savings-row').classList.toggle('hidden', boxSavings <= 0);
+  document.getElementById('subtotal-display').textContent = `$${subtotal.toFixed(2)}`;
+  document.getElementById('discount-amount-display').textContent = `−$${discountAmount.toFixed(2)}`;
+  document.getElementById('discount-row').classList.toggle('hidden', discountAmount <= 0);
+  document.getElementById('tip-amount-display').textContent = `$${tipAmount.toFixed(2)}`;
+  document.getElementById('tip-row').classList.toggle('hidden', tipAmount <= 0);
+  document.getElementById('total-display').textContent = `$${total.toFixed(2)}`;
+  renderMiniCart(total);
+  return { price: total, subtotal, discountAmount };
+}
+
+// Mini cart — mirrors whatever is in `qty` right now, so it's always in
+// sync with the real cart state without needing separate update calls
+// scattered everywhere quantities change.
+function renderMiniCart(total) {
+  const itemsEl = document.getElementById('mini-cart-items');
+  const countEl = document.getElementById('mini-cart-count');
+  const totalEl = document.getElementById('mini-cart-total-amount');
+  if (!itemsEl) return;
+
+  const lines = ALL_PRODUCTS.filter(p => (qty[p.key] || 0) > 0);
+  const totalCount = lines.reduce((sum, p) => sum + qty[p.key], 0);
+  countEl.textContent = totalCount;
+
+  if (lines.length === 0) {
+    itemsEl.innerHTML = '<div class="mini-cart-empty">Your cart is empty — pick a flavor! 🍪</div>';
+  } else {
+    itemsEl.innerHTML = lines.map(p =>
+      `<div class="mini-cart-item"><span class="item-name">${p.name}</span><span>× ${qty[p.key]}</span></div>`
+    ).join('');
+  }
+  totalEl.textContent = `$${(total || 0).toFixed(2)}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const miniCartEl = document.getElementById('mini-cart');
+  const miniCartBadge = document.getElementById('mini-cart-badge');
+  const miniCartClose = document.getElementById('mini-cart-close');
+  if (miniCartBadge) {
+    miniCartBadge.addEventListener('click', () => miniCartEl.classList.toggle('open'));
+    miniCartClose.addEventListener('click', () => miniCartEl.classList.remove('open'));
+    document.getElementById('mini-cart-checkout-btn').addEventListener('click', () => miniCartEl.classList.remove('open'));
+  }
+  renderMiniCart(updateTotal().price);
+});
+
+updateTotal();
+
+const timeSelect = document.getElementById('pickup_time');
+function to12h(h, m) { const period = h < 12 ? 'AM' : 'PM'; let hh = h % 12; if (hh === 0) hh = 12; return `${hh}:${m.toString().padStart(2,'0')} ${period}`; }
+for (let mins = 7*60+30; mins <= 18*60; mins += 30) {
+  const h = Math.floor(mins/60), m = mins%60;
+  const opt = document.createElement('option'); opt.textContent = to12h(h,m); timeSelect.appendChild(opt);
+}
+
+const errorBox = document.getElementById('form-error');
+const checkoutBtn = document.getElementById('checkout-btn');
+
+checkoutBtn.addEventListener('click', async () => {
+  errorBox.style.display = 'none';
+  const total = totalItemCount();
+  if (total === 0) { errorBox.textContent = 'Please pick at least one item 🍪'; errorBox.style.display = 'block'; return; }
+
+  // Contact info is collected up front on our own page now, rather than
+  // leaving it entirely to Stripe's checkout page — so a real name,
+  // email, and phone are always on the order record even if Stripe's
+  // own fields get skipped or filled in differently there.
+  const customerFullName = document.getElementById('customer_full_name').value.trim();
+  if (!customerFullName) { errorBox.textContent = 'Please enter your full name.'; errorBox.style.display = 'block'; return; }
+  const customerEmailValue = document.getElementById('customer_email').value.trim();
+  if (!customerEmailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmailValue)) {
+    errorBox.textContent = 'Please enter a valid email address.'; errorBox.style.display = 'block'; return;
+  }
+  const preferredContactValue = document.getElementById('preferred_contact').value;
+  const isSocialContact = preferredContactValue === 'Social Media';
+  if (!isSocialContact && !document.getElementById('contact_phone').value.trim()) {
+    errorBox.textContent = 'Please enter a phone number, or switch "Best Way To Reach You" to Social Media.'; errorBox.style.display = 'block'; return;
+  }
+  if (isSocialContact) {
+    if (!document.getElementById('social_platform').value) {
+      errorBox.textContent = 'Please select which social platform to reach you on.'; errorBox.style.display = 'block'; return;
+    }
+    if (!document.getElementById('social_handle').value.trim()) {
+      errorBox.textContent = 'Please enter your social media handle.'; errorBox.style.display = 'block'; return;
+    }
+  }
+
+  // Block checkout on missing fulfillment details rather than silently
+  // sending "TBD" to Stripe — a paid order with no real pickup/delivery
+  // info is a real problem to sort out after the fact.
+  if (fulfillment === 'pickup') {
+    const loc = document.getElementById('pickup_location').value;
+    if (!loc) { errorBox.textContent = 'Please select a pickup location.'; errorBox.style.display = 'block'; return; }
+    if (loc === 'Other (Enter Below)' && !document.getElementById('pickup_location_other').value.trim()) {
+      errorBox.textContent = 'Please enter your preferred pickup spot.'; errorBox.style.display = 'block'; return;
+    }
+  } else {
+    if (!document.getElementById('delivery_address').value.trim()) {
+      errorBox.textContent = 'Please enter a delivery address.'; errorBox.style.display = 'block'; return;
+    }
+  }
+  if (!document.getElementById('preferred_date').value) {
+    errorBox.textContent = 'Please select a preferred date.'; errorBox.style.display = 'block'; return;
+  }
+  {
+    const hasCinnamonRolls = categoryCount('cinnamon_rolls') > 0;
+    const hasThemeBoxes = categoryCount('theme_boxes') > 0;
+    const cookieCategory = getCategory('cookies');
+    const cartCoveredByOnHand = !hasCinnamonRolls && !hasThemeBoxes && cookieCategory &&
+      cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
+      categoryCount('cookies') > 0;
+    const afterHours = isAfterBusinessHoursChicago();
+    const requiredLeadDays = (cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1)) + (afterHours ? 1 : 0);
+    const requiredMinDate = new Date();
+    requiredMinDate.setDate(requiredMinDate.getDate() + requiredLeadDays);
+    if (document.getElementById('preferred_date').value < formatDateInput(requiredMinDate)) {
+      errorBox.textContent = afterHours
+        ? "It's after hours for today, so the earliest available date has moved out a day — please pick a later date."
+        : hasCinnamonRolls
+          ? 'Cinnamon rolls need at least 2 days notice — please pick a later date.'
+          : 'Please pick a date at least 1 day out.';
+      errorBox.style.display = 'block';
+      return;
+    }
+  }
+
+  const items = [];
+  const flavorLines = [];
+  const themeBoxLines = [];
+  // Plain { "Flavor Name": qty } map — the shape the orders table's
+  // `cookies` jsonb column expects (same shape submit-order and the admin
+  // dashboard already read elsewhere), built alongside the Stripe line
+  // items and note text below rather than re-deriving it from either.
+  const cookiesOrdered = {};
+  ACTIVE_CATEGORIES.forEach(cat => {
+    const count = categoryCount(cat.key);
+    if (count === 0) return;
+    const plan = computePurchasePlan(cat, count);
+    // Build a plain-English flavor summary for this category's whole cart
+    // so the Stripe Checkout page (and the confirmation emails, which pull
+    // straight from this same note) show what's actually inside the box —
+    // not just a generic "4-Count Cookies Box" with no detail.
+    const categoryFlavorParts = [];
+    cat.products.forEach(p => {
+      if (qty[p.key] <= 0) return;
+      if (p.contents) {
+        Object.entries(p.contents).forEach(([flavorName, flavorQty]) => {
+          categoryFlavorParts.push(`${flavorQty * qty[p.key]} ${flavorName}`);
+        });
+      } else {
+        categoryFlavorParts.push(`${qty[p.key]} ${p.name}`);
+      }
+    });
+    let categoryFlavorSummary = categoryFlavorParts.join(', ');
+    // Stripe caps product names around 250 chars — trim generously so a big
+    // cart never breaks checkout, favoring showing most of the detail.
+    if (categoryFlavorSummary.length > 180) categoryFlavorSummary = categoryFlavorSummary.slice(0, 177) + '...';
+    Object.entries(plan.boxes).forEach(([boxSize, boxQty]) => {
+      const tier = cat.boxTiers.find(t => t.count === parseInt(boxSize));
+      const boxName = categoryFlavorSummary
+        ? `${boxSize}-Count ${cat.label} Box (${categoryFlavorSummary})`
+        : `${boxSize}-Count ${cat.label} Box`;
+      items.push({ name: boxName, unitAmountCents: Math.round(tier.price * 100), quantity: boxQty });
+    });
+    let remainingSingles = plan.singles;
+    for (const p of cat.products) {
+      if (remainingSingles <= 0) break;
+      const take = Math.min(qty[p.key], remainingSingles);
+      if (take > 0) { items.push({ name: p.name, unitAmountCents: Math.round(cat.unitPrice * 100), quantity: take }); remainingSingles -= take; }
+    }
+    cat.products.forEach(p => {
+      if (qty[p.key] <= 0) return;
+      if (p.contents) {
+        // A theme box isn't a real flavor itself — expand it into what's
+        // actually inside, multiplied by how many boxes were bought, so
+        // the baking note says what to actually bake. Keep this in the
+        // same clean "qty × flavor name" format (no extra annotation)
+        // since the backend parses this exact format to decrement stock
+        // by matching flavor names — an annotated name wouldn't match.
+        Object.entries(p.contents).forEach(([flavorName, flavorQty]) => {
+          flavorLines.push(`${flavorQty * qty[p.key]} × ${flavorName}`);
+          cookiesOrdered[flavorName] = (cookiesOrdered[flavorName] || 0) + flavorQty * qty[p.key];
+        });
+        themeBoxLines.push(`${qty[p.key]} × ${p.name}`);
+      } else {
+        flavorLines.push(`${qty[p.key]} × ${p.name}`);
+        cookiesOrdered[p.name] = (cookiesOrdered[p.name] || 0) + qty[p.key];
+      }
+    });
+  });
+
+  if (fulfillment === 'delivery') items.push({ name: 'Delivery Fee', unitAmountCents: Math.round(currentDeliveryFee * 100), quantity: 1 });
+
+  const pickupLocationValue = document.getElementById('pickup_location').value === 'Other (Enter Below)'
+    ? document.getElementById('pickup_location_other').value.trim()
+    : document.getElementById('pickup_location').value;
+  const noteLines = [
+    `FLAVOR BREAKDOWN: ${flavorLines.join(', ')}`,
+    `Fulfillment: ${fulfillment}${fulfillment === 'pickup' ? ' — ' + pickupLocationValue : ' — ' + document.getElementById('delivery_address').value.trim()}`,
+    `Preferred Date: ${document.getElementById('preferred_date').value}`,
+    `Preferred Time: ${document.getElementById('pickup_time').value || 'Any time'}`,
+  ];
+  if (themeBoxLines.length > 0) noteLines.push(`Theme Boxes: ${themeBoxLines.join(', ')} — pack together as gift boxes`);
+  // Orders are always made-to-order now (no more "preorder" as a special
+  // exception) — the backend no longer decrements current stock for
+  // website orders at all, so there's no flag needed here to signal that.
+  const contactPhone = document.getElementById('contact_phone').value.trim();
+  if (contactPhone) noteLines.push(`Phone: ${contactPhone}`);
+  noteLines.push(`Preferred Contact: ${preferredContactValue}`);
+  const socialPlatformValue = document.getElementById('social_platform').value;
+  const socialHandleValue = document.getElementById('social_handle').value.trim();
+  if (isSocialContact && socialPlatformValue && socialHandleValue) {
+    noteLines.push(`Social: ${socialHandleValue} (${socialPlatformValue})`);
+  }
+  const instructions = document.getElementById('special_instructions').value.trim();
+  if (instructions) noteLines.push(`Notes: ${instructions}`);
+  const note = noteLines.join(' | ');
+
+  checkoutBtn.disabled = true;
+
+  // Cash (pickup or delivery) skips Stripe entirely — the order is
+  // inserted straight away (via submit-order, same backend the legacy
+  // order form uses for its own "pay later" option) so it shows up on
+  // the dashboard right away, unpaid, for Meliese to collect cash on
+  // when she hands it over.
+  if (paymentMethod === 'cash') {
+    checkoutBtn.textContent = 'Placing your order...';
+    try {
+      const { price: orderTotal } = updateTotal();
+      const supabase = await getSupabase();
+      const orderRow = {
+        full_name: customerFullName,
+        email: customerEmailValue,
+        phone: contactPhone || null,
+        contact_via_social: isSocialContact,
+        social_platform: isSocialContact ? socialPlatformValue : null,
+        social_handle: isSocialContact ? socialHandleValue : null,
+        cookies: cookiesOrdered,
+        fulfillment_type: fulfillment,
+        pickup_location: fulfillment === 'pickup' ? pickupLocationValue : null,
+        delivery_address: fulfillment === 'delivery' ? document.getElementById('delivery_address').value.trim() : null,
+        preferred_date: document.getElementById('preferred_date').value || null,
+        pickup_time: document.getElementById('pickup_time').value || null,
+        preferred_contact: preferredContactValue,
+        special_instructions: instructions || null,
+        payment_method: cashPaymentMethodValue(),
+        total: orderTotal,
+        discount_code: appliedDiscount ? appliedDiscount.code : null,
+        discount_amount: appliedDiscount ? calcDiscountAmount(calcSubtotal()) : 0,
+        tip_amount: tipAmount,
+        is_preorder: isPreorderMode,
+        // Not a column on the orders table (submit-order just ignores it) —
+        // carried through to send-order-emails below so a cash-on-delivery
+        // confirmation can spell out the delivery fee instead of just a
+        // lump total.
+        delivery_fee: fulfillment === 'delivery' ? currentDeliveryFee : 0,
+      };
+
+      const { data: submitData, error: insertError } = await supabase.functions.invoke('submit-order', { body: orderRow });
+      if (insertError) throw insertError;
+      if (!submitData || submitData.success === false) {
+        throw new Error((submitData && submitData.message) || 'Order could not be submitted.');
+      }
+
+      if (appliedDiscount) {
+        try {
+          await supabase.functions.invoke('redeem-discount-code', { body: { code: appliedDiscount.code } });
+        } catch (redeemErr) { console.error('Discount redemption tracking failed (order was still saved):', redeemErr); }
+      }
+      try {
+        await supabase.functions.invoke('send-order-emails', { body: orderRow });
+      } catch (emailErr) { console.error('Email notification failed (order was still saved):', emailErr); }
+
+      if (document.getElementById('remember_me_checkbox')?.checked) { saveRememberedContact(); } else { clearRememberedContact(); }
+      // A cash order is confirmed the moment it's submitted (no payment
+      // page to redirect through), so clear the cart/draft right here —
+      // same moment shop-thankyou.html does it for a Stripe payment.
+      try { localStorage.removeItem('mels_cart'); } catch (e) {}
+      clearSavedCheckoutFields();
+      window.location.href = `shop-thankyou.html?method=cash&fulfillment=${fulfillment}`;
+    } catch (err) {
+      console.error(err);
+      errorBox.textContent = 'Something went wrong placing your order. Please try again: ' + (err.message || '');
+      errorBox.style.display = 'block';
+      checkoutBtn.disabled = false;
+      checkoutBtn.textContent = 'Place Order — Pay Cash On Pickup 💵';
+    }
+    return;
+  }
+
+  checkoutBtn.textContent = 'Redirecting to checkout...';
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.functions.invoke('create-stripe-checkout', {
+      body: {
+        items, note, tipCents: Math.round(tipAmount * 100), discount: appliedDiscount,
+        customerName: customerFullName, customerEmail: customerEmailValue, customerPhone: contactPhone
+      }
+    });
+    if (error) throw error;
+    if (!data.success) throw new Error(data.message || 'Could not start checkout.');
+    // Deliberately NOT clearing the cart or the saved draft fields here —
+    // this only means Stripe's checkout page is about to open, not that
+    // payment actually went through. If a customer backs out of Stripe
+    // (Stripe's cancel button sends them right back to this page), they'd
+    // otherwise land back on an empty cart having to start over, which is
+    // exactly the kind of friction that makes someone give up on ordering.
+    // The cart/draft only get cleared on shop-thankyou.html, which only
+    // loads after a real successful payment.
+    if (document.getElementById('remember_me_checkbox')?.checked) { saveRememberedContact(); } else { clearRememberedContact(); }
+    window.location.href = data.url;
+  } catch (err) {
+    console.error(err);
+    errorBox.textContent = 'Something went wrong starting checkout. Please try again: ' + (err.message || '');
+    errorBox.style.display = 'block';
+    checkoutBtn.disabled = false;
+    checkoutBtn.textContent = 'Checkout With Stripe 🔒';
+  }
+});
+
+function scatterPageAccents() {
+  const sectionSelectors = ['.page-header'];
+  const sections = sectionSelectors
+    .map(sel => Array.from(document.querySelectorAll(sel)).find(el => el.offsetParent !== null))
+    .filter(Boolean);
+  if (sections.length === 0) return;
+
+  const glyphs = ['✦', '✧', '✨', '♥', '⋆'];
+  const anims = ['', 'drift', 'sway'];
+  const starColors = ['#c8912f', '#e20376'];
+
+  function buildFor(section, sparkleN, starN, heartN) {
+    const rect = section.getBoundingClientRect();
+    const height = Math.max(rect.height, 80);
+    const width = Math.max(rect.width, 200);
+    const placed = [];
+    const entries = [];
+
+    function findSpot(radius, excludeEntry) {
+      for (let attempt = 0; attempt < 12; attempt++) {
+        const topPx = Math.random() * height;
+        const leftPercent = Math.random() * 100;
+        const leftPx = (leftPercent / 100) * width;
+        const collides = placed.some(p => {
+          if (p === excludeEntry) return false;
+          const dx = p.leftPx - leftPx;
+          const dy = p.topPx - topPx;
+          const minDist = p.radius + radius + 16;
+          return (dx * dx + dy * dy) < (minDist * minDist);
+        });
+        if (!collides) return { topPx, leftPercent, leftPx };
+      }
+      return null;
+    }
+
+    function scheduleWander(entry) {
+      const waitMs = 5000 + Math.random() * 6000;
+      setTimeout(() => {
+        entry.el.style.animationPlayState = 'paused';
+        entry.el.style.transition = 'opacity 0.6s ease';
+        entry.el.style.opacity = '0';
+        setTimeout(() => {
+          const spot = findSpot(entry.radius, entry);
+          if (spot) {
+            entry.el.style.top = spot.topPx + 'px';
+            entry.el.style.left = spot.leftPercent + '%';
+            Object.assign(entry, spot);
+            const i = placed.indexOf(entry);
+            if (i >= 0) placed[i] = entry;
+          }
+          entry.el.style.opacity = '1';
+          setTimeout(() => { entry.el.style.animationPlayState = 'running'; }, 650);
+          scheduleWander(entry);
+        }, 650);
+      }, waitMs);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden;';
+
+    for (let i = 0; i < sparkleN; i++) {
+      const size = 9 + Math.random() * 12;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElement('span');
+      const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+      const anim = anims[Math.floor(Math.random() * anims.length)];
+      el.className = `sparkle ${anim}`;
+      el.style.cssText = `top:${spot.topPx}px; left:${spot.leftPercent}%; font-size:${size}px; animation-delay:${Math.random() * 4}s;`;
+      el.textContent = glyph;
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < starN; i++) {
+      const size = 15 + Math.random() * 8;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('viewBox', '0 0 100 100');
+      const rotate = Math.random() * 30 - 15;
+      const duration = 6 + Math.random() * 4;
+      const color = starColors[Math.floor(Math.random() * starColors.length)];
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size}px; color:${color}; filter:drop-shadow(0 2px 4px rgba(58,36,48,0.2)); animation:starSpin ${duration}s linear infinite; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<path d="M50 2 L61 38 L98 38 L68 60 L79 96 L50 74 L21 96 L32 60 L2 38 L39 38 Z" fill="currentColor" stroke="#fff" stroke-width="3"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    for (let i = 0; i < heartN; i++) {
+      const size = 13 + Math.random() * 7;
+      const radius = size * 0.6;
+      const spot = findSpot(radius);
+      if (!spot) continue;
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      el.setAttribute('class', 'sticker-gem');
+      el.setAttribute('viewBox', '0 0 100 90');
+      const rotate = Math.random() * 20 - 10;
+      el.style.cssText = `position:absolute; top:${spot.topPx}px; left:${spot.leftPercent}%; width:${size}px; height:${size * 0.9}px; color:#ff8fc4; transform:rotate(${rotate}deg);`;
+      el.innerHTML = '<use href="#gemHeartShape"/>';
+      wrap.appendChild(el);
+      const entry = { ...spot, radius, el };
+      placed.push(entry); entries.push(entry);
+    }
+
+    if (getComputedStyle(section).position === 'static') section.style.position = 'relative';
+    section.insertBefore(wrap, section.firstChild);
+    entries.forEach(scheduleWander);
+  }
+
+  const heights = sections.map(s => Math.max(s.getBoundingClientRect().height, 80));
+  const totalH = heights.reduce((a, b) => a + b, 0);
+  sections.forEach((section, i) => {
+    const share = heights[i] / totalH;
+    buildFor(
+      section,
+      Math.round(22 * share),
+      i === 0 ? 2 : 0,
+      i === sections.length - 1 ? 2 : 0
+    );
+  });
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => scatterPageAccents(), 300);
+});
+</script>
+
+<!-- Mini cart — collapsed floating badge on the side, expands into a small
+     panel showing current items without needing to scroll to checkout -->
+<div class="mini-cart" id="mini-cart">
+  <button type="button" class="mini-cart-badge" id="mini-cart-badge" aria-label="View cart">
+    🛍️ <span class="mini-cart-count" id="mini-cart-count">0</span>
+  </button>
+  <div class="mini-cart-panel" id="mini-cart-panel">
+    <div class="mini-cart-header">
+      <span>Your Order</span>
+      <button type="button" class="mini-cart-close" id="mini-cart-close" aria-label="Close">✕</button>
+    </div>
+    <div class="mini-cart-items" id="mini-cart-items"></div>
+    <div class="mini-cart-total">
+      <span>Total</span>
+      <span id="mini-cart-total-amount">$0.00</span>
+    </div>
+    <a href="#checkout-btn" class="mini-cart-checkout-btn" id="mini-cart-checkout-btn">Go To Checkout →</a>
+  </div>
+</div>
+
+<div class="surprise-toast" id="surprise-toast"></div>
+
+<!-- Small "open in browser" button — installed-app mode hides the
+     address bar on purpose; this gives a one-tap way to pop into the real
+     browser (to copy/share the link, etc.) only when it's actually wanted. -->
+<button id="melsBrowserBarBtn" onclick="window.open(location.href, '_blank')" aria-label="Open in browser" style="position:fixed; bottom:18px; right:18px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:linear-gradient(135deg,#e20376,#ff6fb0); color:#fff; font-size:1.2rem; box-shadow:0 6px 16px rgba(226,3,118,0.35); display:none; align-items:center; justify-content:center; cursor:pointer;">🔗</button>
+<script>
+(function(){
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone) {
+    var btn = document.getElementById('melsBrowserBarBtn');
+    if (btn) btn.style.display = 'flex';
+  }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
