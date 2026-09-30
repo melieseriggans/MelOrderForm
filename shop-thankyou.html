@@ -103,6 +103,57 @@
   @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
   @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
   @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+  /* Digital punch card */
+  .punch-card{
+    margin-top:18px; padding-top:16px; border-top:1px dashed var(--border);
+    position:relative; z-index:1; display:none;
+  }
+  .punch-card.show{display:block;}
+  .punch-card-title{
+    font-family:'Fredoka', sans-serif; font-weight:700; color:var(--pink-deep);
+    font-size:0.92rem; margin:0 0 10px;
+  }
+  .punch-row{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px;}
+  .punch-dot{
+    width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem; background:var(--pink-light); border:2px dashed var(--border); color:transparent;
+    transition:transform 0.3s, background 0.3s, border-color 0.3s;
+  }
+  .punch-dot.filled{
+    background:var(--pink-hot); border:2px solid var(--pink-hot); color:var(--white);
+    box-shadow:0 3px 10px rgba(226,3,118,0.3);
+  }
+  .punch-dot.pop{animation:punchPop 0.5s ease;}
+  @keyframes punchPop{ 0%{transform:scale(0.4);} 60%{transform:scale(1.25);} 100%{transform:scale(1);} }
+  .punch-status{color:var(--ink-soft); font-size:0.8rem; margin:0;}
+
+  .punch-celebration{
+    position:fixed; inset:0; z-index:180; display:none; align-items:center; justify-content:center;
+    background:rgba(46,27,36,0.6); padding:20px;
+  }
+  .punch-celebration.show{display:flex;}
+  .punch-celebration-card{
+    background:var(--white); border-radius:24px; padding:30px 26px; max-width:340px; text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,0.3); position:relative; overflow:hidden;
+    animation:celebrationPop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  }
+  @keyframes celebrationPop{ 0%{transform:scale(0.6); opacity:0;} 100%{transform:scale(1); opacity:1;} }
+  .punch-celebration-emoji{font-size:3rem; margin-bottom:8px; animation:celebrationBounce 1.1s ease-in-out infinite;}
+  @keyframes celebrationBounce{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  .punch-celebration-title{font-family:'Baloo 2', cursive; font-weight:800; color:var(--pink-hot); font-size:1.4rem; margin:0 0 10px;}
+  .punch-celebration-text{color:var(--ink-soft); font-size:0.88rem; line-height:1.55; margin:0 0 18px;}
+  .punch-celebration-close{
+    background:var(--pink-hot); color:var(--white); border:none; border-radius:16px;
+    padding:12px 26px; font-family:'Fredoka', sans-serif; font-weight:700; font-size:0.9rem; cursor:pointer;
+  }
+  .punch-confetti-piece{
+    position:absolute; top:-10%; font-size:1.3rem; opacity:0; animation:punchConfettiFall 1.8s ease-in forwards;
+  }
+  @keyframes punchConfettiFall{
+    0%{opacity:1; transform:translateY(0) rotate(0deg);}
+    100%{opacity:0; transform:translateY(340px) rotate(260deg);}
+  }
 </style>
 </head>
 <body>
@@ -126,6 +177,12 @@
   <p id="confirm-message">Thank you so much! Your payment went through and your order is officially in. I'll be in touch to confirm any final details — can't wait for you to try these!</p>
   <a href="shop.html" class="back-btn">← Back To Shop</a>
 
+  <div class="punch-card" id="punch-card">
+    <div class="punch-card-title">🍪 Your Loyalty Punch Card</div>
+    <div class="punch-row" id="punch-row"></div>
+    <p class="punch-status" id="punch-status"></p>
+  </div>
+
   <div class="traffic-ask" id="traffic-ask">
     <p class="traffic-ask-label">Mind sharing where you found us? <button type="button" class="traffic-skip" id="traffic-skip">skip</button></p>
     <div class="traffic-chips">
@@ -137,6 +194,16 @@
       <button type="button" class="traffic-chip" data-source="Local Market/Pop-Up">Market/Pop-Up</button>
       <button type="button" class="traffic-chip" data-source="Other">Other</button>
     </div>
+  </div>
+</div>
+
+<div class="punch-celebration" id="punch-celebration">
+  <div class="punch-celebration-card">
+    <div class="punch-confetti-wrap" id="punch-confetti-wrap" style="position:absolute; inset:0; pointer-events:none; overflow:hidden;"></div>
+    <div class="punch-celebration-emoji">🎉</div>
+    <div class="punch-celebration-title">Reward Unlocked!</div>
+    <div class="punch-celebration-text">You just earned a loyalty reward! We've emailed you a code — check your inbox and treat yourself next time. 💕</div>
+    <button type="button" class="punch-celebration-close" id="punch-celebration-close">Yay, Thanks! 🍪</button>
   </div>
 </div>
 
@@ -182,6 +249,15 @@
 })();
 </script>
 <script>
+// Grab the customer's email from the in-progress checkout draft BEFORE it
+// gets cleared just below — this is the only moment we have it without
+// asking them to type it again, and it's what powers the punch card.
+let thankYouCustomerEmail = null;
+try {
+  const savedFields = JSON.parse(localStorage.getItem('mels_checkout_fields') || '{}');
+  if (savedFields.customer_email) thankYouCustomerEmail = savedFields.customer_email.trim();
+} catch (e) { /* ignore, punch card just won't show */ }
+
 // This page only loads after Stripe redirects back from a completed
 // payment, so it's the right moment (not the moment checkout starts) to
 // clear the cart and the in-progress checkout draft. Keeping this here
@@ -211,6 +287,83 @@ try {
     }
   }
 } catch (e) { /* ignore, default message still shows */ }
+
+// --- Digital punch card ---
+// Reads real loyalty progress from the public loyalty-status function
+// (counts this email's actual completed orders — so it automatically
+// reflects orders placed before the punch card even existed, no backfill
+// needed). Every 3rd order (3rd, 6th, 9th...) unlocks a reward that's
+// already been emailed by stripe-webhook — this just celebrates it.
+const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
+
+function renderPunchDots(cyclePosition, rewardUnlocked, animate) {
+  const row = document.getElementById('punch-row');
+  const filledCount = rewardUnlocked ? 3 : cyclePosition;
+  row.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement('div');
+    const isFilled = i < filledCount;
+    dot.className = 'punch-dot' + (isFilled ? ' filled' : '') + (animate && isFilled ? ' pop' : '');
+    dot.textContent = isFilled ? '🍪' : '';
+    if (animate && isFilled) dot.style.animationDelay = `${i * 0.15}s`;
+    row.appendChild(dot);
+  }
+}
+
+function launchPunchConfetti() {
+  const wrap = document.getElementById('punch-confetti-wrap');
+  if (!wrap) return;
+  const glyphs = ['🎉', '✨', '🍪', '💕', '⭐'];
+  for (let i = 0; i < 18; i++) {
+    const span = document.createElement('span');
+    span.className = 'punch-confetti-piece';
+    span.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    span.style.left = `${Math.random() * 94}%`;
+    span.style.animationDelay = `${Math.random() * 0.5}s`;
+    span.style.fontSize = `${0.9 + Math.random() * 0.7}rem`;
+    wrap.appendChild(span);
+  }
+}
+
+document.getElementById('punch-celebration-close')?.addEventListener('click', () => {
+  document.getElementById('punch-celebration').classList.remove('show');
+});
+
+async function loadPunchCard() {
+  if (!thankYouCustomerEmail) return;
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/loyalty-status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY },
+      body: JSON.stringify({ email: thankYouCustomerEmail }),
+    });
+    const data = await resp.json();
+    if (!data.success) return;
+
+    const punchCard = document.getElementById('punch-card');
+    const statusEl = document.getElementById('punch-status');
+    const cyclePosition = data.rewardUnlocked ? 3 : (3 - data.ordersUntilReward);
+
+    punchCard.classList.add('show');
+    renderPunchDots(cyclePosition, data.rewardUnlocked, true);
+
+    if (data.rewardUnlocked) {
+      statusEl.textContent = "You've unlocked a reward — check your email! 🎉";
+      setTimeout(() => {
+        launchPunchConfetti();
+        document.getElementById('punch-celebration').classList.add('show');
+      }, 500);
+    } else {
+      statusEl.textContent = data.ordersUntilReward === 1
+        ? 'Just 1 more order for a free reward! 🍪'
+        : `${data.ordersUntilReward} more orders for a free reward! 🍪`;
+    }
+  } catch (err) {
+    console.error('Could not load punch card:', err);
+  }
+}
+loadPunchCard();
 
 function scatterPageAccents() {
   const sectionSelectors = ['.card'];

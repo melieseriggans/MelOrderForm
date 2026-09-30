@@ -136,6 +136,33 @@
   .summary-count{font-size:0.85rem; color:var(--ink-soft);}
 
   #review-list{margin-top:18px;}
+
+  /* Photo wall — stays hidden (see JS) until at least one approved review
+     has a photo, so an empty grid never shows while no one has used the
+     upload option yet. */
+  .photo-wall{margin:22px 0 0; display:none;}
+  .photo-wall-title{
+    font-family:'Fredoka', sans-serif; font-weight:700; font-size:1.05rem; color:var(--ink);
+    margin:0 0 10px; display:flex; align-items:center; gap:6px;
+  }
+  .photo-wall-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;}
+  .photo-wall-item{
+    aspect-ratio:1/1; border-radius:14px; overflow:hidden; border:1.5px solid var(--border);
+    box-shadow:var(--shadow); cursor:pointer; padding:0; background:none;
+  }
+  .photo-wall-item img{width:100%; height:100%; object-fit:cover; display:block;}
+  .photo-lightbox-overlay{
+    position:fixed; inset:0; background:rgba(46,27,36,0.75); z-index:200;
+    display:none; align-items:center; justify-content:center; padding:24px;
+  }
+  .photo-lightbox-overlay.open{display:flex;}
+  .photo-lightbox-card{max-width:min(440px, 100%); text-align:center;}
+  .photo-lightbox-card img{width:100%; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.3); display:block;}
+  .photo-lightbox-caption{color:var(--white); font-size:0.85rem; margin-top:10px;}
+  .photo-lightbox-close{
+    margin-top:14px; background:var(--white); color:var(--ink); border:none; border-radius:20px;
+    padding:8px 20px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem; cursor:pointer;
+  }
   .review-card{
     background:var(--white); border-radius:18px; padding:18px 20px; margin-bottom:12px;
     box-shadow:var(--shadow); border:1.5px solid var(--border); text-align:left; transition:transform 0.15s;
@@ -260,11 +287,24 @@
     <div class="summary-count" id="summary-count">Loading reviews…</div>
   </div>
 
+  <div class="photo-wall" id="photo-wall">
+    <div class="photo-wall-title">📸 From Our Customers</div>
+    <div class="photo-wall-grid" id="photo-wall-grid"></div>
+  </div>
+
   <div id="review-list"></div>
 
   <a href="reviews.html" class="leave-review-btn">Leave A Review 💕</a>
 
   <div class="footer-note">🍪 Baked With Love 🎀</div>
+</div>
+
+<div class="photo-lightbox-overlay" id="photo-lightbox-overlay">
+  <div class="photo-lightbox-card">
+    <img id="photo-lightbox-img" src="" alt="Customer photo">
+    <div class="photo-lightbox-caption" id="photo-lightbox-caption"></div>
+    <button type="button" class="photo-lightbox-close" id="photo-lightbox-close">Close</button>
+  </div>
 </div>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -298,7 +338,7 @@ async function loadReviews(){
 
     const { data, error } = await supabase
       .from('reviews')
-      .select('customer_name, rating, taste_rating, packaging_rating, communication_rating, review_text, order_reference, created_at')
+      .select('customer_name, rating, taste_rating, packaging_rating, communication_rating, review_text, order_reference, created_at, photo_url')
       .eq('approved', true)
       .order('created_at', { ascending: false });
 
@@ -337,6 +377,41 @@ async function loadReviews(){
         </div>
       `;
     }).join('');
+
+    const photoed = data.filter(r => r.photo_url);
+    const photoWall = document.getElementById('photo-wall');
+    const photoWallGrid = document.getElementById('photo-wall-grid');
+    if (photoed.length > 0 && photoWall && photoWallGrid) {
+      photoWallGrid.innerHTML = photoed.map((r, i) => `
+        <button type="button" class="photo-wall-item" data-index="${i}">
+          <img src="${escapeHtml(r.photo_url)}" alt="Photo from ${escapeHtml(r.customer_name)}" loading="lazy">
+        </button>
+      `).join('');
+      photoWall.style.display = 'block';
+
+      const lightboxOverlay = document.getElementById('photo-lightbox-overlay');
+      const lightboxImg = document.getElementById('photo-lightbox-img');
+      const lightboxCaption = document.getElementById('photo-lightbox-caption');
+      const lightboxClose = document.getElementById('photo-lightbox-close');
+
+      function openLightbox(index) {
+        const r = photoed[index];
+        lightboxImg.src = r.photo_url;
+        lightboxCaption.textContent = `${r.customer_name}${r.order_reference ? ' · ' + r.order_reference : ''}`;
+        lightboxOverlay.classList.add('open');
+      }
+      function closeLightbox() {
+        lightboxOverlay.classList.remove('open');
+        lightboxImg.src = '';
+      }
+      photoWallGrid.querySelectorAll('.photo-wall-item').forEach(btn => {
+        btn.addEventListener('click', () => openLightbox(parseInt(btn.dataset.index, 10)));
+      });
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightboxOverlay.addEventListener('click', (e) => {
+        if (e.target === lightboxOverlay) closeLightbox();
+      });
+    }
   } catch (err) {
     console.error(err);
     summaryCount.textContent = 'Could not load reviews: ' + (err && err.message ? err.message : String(err));
