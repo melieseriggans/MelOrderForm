@@ -414,11 +414,11 @@
        Order must match the WHEEL_SEGMENTS array in the script below, and
        the color key in .wheel-legend below. */
     background: conic-gradient(from 0deg,
-      var(--pink-hot) 0deg 36deg, var(--white) 36deg 72deg,
-      var(--pink-glow) 72deg 108deg, var(--pink-hot) 108deg 144deg,
-      var(--white) 144deg 180deg, var(--gold) 180deg 216deg,
-      var(--pink-hot) 216deg 252deg, var(--white) 252deg 288deg,
-      var(--pink-glow) 288deg 324deg, var(--pink-hot) 324deg 360deg);
+      var(--white) 0deg 36deg, var(--pink-hot) 36deg 72deg,
+      var(--white) 72deg 108deg, var(--pink-glow) 108deg 144deg,
+      var(--white) 144deg 180deg, var(--pink-hot) 180deg 216deg,
+      var(--white) 216deg 252deg, var(--gold) 252deg 288deg,
+      var(--white) 288deg 324deg, var(--pink-hot) 324deg 360deg);
     transition: transform 4.2s cubic-bezier(0.12, 0.72, 0.15, 1);
   }
   .sticky-note.expanded .wheel-disc{border-width:6px;}
@@ -1348,25 +1348,34 @@ function setWheelExpanded(state) {
   }
 }
 document.getElementById('sticky-note-expand')?.addEventListener('click', () => setWheelExpanded(!wheelExpanded));
+// Auto-expand the moment someone actually engages with the wheel — typing
+// their email or hitting spin — so they're not squinting at the compact
+// version while it's actually spinning.
+document.getElementById('wheel-email-input')?.addEventListener('focus', () => {
+  if (!wheelExpanded) setWheelExpanded(true);
+});
+document.getElementById('wheel-spin-btn')?.addEventListener('click', () => {
+  if (!wheelExpanded) setWheelExpanded(true);
+});
 
 // --- Spin The Wheel ---
 // 10 equal 36°-wide segments around the dial, matching the prize odds the
-// server actually uses (4 cookie / 3 bonus-reward / 2 percent-off coupon /
-// 1 free-box — see the spin-wheel edge function). The server always decides
-// the real prize; this array is only used to pick which matching segment to
-// visually land the pointer on, for variety. Each segment shows BOTH the
-// emoji and a short readable word, stacked so neither one crowds a narrow
-// wedge.
+// server actually uses. Rarest to most common: free_box (3%) > percent_off
+// (12%) > free_cookie (25%) > bonus_reward (60%, the most common prize —
+// see the spin-wheel edge function). The server always decides the real
+// prize; this array is only used to pick which matching segment to visually
+// land the pointer on, for variety. Each segment shows BOTH the emoji and a
+// short readable word, stacked so neither one crowds a narrow wedge.
 const WHEEL_SEGMENTS = [
+  { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'percent_off', emoji: '🎉', word: '10% OFF', textColor: '#ffffff' },
+  { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_box', emoji: '🎁', word: 'BOX!', textColor: '#ffffff' },
-  { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
-  { type: 'percent_off', emoji: '🎉', word: '10% OFF', textColor: '#ffffff' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
 ];
 const WHEEL_PRIZE_META = {
