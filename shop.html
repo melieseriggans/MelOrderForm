@@ -234,9 +234,13 @@
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px;
     font-family:'Fredoka', sans-serif; font-size:0.76rem; font-weight:600; color:var(--pink-deep);
-    letter-spacing:1.4px; text-transform:uppercase; margin-bottom:14px;
+    letter-spacing:1.4px; text-transform:uppercase; margin-bottom:0;
+    background:var(--white); border:1.5px solid var(--pink-hot); border-radius:30px;
+    padding:9px 20px; box-shadow:0 3px 10px rgba(226,3,118,0.15);
   }
   .eyebrow::before, .eyebrow::after{content:'✦'; color:var(--gold); font-size:0.7rem;}
+  .banner-sticker{position:absolute; pointer-events:none; animation:splashFloat 4s ease-in-out infinite;}
+  .banner-sticker svg{width:100%; height:100%; display:block;}
 
   /* Y2K glossy star accent — a real drawn star with a glossy highlight,
      not a copied graphic, built in your own pink/gold palette */
@@ -308,7 +312,7 @@
   .catering-promo-bar strong{font-family:'Fredoka', sans-serif;}
   .catering-promo-bar:hover{background:linear-gradient(90deg, #b87f1f, var(--gold));}
 
-  .eyebrow-wrap{text-align:center; padding:24px 24px 0;}
+  .eyebrow-wrap{text-align:center; padding:24px 24px 18px; position:relative;}
   .hero-banner-wrap{position:relative; width:100%; margin:14px 0 16px; line-height:0;}
   .hero-banner{width:100%; aspect-ratio:850/314; max-height:50vh; object-fit:cover; display:block;}
   .hero-ctas{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:18px;}
@@ -397,8 +401,12 @@
 
   /* Feature strip: quick reasons to shop */
   .top-banner-wrap{
-    background:var(--white);
+    background:
+      radial-gradient(circle, var(--pink-mid) 1.5px, transparent 1.5px),
+      linear-gradient(180deg, var(--white) 0%, var(--blush) 100%);
+    background-size: 26px 26px, 100% 100%;
     border-bottom:2px solid var(--border);
+    position:relative; overflow:hidden;
   }
   .favorites-section{
     background:var(--blush);
@@ -632,6 +640,9 @@
 </a>
 
 <div class="top-banner-wrap">
+<div class="banner-sticker" style="top:8px; left:6%; width:26px; height:26px; color:#ff8fc4; animation-delay:0s;" aria-hidden="true"><svg viewBox="0 0 100 90"><use href="#gemHeartShape"/></svg></div>
+<div class="banner-sticker" style="top:14px; right:7%; width:22px; height:22px; color:var(--gold); animation-delay:0.6s;" aria-hidden="true"><svg viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg></div>
+<div class="banner-sticker" style="bottom:6px; left:12%; width:18px; height:18px; color:var(--pink-hot); animation-delay:1.2s;" aria-hidden="true"><svg viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg></div>
 <div class="eyebrow-wrap reveal">
   <div class="eyebrow">Baked With Love In Small Batches</div>
 </div>

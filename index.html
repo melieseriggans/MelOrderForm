@@ -11,15 +11,7 @@
 <meta property="og:image" content="https://melstreat.com/assets/welcome-banner-new.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<!-- Real favicon set generated from her logo — a browser tab requests
-     /favicon.ico from the site root by default no matter what's linked
-     here, so that file has to exist there too (not just referenced) or
-     some browsers/tabs keep showing whatever old icon (e.g. a leftover
-     Lovable default) is sitting at the root. -->
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png">
+<link rel="icon" type="image/png" href="assets/logo.png">
 <!-- Add-to-Home-Screen / PWA setup — lets the whole site install as one
      app (see manifest.json) so it opens full-screen without the browser's
      address bar, same as Quick Pay / App Payments. -->
@@ -28,6 +20,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mel's Treat">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -175,7 +168,7 @@
   }
 
   /* Nav */
-  .top-nav{position:sticky; top:0; z-index:50; background:rgba(255,255,255,0.94); backdrop-filter:blur(10px); border-bottom:1px solid var(--border);}
+  .top-nav{position:sticky; top:0; z-index:50; background:linear-gradient(180deg, #fff5fa, #ffe0ee); border-bottom:2px solid var(--pink-hot); box-shadow:0 2px 10px rgba(226,3,118,0.08);}
   .nav-inner{max-width:1100px; margin:0 auto; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px;}
   .nav-brand{display:flex; align-items:center; gap:8px; text-decoration:none; flex-shrink:0;}
   .nav-brand img{width:48px; height:48px; object-fit:cover;}
@@ -233,13 +226,21 @@
   @media (min-width: 720px){ .nav-dropdown, .nav-dropdown-overlay{display:none;} }
 
   /* Hero */
+  .hero-section-wrap{
+    background:var(--cream); border-bottom:2px solid var(--border);
+    position:relative;
+  }
   .hero{max-width:720px; margin:0 auto; padding:50px 24px 40px; text-align:center;}
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px;
     font-family:'Fredoka', sans-serif; font-size:0.76rem; font-weight:600; color:var(--pink-deep);
-    letter-spacing:1.4px; text-transform:uppercase; margin-bottom:14px;
+    letter-spacing:1.4px; text-transform:uppercase; margin-bottom:0;
+    background:var(--white); border:1.5px solid var(--pink-hot); border-radius:30px;
+    padding:9px 20px; box-shadow:0 3px 10px rgba(226,3,118,0.15);
   }
   .eyebrow::before, .eyebrow::after{content:'✦'; color:var(--gold); font-size:0.7rem;}
+  .banner-sticker{position:absolute; pointer-events:none; animation:splashFloat 4s ease-in-out infinite;}
+  .banner-sticker svg{width:100%; height:100%; display:block;}
 
   /* Y2K glossy star accent — a real drawn star with a glossy highlight,
      not a copied graphic, built in your own pink/gold palette */
@@ -311,8 +312,8 @@
   .catering-promo-bar strong{font-family:'Fredoka', sans-serif;}
   .catering-promo-bar:hover{background:linear-gradient(90deg, #b87f1f, var(--gold));}
 
-  .eyebrow-wrap{text-align:center; padding:24px 24px 0;}
-  .hero-banner-wrap{position:relative; width:100%; margin:14px 0 0; line-height:0;}
+  .eyebrow-wrap{text-align:center; padding:24px 24px 18px; position:relative;}
+  .hero-banner-wrap{position:relative; width:100%; margin:14px 0 16px; line-height:0;}
   .hero-banner{width:100%; aspect-ratio:850/314; max-height:50vh; object-fit:cover; display:block;}
   .hero-ctas{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:18px;}
 
@@ -399,10 +400,17 @@
   .trust-item .icon{width:22px; height:22px; border-radius:50%; background:var(--blush); display:flex; align-items:center; justify-content:center; font-size:0.72rem; flex-shrink:0;}
 
   /* Feature strip: quick reasons to shop */
+  .top-banner-wrap{
+    background:
+      radial-gradient(circle, var(--pink-mid) 1.5px, transparent 1.5px),
+      linear-gradient(180deg, var(--white) 0%, var(--blush) 100%);
+    background-size: 26px 26px, 100% 100%;
+    border-bottom:2px solid var(--border);
+    position:relative; overflow:hidden;
+  }
   .favorites-section{
-    background-image: linear-gradient(rgba(254,221,228,0.6), rgba(254,221,228,0.6)), url('assets/about-leopard-recolor.jpg');
-    background-size: cover, 200px auto;
-    background-position: center, center;
+    background:var(--blush);
+    border-top:2px solid var(--border);
     padding:30px 0 32px; text-align:center; overflow:hidden; position:relative;
   }
   .favorites-inner{max-width:900px; margin:0 auto; padding:0 24px;}
@@ -423,11 +431,21 @@
   .favorite-card{
     position:relative; flex-shrink:0; width:150px;
     text-decoration:none; color:var(--ink); border-radius:20px; overflow:hidden;
-    box-shadow:var(--shadow); border:1px solid var(--border); transition:transform 0.2s, box-shadow 0.2s;
+    background:transparent; box-shadow:none; border:1px solid transparent;
+    transition:transform 0.2s, box-shadow 0.2s, background 0.2s, border-color 0.2s;
   }
-  .favorite-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-lift);}
+  .favorite-card:hover, .favorite-card:focus-visible{
+    transform:translateY(-4px); background:var(--white);
+    box-shadow:var(--shadow-lift); border-color:var(--border);
+  }
   .favorite-card img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;}
-  .favorite-name{font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem; padding:10px 8px;}
+  .favorite-name{
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.85rem; padding:10px 8px;
+    transition:background 0.2s, color 0.2s;
+  }
+  .favorite-card:hover .favorite-name, .favorite-card:focus-visible .favorite-name{
+    background:var(--pink-deep); color:var(--white);
+  }
   .favorite-badge{
     position:absolute; top:6px; left:6px; z-index:2;
     background:url('assets/about-leopard-recolor.jpg') center/cover, var(--pink-hot); color:var(--white); font-family:'Fredoka', sans-serif;
@@ -592,7 +610,7 @@
       <a href="about.html" class="desktop-link">About</a>
       <a href="testimonials.html" class="desktop-link">Reviews</a>
       <a href="faq.html" class="desktop-link">FAQ</a>
-      <a href="links.html" class="desktop-link">Links</a>
+      <a href="shop-links.html" class="desktop-link">Links</a>
       <a href="menu.html" class="nav-cart" aria-label="Shop"><span id="nav-cart-emoji">🛍️</span><span class="nav-cart-badge hidden" id="nav-cart-badge">0</span></a>
       <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-label="Menu">☰</button>
     </div>
@@ -613,7 +631,7 @@
     <a href="testimonials.html">⭐ Reviews</a>
     <a href="faq.html">❓ FAQ</a>
     <a href="catering.html">🎉 Catering</a>
-    <a href="links.html">🔗 All Links</a>
+    <a href="shop-links.html">🔗 All Links</a>
   </div>
 </div>
 
@@ -621,6 +639,10 @@
   🎉 Planning an event? <strong>3+ Dozen Catering Orders</strong> — Tap To Request A Quote →
 </a>
 
+<div class="top-banner-wrap">
+<div class="banner-sticker" style="top:8px; left:6%; width:26px; height:26px; color:#ff8fc4; animation-delay:0s;" aria-hidden="true"><svg viewBox="0 0 100 90"><use href="#gemHeartShape"/></svg></div>
+<div class="banner-sticker" style="top:14px; right:7%; width:22px; height:22px; color:var(--gold); animation-delay:0.6s;" aria-hidden="true"><svg viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg></div>
+<div class="banner-sticker" style="bottom:6px; left:12%; width:18px; height:18px; color:var(--pink-hot); animation-delay:1.2s;" aria-hidden="true"><svg viewBox="0 0 100 100"><use href="#stickerStarShape"/></svg></div>
 <div class="eyebrow-wrap reveal">
   <div class="eyebrow">Baked With Love In Small Batches</div>
 </div>
@@ -629,6 +651,7 @@
   <video class="hero-banner" id="hero-video" autoplay muted loop playsinline webkit-playsinline poster="assets/welcome-banner-new.png">
     <source src="assets/hero-banner.mp4" type="video/mp4">
   </video>
+</div>
 </div>
 
 <div class="favorites-section">
@@ -702,6 +725,9 @@
   </div>
 </div>
 
+<div class="leopard-strip"></div>
+
+<div class="hero-section-wrap">
 <div class="hero reveal" style="padding-top:24px; position:relative;">
   <h1>Tasty Homemade Treats ♡
     <svg class="hero-star-accent" viewBox="0 0 100 100" style="top:-18px; right:-8px;" aria-hidden="true">
@@ -730,6 +756,7 @@
     <div class="trust-item"><span class="icon">🔒</span> Secure Checkout</div>
   </div>
   <div class="service-area">📍 Pickup in Oxford &amp; Anniston, AL · Local Delivery Available</div>
+</div>
 </div>
 
 <div class="sticky-note" id="sticky-note">
@@ -856,7 +883,8 @@
         <a href="about.html">About Me</a>
         <a href="faq.html">FAQ</a>
         <a href="testimonials.html">Reviews</a>
-        <a href="links.html">Links</a>
+        <a href="shop-links.html">Links</a>
+        <a href="donations.html">Donations</a>
       </div>
     </div>
   </div>
@@ -1025,8 +1053,11 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'Intersect
 }
 
 // The Fan Favorites strip animates continuously via CSS (see @keyframes
-// favMarquee) — this just pauses it briefly if someone taps/drags it,
-// so the animation doesn't fight their attempt to look closer.
+// favMarquee) — this pauses it briefly if someone hovers with a mouse, so
+// the animation doesn't fight their attempt to look closer. Mobile has no
+// real "hover", and scrolling the page naturally touches this section, so
+// touch input is intentionally excluded — otherwise a passing scroll would
+// pause it and it could look stuck for anyone browsing on a phone.
 const favTrack = document.getElementById('favorites-track');
 if (favTrack) {
   let favResumeTimer = null;
@@ -1035,8 +1066,9 @@ if (favTrack) {
     clearTimeout(favResumeTimer);
     favResumeTimer = setTimeout(() => favTrack.classList.remove('paused'), 4000);
   }
-  favTrack.addEventListener('pointerdown', pauseFavMarquee);
-  favTrack.addEventListener('touchstart', pauseFavMarquee, { passive: true });
+  favTrack.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') pauseFavMarquee();
+  });
 }
 
 // --- Welcome discount signup ---
@@ -1066,7 +1098,10 @@ async function getSupabase() {
 // if it's been closed or already used so it doesn't keep bugging people.
 try {
   const alreadyClaimed = localStorage.getItem('mels_welcome_claimed');
-  const alreadyDismissed = sessionStorage.getItem('mels_note_dismissed');
+  // Was sessionStorage (reset every tab session, so a closed note came
+  // right back on the next visit) — now permanent per browser, same as
+  // claiming it, so closing it once actually means "stop asking."
+  const alreadyDismissed = localStorage.getItem('mels_welcome_dismissed');
   if (!alreadyClaimed && !alreadyDismissed) {
     setTimeout(() => {
       document.getElementById('sticky-note').classList.add('show');
@@ -1078,7 +1113,7 @@ try {
 
 document.getElementById('sticky-note-close').addEventListener('click', () => {
   document.getElementById('sticky-note').classList.remove('show');
-  try { sessionStorage.setItem('mels_note_dismissed', '1'); } catch (e) {}
+  try { localStorage.setItem('mels_welcome_dismissed', '1'); } catch (e) {}
 });
 
 async function submitWelcomeSignup() {
