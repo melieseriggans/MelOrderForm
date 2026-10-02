@@ -577,7 +577,7 @@
     <div class="nav-links">
       <a href="shop.html" style="color:#e20376;">Shop 🔒</a>
       <a href="#about" data-section="about">About Me</a>
-      <a href="links.html">Links</a>
+      <a href="shop-links.html">Links</a>
       <a href="faq.html">FAQ</a>
       <a href="testimonials.html">Reviews</a>
     </div>
@@ -1466,8 +1466,11 @@ async function placeOrder() {
       is_preorder: isPreorderMode,
     };
 
-    const { error: insertError } = await supabase.from('orders').insert(orderRow);
+    const { data: submitData, error: insertError } = await supabase.functions.invoke('submit-order', { body: orderRow });
     if (insertError) throw insertError;
+    if (!submitData || submitData.success === false) {
+      throw new Error((submitData && submitData.message) || 'Order could not be submitted.');
+    }
 
     if (!isPreorderMode) {
       try {

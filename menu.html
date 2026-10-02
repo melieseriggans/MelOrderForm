@@ -529,10 +529,10 @@
        the color key in .wheel-legend below. */
     background: conic-gradient(from 0deg,
       var(--white) 0deg 36deg, var(--pink-hot) 36deg 72deg,
-      var(--white) 72deg 108deg, var(--pink-glow) 108deg 144deg,
-      var(--white) 144deg 180deg, var(--pink-hot) 180deg 216deg,
-      var(--white) 216deg 252deg, var(--gold) 252deg 288deg,
-      var(--white) 288deg 324deg, var(--pink-hot) 324deg 360deg);
+      var(--pink-glow) 72deg 108deg, var(--white) 108deg 144deg,
+      var(--pink-hot) 144deg 180deg, var(--white) 180deg 216deg,
+      var(--gold) 216deg 252deg, var(--pink-hot) 252deg 288deg,
+      var(--pink-glow) 288deg 324deg, var(--white) 324deg 360deg);
     transition: transform 4.2s cubic-bezier(0.12, 0.72, 0.15, 1);
   }
   .sticky-note.expanded .wheel-disc{border-width:6px;}
@@ -819,7 +819,7 @@
     <a href="testimonials.html">⭐ Reviews</a>
     <a href="faq.html">❓ FAQ</a>
     <a href="catering.html">🎉 Catering</a>
-    <a href="links.html">🔗 All Links</a>
+    <a href="shop-links.html">🔗 All Links</a>
   </div>
 </div>
 
@@ -2096,7 +2096,17 @@ function attachAddressAutocomplete(input) {
     if (q.length < 5) { hideList(); return; }
     debounceTimer = setTimeout(async () => {
       try {
-        const params = new URLSearchParams({ format: 'json', addressdetails: '1', limit: '5', countrycodes: 'us', q });
+        // Soft-biased (not hard-bounded) toward Mel's actual delivery area
+        // around Anniston, AL — without this, a query like "123 Main St"
+        // has no geographic context and Nominatim can surface a same-named
+        // street anywhere in the US ahead of the real local one. viewbox
+        // without &bounded=1 only nudges ranking, so a genuinely distant
+        // customer's real address still shows up, just not pushed to the
+        // top over a local false match.
+        const params = new URLSearchParams({
+          format: 'json', addressdetails: '1', limit: '5', countrycodes: 'us', q,
+          viewbox: '-86.58,34.26,-85.08,33.06',
+        });
         const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, { headers: { 'Accept': 'application/json' } });
         if (!res.ok) return;
         const data = await res.json();
@@ -2210,14 +2220,14 @@ document.getElementById('wheel-spin-btn')?.addEventListener('click', () => {
 const WHEEL_SEGMENTS = [
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
-  { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'percent_off', emoji: '🎉', word: '10% OFF', textColor: '#ffffff' },
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_box', emoji: '🎁', word: 'BOX!', textColor: '#ffffff' },
-  { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
+  { type: 'percent_off', emoji: '🎉', word: '10% OFF', textColor: '#ffffff' },
+  { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
 ];
 const WHEEL_PRIZE_META = {
   free_cookie: { emoji: '🍪', title: 'A Free Cookie!' },
@@ -2771,7 +2781,12 @@ checkoutBtn.addEventListener('click', async () => {
         discount_code: appliedDiscount ? appliedDiscount.code : null,
         discount_amount: appliedDiscount ? calcDiscountAmount(calcSubtotal()) : 0,
         tip_amount: tipAmount,
-        is_preorder: isPreorderMode,
+        // Always false now — "isPreorderMode" above is just a stock-bypass
+        // flag for the made-to-order model (nothing to do with whether this
+        // particular order is a real preorder), so it must never be reused
+        // here. A real "is_preorder" distinction doesn't apply anymore
+        // since every order is made fresh to order.
+        is_preorder: false,
         // Not a column on the orders table (submit-order just ignores it) —
         // carried through to send-order-emails below so a cash-on-delivery
         // confirmation can spell out the delivery fee instead of just a
