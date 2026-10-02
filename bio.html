@@ -71,7 +71,9 @@
     font-family:'Baloo 2', cursive; font-weight:800; font-size:0.86rem; color:var(--pink-deep);
     display:flex; align-items:center; gap:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     text-shadow:1px 1px 0 rgba(255,255,255,0.75);
+    text-decoration:none; cursor:pointer;
   }
+  .browser-topbar a.url-text:hover, .browser-topbar a.url-text:active{color:var(--pink-hot); text-decoration:underline;}
   .browser-topbar .win-dots{display:flex; gap:6px; flex-shrink:0;}
   .browser-topbar .win-dots span{width:9px; height:9px; border-radius:50%; background:var(--pink-hot); display:block;}
   .browser-topbar .win-dots span:nth-child(2){background:#ffbd2e;}
@@ -85,7 +87,7 @@
     position:relative;
   }
   .profile-avatar{
-    width:84px; height:84px; border-radius:50%; object-fit:cover; flex-shrink:0;
+    width:112px; height:112px; border-radius:50%; object-fit:cover; flex-shrink:0;
     border:4px solid var(--pink-hot); box-shadow:0 4px 14px rgba(226,3,118,0.25);
     background:var(--white); padding:4px;
   }
@@ -112,22 +114,31 @@
     transform:rotate(45deg);
   }
 
-  /* ---- Action row: chunky "sticker" buttons with a hard offset shadow,
-         like the message / call-here buttons on a Y2K fan-site profile ---- */
-  .profile-actions{display:flex; gap:10px; padding:16px 16px 6px;}
-  .profile-actions a{
-    flex:1; text-align:center; text-decoration:none; color:var(--pink-deep);
-    border:2px solid var(--pink-hot); border-radius:12px; padding:10px 4px;
-    background:var(--pink-light); box-shadow:3px 3px 0 var(--pink-hot);
+  /* ---- Order Now: one big primary button, full width ---- */
+  .order-now-btn{
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    margin:16px 16px 8px; text-decoration:none; color:#fff;
+    background:var(--pink-hot); border:2px solid var(--pink-hot); border-radius:12px;
+    padding:11px 4px; box-shadow:3px 3px 0 var(--pink-deep);
+    font-family:'Baloo 2', cursive; font-weight:800; font-size:0.95rem;
     transition:transform 0.08s ease, box-shadow 0.08s ease;
   }
-  .profile-actions a:active{transform:translate(3px, 3px); box-shadow:0 0 0 var(--pink-hot);}
-  .profile-actions a.primary{
-    color:#fff; background:var(--pink-hot); box-shadow:3px 3px 0 var(--pink-deep);
+  .order-now-btn:active{transform:translate(3px, 3px); box-shadow:0 0 0 var(--pink-deep);}
+  .order-now-btn .pa-icon{font-size:1.05rem;}
+
+  /* ---- Contact row: compact secondary buttons underneath, so they stay
+         out of the way of the primary Order Now button ---- */
+  .contact-actions{display:flex; gap:6px; padding:0 16px 6px;}
+  .contact-actions a, .contact-actions button{
+    flex:1; text-align:center; text-decoration:none; color:var(--pink-deep);
+    border:1.5px solid var(--pink-hot); border-radius:10px; padding:5px 3px;
+    background:var(--pink-light); box-shadow:2px 2px 0 var(--pink-hot);
+    transition:transform 0.08s ease, box-shadow 0.08s ease;
+    font-family:inherit; cursor:pointer; -webkit-appearance:none; appearance:none;
   }
-  .profile-actions a.primary:active{box-shadow:0 0 0 var(--pink-deep);}
-  .pa-icon{display:block; font-size:1.15rem; margin-bottom:1px;}
-  .pa-label{display:block; font-family:'Comic Neue', cursive; font-weight:700; font-size:0.74rem;}
+  .contact-actions a:active, .contact-actions button:active{transform:translate(2px, 2px); box-shadow:0 0 0 var(--pink-hot);}
+  .pa-icon{display:block; font-size:0.88rem; margin-bottom:1px;}
+  .pa-label{display:block; font-family:'Comic Neue', cursive; font-weight:700; font-size:0.64rem;}
 
   .section-title{
     font-family:'Baloo 2', cursive; font-weight:800; color:var(--pink-deep); font-size:1.08rem;
@@ -168,15 +179,25 @@
     border:2px dashed var(--pink-hot); border-radius:16px; padding:10px 12px 12px;
     min-height:188px; max-height:188px; overflow:hidden; position:relative;
     box-shadow:0 4px 14px rgba(226,3,118,0.16);
+    -webkit-mask-image:linear-gradient(180deg, transparent 0, black 20px, black 100%);
+    mask-image:linear-gradient(180deg, transparent 0, black 20px, black 100%);
   }
   .live-chat-feed{display:flex; flex-direction:column; gap:8px; justify-content:flex-end; min-height:100%;}
   .live-comment{
     background:var(--white); border:1.5px solid var(--pink-mid); border-radius:13px 13px 13px 3px; padding:8px 12px;
     box-shadow:0 2px 6px rgba(226,3,118,0.1);
-    opacity:0; transform:translateY(18px); animation:liveCommentIn 0.5s ease forwards;
+    opacity:0; transform:translateY(18px); animation:liveCommentIn 0.6s cubic-bezier(.22,1,.36,1) forwards;
+    max-height:140px;
+    transition:opacity 0.42s ease, transform 0.42s ease, max-height 0.42s ease, padding 0.42s ease, margin 0.42s ease, border-width 0.42s ease;
   }
-  @keyframes liveCommentIn{ from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes liveCommentIn{ from{opacity:0; transform:translateY(18px) scale(0.97);} to{opacity:1; transform:translateY(0) scale(1);} }
   @media (prefers-reduced-motion: reduce){ .live-comment{animation:none; opacity:1; transform:none;} }
+  .live-comment.lc-exit{
+    opacity:0; transform:translateY(-14px) scale(0.96);
+    max-height:0; padding-top:0; padding-bottom:0; margin-bottom:-8px; border-width:0;
+    pointer-events:none;
+  }
+  @media (prefers-reduced-motion: reduce){ .live-comment.lc-exit{transition:none; opacity:0; max-height:0;} }
   .live-comment .lc-name{font-weight:700; color:var(--pink-deep); font-size:0.82rem; font-family:'Comic Neue', cursive;}
   .live-comment .lc-stars{color:#e8a400; font-size:0.75rem; margin:1px 0 2px; letter-spacing:1px;}
   .live-comment .lc-text{font-size:0.86rem; color:var(--ink); line-height:1.4;}
@@ -261,7 +282,7 @@
 <div class="page">
 
   <div class="browser-topbar">
-    <span class="url-text">melstreat.com ★</span>
+    <a class="url-text" href="https://melstreat.com/">melstreat.com ★</a>
     <span class="win-dots"><span></span><span></span><span></span></span>
   </div>
 
@@ -292,10 +313,11 @@
     </div>
   </div>
 
-  <div class="profile-actions">
+  <a href="https://melstreat.com/menu.html" target="_blank" rel="noopener" class="order-now-btn"><span class="pa-icon">🛒</span><span>Order Now</span></a>
+  <div class="contact-actions">
     <a href="mailto:Meliese-riggans@melstreat.com"><span class="pa-icon">✉️</span><span class="pa-label">Email</span></a>
-    <a href="https://melstreat.com/menu.html" target="_blank" rel="noopener" class="primary"><span class="pa-icon">🛒</span><span class="pa-label">Order Now</span></a>
-    <a href="tel:+12564059471"><span class="pa-icon">📱</span><span class="pa-label">Call/Text</span></a>
+    <a href="tel:+12564059471"><span class="pa-icon">📱</span><span class="pa-label">Call</span></a>
+    <button type="button" id="text-btn" data-number="+12564059471"><span class="pa-icon">💬</span><span class="pa-label" id="text-btn-label">Text</span></button>
   </div>
 
   <div class="section-title">✨ My Socials</div>
@@ -342,6 +364,28 @@
 </div>
 
 <script>
+// "Text" button: copies the phone number to the clipboard (as a safety net
+// for desktops or anywhere the sms: link can't open an app) and opens the
+// device's messaging app to a new text to that number.
+(function setupTextButton() {
+  const btn = document.getElementById('text-btn');
+  if (!btn) return;
+  const label = document.getElementById('text-btn-label');
+  const number = btn.dataset.number;
+
+  btn.addEventListener('click', () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(number).catch(() => {});
+    }
+    if (label) {
+      const original = label.textContent;
+      label.textContent = 'Copied!';
+      setTimeout(() => { label.textContent = original; }, 1500);
+    }
+    window.location.href = `sms:${number}`;
+  });
+})();
+
 // Streams real approved reviews into the "Live Reviews" box one at a time,
 // like comments scrolling up during a live video — a genuine guestbook
 // feed instead of invented engagement.
@@ -389,8 +433,14 @@
         <div class="lc-text">${text}</div>`;
       feed.appendChild(bubble);
 
-      while (feed.children.length > MAX_VISIBLE) {
-        feed.removeChild(feed.firstChild);
+      // Smoothly fade + collapse the oldest comment out instead of an
+      // abrupt cut, so the feed reads like it's gently scrolling.
+      if (feed.children.length > MAX_VISIBLE) {
+        const oldest = feed.children[0];
+        oldest.classList.add('lc-exit');
+        setTimeout(() => {
+          if (oldest.parentNode === feed) feed.removeChild(oldest);
+        }, 430);
       }
     }
 
