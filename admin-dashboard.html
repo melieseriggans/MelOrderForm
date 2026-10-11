@@ -303,6 +303,18 @@
     border-radius:14px; padding:8px 16px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.82rem; cursor:pointer;
   }
   .review-filter-btn.active{background:var(--pink-hot); color:var(--white); border-color:var(--pink-hot);}
+  .pantry-filter-btn{
+    background:var(--white); border:1.5px solid var(--border); color:var(--ink-soft);
+    border-radius:12px; padding:9px 14px; font-family:'Fredoka', sans-serif; font-weight:600;
+    font-size:0.85rem; cursor:pointer; transition:all 0.15s;
+  }
+  .pantry-filter-btn.active{background:var(--pink-hot); color:var(--white); border-color:var(--pink-hot);}
+  .pantry-row{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border);}
+  .pantry-row:last-child{border-bottom:none;}
+  .pantry-row input[type=checkbox]{width:22px; height:22px; accent-color:var(--pink-hot); flex:0 0 auto; margin:0;}
+  .pantry-row-name{flex:1; font-weight:600; font-size:0.95rem;}
+  .pantry-row-stamp{display:block; font-size:0.78rem; color:var(--ink-soft); font-weight:500;}
+  .pantry-row-del{background:none; border:none; color:var(--ink-soft); font-size:1.1rem; cursor:pointer; padding:4px;}
   .log-filter-btn{
     background:var(--white); border:1.5px solid var(--border); color:var(--ink-soft);
     border-radius:14px; padding:8px 16px; font-family:'Fredoka', sans-serif; font-weight:600; font-size:0.82rem; cursor:pointer;
@@ -522,6 +534,34 @@
   .mm-content-picker-row:last-child{border-bottom:none;}
   .mm-content-picker-row label{margin:0; flex:1; font-weight:600; font-size:0.85rem;}
   .mm-content-picker-row input[type="number"]{width:64px; text-align:center;}
+
+  .rs-strip { display:flex; align-items:center; gap:10px; background:#fff0f7; border:1.5px solid #ffd0e6; border-radius:14px; padding:10px 12px; margin-bottom:12px; font-weight:700; font-size:0.95rem; }
+  .rs-strip.all { background:#e8f8ee; border-color:#b6e6c8; color:#1d7a43; }
+  .rs-load { background:#fff; border:1.5px solid #ffd0e6; border-radius:14px; padding:10px 12px; margin-bottom:12px; }
+  .rs-load summary { cursor:pointer; font-weight:700; }
+  .rs-load-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #ffd0e6; }
+  .rs-final { margin-top:10px; font-size:0.88rem; line-height:1.6; }
+  .rs-card { border:2px solid #ffd0e6; border-radius:16px; padding:12px; margin-bottom:12px; background:#fff; }
+  .rs-card.overdue { background:#fde8ef; border-color:#f4a3c4; }
+  .rs-card.done { opacity:0.65; padding:8px 12px; }
+  .rs-head { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; }
+  .rs-name { font-weight:800; font-size:1.05rem; }
+  .rs-when { font-size:0.88rem; color:#555; margin-top:2px; }
+  .rs-warn { background:#fff8e1; border-radius:10px; padding:6px 10px; margin:8px 0; font-size:0.85rem; font-weight:600; color:#8a5a00; }
+  .rs-item { display:flex; align-items:center; gap:10px; padding:9px 4px; border-bottom:1px dashed #ffd0e6; font-size:1rem; cursor:pointer; }
+  .rs-item input { width:24px; height:24px; accent-color:#e20376; margin:0; flex:0 0 auto; }
+  .rs-item.ok span { text-decoration:line-through; color:#999; }
+  .rs-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  .rs-btn { border:1.5px solid #ffd0e6; background:#fff; color:#222; border-radius:12px; padding:10px 12px; font-weight:700; font-size:0.9rem; text-decoration:none; cursor:pointer; font-family:inherit; }
+  .rs-btn.ok { background:#e8f8ee; border-color:#b6e6c8; color:#1d7a43; }
+  .rs-hand { width:100%; margin-top:12px; padding:16px; border:none; border-radius:14px; background:#e20376; color:#fff; font-weight:800; font-size:1.1rem; cursor:pointer; font-family:inherit; }
+  .rs-hand:disabled { opacity:0.6; }
+  .closeout-row { display:flex; align-items:center; gap:10px; padding:11px 4px; border-bottom:1px dashed #ffd0e6; font-size:0.92rem; line-height:1.3; }
+  .closeout-row.todo { cursor:pointer; background:#fff8e1; border-radius:10px; padding-left:8px; margin-bottom:4px; border-bottom:none; font-weight:700; color:#8a5a00; }
+  .closeout-row.manual input { width:22px; height:22px; accent-color:#e20376; flex:0 0 auto; margin:0; }
+  .closeout-row.manual.ok span { text-decoration:line-through; opacity:.6; }
+  .closeout-mark { font-size:1.1rem; flex:0 0 auto; }
+  .closeout-done { text-align:center; font-weight:800; color:#1a8a4a; background:#e6f9ee; border-radius:12px; padding:12px; margin-top:10px; }
 </style>
 </head>
 <body>
@@ -550,6 +590,7 @@
       <button class="tab-btn" data-tab="customers">Customers</button>
       <button class="tab-btn" data-tab="catering">Catering<span class="tab-count-badge" id="tab-badge-catering" style="display:none;"></span></button>
       <button class="tab-btn" data-tab="reviews">Reviews<span class="tab-count-badge" id="tab-badge-reviews" style="display:none;"></span></button>
+      <button class="tab-btn" data-tab="pantry">🛒 Ingredients<span class="tab-count-badge" id="tab-badge-pantry" style="display:none;"></span></button>
       <button class="tab-btn" data-tab="discounts">Discounts<span class="tab-count-badge" id="tab-badge-discounts" style="display:none;"></span></button>
       <button class="tab-btn" data-tab="email-center">📧 Emails<span class="tab-count-badge" id="tab-badge-email-center" style="display:none;"></span></button>
       <button class="tab-btn" data-tab="scripts">Messages</button>
@@ -570,11 +611,11 @@
       <div class="stat-grid">
         <div class="stat-card">
           <div class="stat-value" id="today-order-count">0</div>
-          <div class="stat-label">Pickups/Deliveries Today</div>
+          <div class="stat-label" id="today-count-label">Pickups/Deliveries Today</div>
         </div>
         <div class="stat-card">
           <div class="stat-value" id="today-revenue">$0</div>
-          <div class="stat-label">Today's Revenue</div>
+          <div class="stat-label" id="today-revenue-label">Today's Revenue</div>
         </div>
       </div>
 
@@ -593,7 +634,8 @@
       </div>
 
       <div class="card">
-        <h2>Today's Orders</h2>
+        <h2 id="today-orders-heading">Today's Orders</h2>
+        <div id="runsheet-top"></div>
         <div id="today-orders-list"></div>
       </div>
 
@@ -615,6 +657,12 @@
       <div class="card" id="today-pending-catering-card">
         <h2>📋 Catering Needing A Quote</h2>
         <div id="today-pending-catering-list"></div>
+      </div>
+
+      <div class="card" id="closeout-card">
+        <h2>🌙 Close-Out Checklist</h2>
+        <div class="order-detail" style="margin:0 0 10px;">Run through this before you stop for the day.</div>
+        <div id="closeout-list"></div>
       </div>
 
       <div class="card">
@@ -641,6 +689,17 @@
         <h2>👁️ Shop Categories</h2>
         <div class="order-detail" style="margin:0 0 12px;">Hide an entire category from your shop without deleting anything — flip it back on whenever you're ready to launch it. Customers only ever see what's turned on here.</div>
         <div id="menu-mgmt-category-list"></div>
+      </div>
+
+      <div class="card" id="pause-card">
+        <h2>🌸 Pause Orders</h2>
+        <div class="order-detail" style="margin:0 0 12px;">Going on vacation or need a break? Turn this on and your order page shows a sad-cookie screen with your reason and the date you'll be back, and customers can't order. Turn it off whenever you're ready.</div>
+        <div id="pause-status" style="font-weight:700; margin-bottom:10px;"></div>
+        <label class="order-detail" style="display:block; margin:0 0 4px;">Back on (customers will see this date)</label>
+        <input type="date" id="pause-until" style="width:100%; margin-bottom:10px;">
+        <label class="order-detail" style="display:block; margin:0 0 4px;">Why are you closed? (customers will see this)</label>
+        <input type="text" id="pause-msg" placeholder="e.g. I'm on vacation with my family" style="width:100%; margin-bottom:10px;">
+        <button type="button" class="btn" id="pause-toggle-btn" style="width:100%;"></button>
       </div>
 
       <div class="card">
@@ -969,6 +1028,23 @@
         <button class="review-filter-btn" data-filter="all">All</button>
       </div>
       <div id="reviews-mgmt-list"></div>
+    </div>
+
+    <!-- INGREDIENTS / PANTRY TAB — shares the manage-pantry backend with
+         the standalone ingredients.html page. Checking an item off there
+         shows up here as "bought" automatically, no re-entry needed. -->
+    <div class="tab-panel" id="tab-pantry">
+      <div class="card">
+        <h2>🛒 Ingredients</h2>
+        <div class="order-detail" style="margin:0 0 14px;">This is linked to your Ingredients list app — anything checked off there as bought shows up here automatically, and anything you check off here shows there too.</div>
+        <a href="ingredients.html" target="_blank" class="btn btn-small btn-outline" style="display:inline-block; text-decoration:none; margin:0 0 16px;">Open full Ingredients app ↗</a>
+        <button type="button" class="btn btn-small" id="pantry-send-list-btn" style="display:block; margin:0 0 16px;">📤 Send my list as a cute picture</button>
+        <div class="tabs" style="margin-bottom:16px;">
+          <button class="pantry-filter-btn active" data-pantryfilter="need">Still Need</button>
+          <button class="pantry-filter-btn" data-pantryfilter="have">Recently Bought</button>
+        </div>
+        <div id="pantry-list"></div>
+      </div>
     </div>
 
     <!-- EMAIL CENTER TAB — everything related to email lives here: what
@@ -1643,6 +1719,8 @@ async function tryLogin(pw) {
     if (d.success) { reviewsList = d.reviews; renderReviewsMgmt(); }
   }).catch(err => console.error('Could not load reviews:', err));
 
+  loadPantryItems();
+
   loadAudienceCounts();
 }
 
@@ -1918,10 +1996,44 @@ function renderCategoryVisibility() {
   });
 }
 
+function renderPauseCard() {
+  const vis = getCategoryVisibility();
+  const pz = vis._pause || {};
+  const today = localDateStr(0);
+  const active = !!pz.on && (!pz.until || today < pz.until);
+  const st = document.getElementById('pause-status');
+  if (!st) return;
+  st.textContent = active ? ('🌸 Orders are PAUSED' + (pz.until ? ' until ' + pz.until : '')) : '✅ Taking orders as normal';
+  document.getElementById('pause-toggle-btn').textContent = active ? 'Turn orders back on' : 'Pause orders';
+  const u = document.getElementById('pause-until'), m = document.getElementById('pause-msg');
+  if (document.activeElement !== u) u.value = pz.until || '';
+  if (document.activeElement !== m) m.value = pz.msg || '';
+}
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest && e.target.closest('#pause-toggle-btn');
+  if (!btn) return;
+  const vis = getCategoryVisibility();
+  const pz = vis._pause || {};
+  const active = !!pz.on && (!pz.until || localDateStr(0) < pz.until);
+  vis._pause = active
+    ? { on: false }
+    : { on: true, until: document.getElementById('pause-until').value || '', msg: document.getElementById('pause-msg').value.trim() };
+  btn.disabled = true;
+  try {
+    await callAdmin('update_setting', { key: 'category_visibility', value: JSON.stringify(vis) });
+    dashboardData.settings.category_visibility = JSON.stringify(vis);
+    renderPauseCard();
+    showToast(active ? 'Orders are back on ✧' : 'Orders paused 🌸');
+  } catch (err) {
+    alert('Could not save: ' + err.message);
+  } finally { btn.disabled = false; }
+});
+
 function renderMenuManagement() {
   const cookieListEl = document.getElementById('menu-mgmt-cookie-list');
   const cinnamonListEl = document.getElementById('menu-mgmt-cinnamon-list');
   renderCategoryVisibility();
+  renderPauseCard();
   if (!cookieListEl) return; // tab not on this page build
 
   const inventory = dashboardData.inventory || [];
@@ -2676,8 +2788,20 @@ document.querySelectorAll('.cpc-period-btn').forEach(btn => {
 // small count badges on the tab buttons, so all three always agree
 // instead of each tab silently defining "low stock" or "pending" a
 // slightly different way.
+// Dates here are the phone's LOCAL date (the old UTC math flipped to
+// "tomorrow" around 7pm Central). workingToday() also rolls over to the next
+// day at 5pm — too late to prep an order after that, so the Today tab starts
+// showing tomorrow's orders instead.
+const DAY_ROLLOVER_HOUR = 17;
+function localDateStr(offsetDays) {
+  const d = new Date(Date.now() + (offsetDays || 0) * 86400000);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function isAfterRollover() { return new Date().getHours() >= DAY_ROLLOVER_HOUR; }
+function workingToday() { return localDateStr(isAfterRollover() ? 1 : 0); }
+
 function getAttentionItems() {
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = workingToday();
   const orders = dashboardData.orders || [];
   const items = [];
 
@@ -2872,8 +2996,267 @@ function parseTimeToMinutes(timeStr) {
   return hour * 60 + min;
 }
 
+// ---- Close-out checklist (Today tab) ----
+// One line ticks itself from real orders; the rest are hers to tick.
+// Ticks are saved in Settings as { 'YYYY-MM-DD': [ids] } — only today's day
+// is kept, so it starts fresh every morning.
+const CLOSEOUT_MANUAL = [
+  { id: 'stock', label: 'Updated Stock with what I baked today' },
+  { id: 'tomorrow', label: "Looked at tomorrow's orders" },
+  { id: 'clean', label: 'Counters wiped, kitchen reset' },
+];
+function getCloseoutState() {
+  try { return JSON.parse((dashboardData.settings || {}).closeout_state || '{}'); } catch (e) { return {}; }
+}
+let closeoutSaveTimer = null;
+function setCloseoutTick(id, checked) {
+  const day = localDateStr(0);
+  const arr = new Set(getCloseoutState()[day] || []);
+  if (checked) arr.add(id); else arr.delete(id);
+  const value = JSON.stringify({ [day]: Array.from(arr) });
+  if (!dashboardData.settings) dashboardData.settings = {};
+  dashboardData.settings.closeout_state = value;
+  clearTimeout(closeoutSaveTimer);
+  closeoutSaveTimer = setTimeout(() => {
+    callAdmin('update_setting', { key: 'closeout_state', value }).catch(() => showToast('Could not save that tick — check your connection'));
+  }, 500);
+}
+function renderCloseOut() {
+  const el = document.getElementById('closeout-list');
+  if (!el) return;
+  const today = localDateStr(0);
+  const tomorrow = localDateStr(1);
+  const orders = dashboardData.orders || [];
+  const open = orders.filter(o => o.preferred_date === today && o.status !== 'cancelled' && o.status !== 'completed');
+  const tomorrowCount = orders.filter(o => o.preferred_date === tomorrow && o.status !== 'cancelled').length;
+  const ticked = new Set(getCloseoutState()[today] || []);
+  const autoRow = open.length === 0
+    ? '<div class="closeout-row ok"><span class="closeout-mark">✅</span><span>Every order for today is done</span></div>'
+    : `<div class="closeout-row todo" data-closeout-go="orders"><span class="closeout-mark">👉</span><span>${open.length} order${open.length === 1 ? ' is' : 's are'} not marked completed yet</span></div>`;
+  el.innerHTML = autoRow + CLOSEOUT_MANUAL.map(m => {
+    const extra = m.id === 'tomorrow' ? ` (${tomorrowCount} order${tomorrowCount === 1 ? '' : 's'})` : '';
+    return `<label class="closeout-row manual ${ticked.has(m.id) ? 'ok' : ''}"><input type="checkbox" data-closeout="${m.id}" ${ticked.has(m.id) ? 'checked' : ''}><span>${escapeHtml(m.label + extra)}</span></label>`;
+  }).join('');
+  if (open.length === 0 && CLOSEOUT_MANUAL.every(m => ticked.has(m.id))) {
+    el.insertAdjacentHTML('beforeend', '<div class="closeout-done">🎉 All done for today — go rest, you earned it!</div>');
+  }
+}
+document.addEventListener('change', (e) => {
+  const cb = e.target.closest && e.target.closest('[data-closeout]');
+  if (!cb) return;
+  setCloseoutTick(cb.getAttribute('data-closeout'), cb.checked);
+  renderCloseOut();
+});
+document.addEventListener('click', (e) => {
+  const go = e.target.closest && e.target.closest('[data-closeout-go]');
+  if (go) goToTab(go.getAttribute('data-closeout-go'));
+});
+
+
+// ---- Order run sheet (Today tab): confirm meet-up, box check, load list, hand-off ----
+// State lives in the settings table (key runsheet_state) as { 'YYYY-MM-DD': { orderId: {asked, replied, items:{flavor:1}, cash} } }
+function getRunsheetState() {
+  try { return JSON.parse((dashboardData.settings || {}).runsheet_state || '{}'); } catch (e) { return {}; }
+}
+let runsheetSaveTimer = null;
+function updateRunsheet(orderId, patch) {
+  const day = workingToday();
+  const all = getRunsheetState();
+  const keep = {};
+  Object.keys(all).forEach(d => { if (d >= localDateStr(-1)) keep[d] = all[d]; });
+  keep[day] = keep[day] || {};
+  keep[day][orderId] = Object.assign({}, keep[day][orderId] || {}, patch);
+  const value = JSON.stringify(keep);
+  if (!dashboardData.settings) dashboardData.settings = {};
+  dashboardData.settings.runsheet_state = value;
+  clearTimeout(runsheetSaveTimer);
+  runsheetSaveTimer = setTimeout(() => {
+    callAdmin('update_setting', { key: 'runsheet_state', value }).catch(() => showToast('Could not save that tick — check your connection'));
+  }, 500);
+}
+function rsOrderState(orderId) {
+  return (getRunsheetState()[workingToday()] || {})[orderId] || {};
+}
+function rsPlace(o) {
+  const isDelivery = o.fulfillment_type === 'delivery';
+  const dest = isDelivery ? o.delivery_address : o.pickup_location;
+  return (dest && dest !== 'In-Person Sale') ? dest : '';
+}
+function rsMessage(o) {
+  const first = (o.full_name || '').trim().split(/\s+/)[0] || 'there';
+  const place = rsPlace(o);
+  const time = o.pickup_time || 'the time we planned';
+  if (o.fulfillment_type === 'delivery') {
+    return `Hi ${first}! Just confirming your delivery for ${time}. Let me know if any changes are needed 💕`;
+  }
+  return `Hi ${first}! Just making sure we're still meeting at ${place || 'our spot'} at ${time} 💕`;
+}
+function rsIsCash(o) { return o.payment_method === 'cash_on_pickup' || o.payment_method === 'cash'; }
+function rsNoteFor(o) {
+  const notes = getCustomerNotes();
+  const key = (o.email || '').toLowerCase();
+  return notes[key] || notes['name:' + (o.full_name || '').toLowerCase()] || '';
+}
+
+function renderRunsheet(sortedOrders, nowMinutes) {
+  const top = document.getElementById('runsheet-top');
+  const list = document.getElementById('today-orders-list');
+  const active = sortedOrders.filter(o => o.status !== 'cancelled');
+  const stateDay = getRunsheetState()[workingToday()] || {};
+  const typeByName = {};
+  (dashboardData.inventory || []).forEach(i => { typeByName[i.cookie_name] = i.product_type || 'cookie'; });
+
+  const itemsOf = o => Object.entries(o.cookies || {}).filter(([, q]) => Number(q) > 0);
+  const boxed = o => { const st = stateDay[o.id] || {}; const its = itemsOf(o); return its.every(([n]) => (st.items || {})[n]); };
+
+  const pending = active.filter(o => o.status !== 'completed');
+  const confirmedCount = active.filter(o => o.status === 'completed' || (stateDay[o.id] || {}).replied).length;
+
+  // load-the-car totals (only what's still to go out)
+  const totals = {};
+  pending.forEach(o => itemsOf(o).forEach(([n, q]) => { totals[n] = (totals[n] || 0) + Number(q); }));
+  const totalRows = Object.entries(totals).sort((a, b) => b[1] - a[1]).map(([n, q]) =>
+    `<div class="rs-load-row"><span>${typeByName[n] === 'cinnamon_roll' ? '🥐' : '🍪'} ${escapeHtml(n)}</span><b>${q}</b></div>`).join('');
+  const unboxed = pending.filter(o => !boxed(o)).length;
+  const unconfirmed = pending.filter(o => !(stateDay[o.id] || {}).replied).length;
+  const cash = pending.filter(rsIsCash).reduce((a, o) => a + Number(o.total || 0), 0);
+
+  if (active.length === 0) { top.innerHTML = ''; return; }
+  top.innerHTML = `
+    <div class="rs-strip ${confirmedCount === active.length ? 'all' : ''}">${confirmedCount === active.length ? '✅' : '💬'} Confirmed ${confirmedCount} of ${active.length}</div>
+    ${pending.length ? `<details class="rs-load" open>
+      <summary>🚗 Load the car</summary>
+      ${totalRows || '<div class="empty-note">Nothing to load</div>'}
+      <div class="rs-final">
+        ${unboxed === 0 ? '✅ Everything boxed' : `📦 ${unboxed} box${unboxed === 1 ? '' : 'es'} still to check`}<br>
+        ${unconfirmed === 0 ? '✅ Everyone confirmed' : `💬 ${unconfirmed} still to confirm`}<br>
+        💵 Cash to collect: <b>${money(cash)}</b>
+      </div>
+    </details>` : '<div class="rs-strip all">🎉 Everything handed off!</div>'}`;
+
+  list.innerHTML = active.map(o => {
+    const st = stateDay[o.id] || {};
+    const mins = parseTimeToMinutes(o.pickup_time);
+    const done = o.status === 'completed';
+    const isOverdue = mins !== null && mins < nowMinutes && !done;
+    const place = rsPlace(o);
+    const isDelivery = o.fulfillment_type === 'delivery';
+    if (done) {
+      const dphone = String(o.phone || '').replace(/[^\d+]/g, '');
+      const first = (o.full_name || '').trim().split(/\s+/)[0] || 'there';
+      const thanks = encodeURIComponent(`Hi ${first}! Thank you so much for your order 💕 If you have 30 seconds, I'd love a quick review: https://melstreat.com/reviews.html?name=${encodeURIComponent(first)}`);
+      const thanksBtn = dphone ? `<a class="rs-btn ${st.thanked ? 'ok' : ''}" href="sms:${dphone}?&body=${thanks}" data-rs-thanks="${o.id}">${st.thanked ? '✓ Thanked' : '💌 Thank-you + review'}</a>` : '';
+      return `<div class="rs-card done"><b>✓ ${escapeHtml(o.full_name)}</b> · ${escapeHtml(o.pickup_time || '')} · handed off${rsIsCash(o) && st.cash ? ` · 💵 cash collected ${money(o.total)}` : ''}${st.miles ? ` · 🚗 ${st.miles} mi logged` : ''}${thanksBtn ? `<div class="rs-row" style="margin-top:6px;">${thanksBtn}</div>` : ''}</div>`;
+    }
+    const its = itemsOf(o);
+    const ticked = its.filter(([n]) => (st.items || {})[n]).length;
+    const warn = [];
+    if (o.special_instructions) warn.push('📝 ' + escapeHtml(o.special_instructions));
+    const note = rsNoteFor(o);
+    if (note) warn.push('⚠️ ' + escapeHtml(note));
+    const phone = String(o.phone || '').replace(/[^\d+]/g, '');
+    const msg = encodeURIComponent(rsMessage(o));
+    const askBtn = !phone ? '' : (st.asked
+      ? `<a class="rs-btn ok" href="sms:${phone}?&body=${msg}" data-rs-ask="${o.id}">✓ Asked (tap to resend)</a>`
+      : `<a class="rs-btn" href="sms:${phone}?&body=${msg}" data-rs-ask="${o.id}">💬 Confirm meet-up</a>`);
+    const replyBtn = st.asked ? `<button type="button" class="rs-btn ${st.replied ? 'ok' : ''}" data-rs-reply="${o.id}">${st.replied ? '✓ They replied' : 'They replied?'}</button>` : '';
+    const mapBtn = place ? `<a class="rs-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place)}">📍 Map</a>` : '';
+    return `
+    <div class="rs-card ${isOverdue ? 'overdue' : ''}">
+      <div class="rs-head">
+        <div>
+          <div class="rs-name">${escapeHtml(o.full_name)}${isOverdue ? ' <span style="color:#c0025e; font-size:0.78rem;">⏰ OVERDUE</span>' : ''}</div>
+          <div class="rs-when">🕒 ${escapeHtml(o.pickup_time || 'Time TBD')} · ${isDelivery ? '🚗 Drive to' : '🤝 Meet at'} ${escapeHtml(place || 'TBD')}</div>
+        </div>
+        <div class="order-total">${money(o.total)}${rsIsCash(o) ? '<div style="font-size:0.72rem; color:#8a5a00;">💵 cash</div>' : ''}</div>
+      </div>
+      ${warn.length ? `<div class="rs-warn">${warn.join('<br>')}</div>` : ''}
+      <div style="margin-top:8px; font-weight:700; font-size:0.85rem; color:#777;">📦 Box check (${ticked}/${its.length})</div>
+      ${its.length ? its.map(([n, q]) => `<label class="rs-item ${(st.items || {})[n] ? 'ok' : ''}"><input type="checkbox" data-rs-item="${o.id}" data-rs-name="${escapeHtml(n)}" ${(st.items || {})[n] ? 'checked' : ''}><span>${q}× ${escapeHtml(n)}</span></label>`).join('') : '<div class="empty-note">No items listed</div>'}
+      <div class="rs-row">${askBtn}${replyBtn}${mapBtn}</div>
+      <button type="button" class="rs-hand" data-rs-hand="${o.id}">🤝 Handed off ✓${rsIsCash(o) ? ' · cash ' + money(o.total) : ''}</button>
+    </div>`;
+  }).join('');
+}
+
+document.addEventListener('change', (e) => {
+  const cb = e.target.closest && e.target.closest('[data-rs-item]');
+  if (!cb) return;
+  const id = cb.getAttribute('data-rs-item');
+  const name = cb.getAttribute('data-rs-name');
+  const items = Object.assign({}, rsOrderState(id).items || {});
+  if (cb.checked) items[name] = 1; else delete items[name];
+  updateRunsheet(id, { items });
+  renderTodayTab();
+});
+document.addEventListener('click', (e) => {
+  const ask = e.target.closest && e.target.closest('[data-rs-ask]');
+  if (ask) {
+    updateRunsheet(ask.getAttribute('data-rs-ask'), { asked: true });
+    setTimeout(renderTodayTab, 400);
+    return;
+  }
+  const thx = e.target.closest && e.target.closest('[data-rs-thanks]');
+  if (thx) {
+    updateRunsheet(thx.getAttribute('data-rs-thanks'), { thanked: true });
+    setTimeout(renderTodayTab, 400);
+    return;
+  }
+  const reply = e.target.closest && e.target.closest('[data-rs-reply]');
+  if (reply) {
+    const id = reply.getAttribute('data-rs-reply');
+    updateRunsheet(id, { replied: !rsOrderState(id).replied });
+    renderTodayTab();
+    return;
+  }
+  const hand = e.target.closest && e.target.closest('[data-rs-hand]');
+  if (hand) {
+    const id = hand.getAttribute('data-rs-hand');
+    const o = (dashboardData.orders || []).find(x => String(x.id) === String(id));
+    if (!o) return;
+    const its = Object.entries(o.cookies || {}).filter(([, q]) => Number(q) > 0);
+    const st = rsOrderState(id);
+    const missing = its.filter(([n]) => !(st.items || {})[n]).length;
+    if (missing && !confirm(`${missing} item${missing === 1 ? ' isn\'t' : 's aren\'t'} ticked in the box. Hand off anyway?`)) return;
+    if (rsIsCash(o)) updateRunsheet(id, { cash: true });
+    advanceStatus('orders', o.id, 'completed', hand).then(() => {
+      if (o.status === 'completed') rsAutoMileage(o);
+    });
+  }
+});
+
+// Logs the round-trip miles for a finished stop (once), using the same
+// estimate as the Orders tab "Log Mileage" button — no prompt, just a toast.
+async function rsAutoMileage(o) {
+  const place = rsPlace(o);
+  if (!place || rsOrderState(o.id).miles) return;
+  const today = localDateStr(0);
+  const already = (dashboardData.mileageLog || []).some(m => m.date_driven === today && String(m.purpose || '').indexOf(o.full_name) !== -1);
+  if (already) return;
+  try {
+    const home = await getHomeBaseCoords();
+    const dest = await geocodeAddress(place);
+    const miles = Math.round(haversineMiles(home.lat, home.lon, dest.lat, dest.lon) * 2 * 10) / 10;
+    const purpose = o.fulfillment_type === 'delivery' ? `Delivery: ${o.full_name}` : `Pickup drop-off: ${o.full_name} (${place})`;
+    const rate_used = parseFloat((dashboardData.settings || {}).mileage_rate || '0.76');
+    await callAdmin('add_mileage', { date_driven: today, purpose, miles, rate_used });
+    if (!dashboardData.mileageLog) dashboardData.mileageLog = [];
+    dashboardData.mileageLog.unshift({ id: 'temp-' + Date.now(), date_driven: today, purpose, miles, rate_used, created_at: new Date().toISOString() });
+    updateRunsheet(o.id, { miles });
+    renderTodayTab();
+    showToast(`🚗 Logged ${miles} miles ✧`);
+  } catch (err) {
+    showToast('Handed off ✓ — couldn\'t log mileage (' + (err.message || 'try the Orders tab') + ')');
+  }
+}
+
 function renderTodayTab() {
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = workingToday();
+  const rolled = isAfterRollover();
+  const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+  setTxt('today-orders-heading', rolled ? "Tomorrow's Orders" : "Today's Orders");
+  setTxt('today-count-label', rolled ? 'Pickups/Deliveries Tomorrow' : 'Pickups/Deliveries Today');
+  setTxt('today-revenue-label', rolled ? "Tomorrow's Revenue" : "Today's Revenue");
   const orders = dashboardData.orders || [];
   const todaysOrders = orders.filter(o => o.preferred_date === todayStr);
   const todayRevenue = todaysOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
@@ -2897,22 +3280,10 @@ function renderTodayTab() {
 
   const list = document.getElementById('today-orders-list');
   if (todaysOrders.length === 0) {
+    document.getElementById('runsheet-top').innerHTML = '';
     list.innerHTML = '<div class="empty-note">Nothing scheduled for today.</div>';
   } else {
-    list.innerHTML = sortedTodaysOrders.map(o => {
-      const mins = parseTimeToMinutes(o.pickup_time);
-      const notDone = o.status !== 'completed' && o.status !== 'cancelled';
-      const isOverdue = mins !== null && mins < nowMinutes && notDone;
-      return `
-      <div class="today-mini-row" style="${isOverdue ? 'background:#fde8ef; border-radius:10px; padding:8px 10px; margin:-2px -2px 2px;' : ''}">
-        <div>
-          <div class="name">${escapeHtml(o.full_name)}${isOverdue ? ' <span style="color:#c0025e; font-weight:700; font-size:0.78rem;">⏰ OVERDUE</span>' : ''}</div>
-          <div class="detail">${o.fulfillment_type === 'pickup' ? 'Pickup' : 'Delivery'} · ${o.pickup_time || 'Time TBD'}</div>
-        </div>
-        <div class="order-total">${money(o.total)}</div>
-      </div>
-    `;
-    }).join('');
+    renderRunsheet(sortedTodaysOrders, nowMinutes);
   }
 
   const lowStock = (dashboardData.inventory || []).filter(i => i.in_stock === false || i.stock_count <= 5);
@@ -2944,6 +3315,7 @@ function renderTodayTab() {
       </div>
     `).join('');
   }
+  renderCloseOut();
 }
 
 let bakingTodoScope = 'week';
@@ -3894,7 +4266,7 @@ function renderOrders() {
       groups[o.preferred_date].push(o);
     });
     const sortedDates = Object.keys(groups).sort();
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = localDateStr();
 
     let html = sortedDates.map((dateStr, idx) => {
       const items = groups[dateStr];
@@ -4490,7 +4862,7 @@ function renderCatering() {
       groups[r.event_date].push(r);
     });
     const sortedDates = Object.keys(groups).sort();
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = localDateStr();
 
     let html = sortedDates.map((dateStr, idx) => {
       const items = groups[dateStr];
@@ -5323,7 +5695,7 @@ function renderMileage() {
   });
 }
 
-document.getElementById('mileage-date-input').value = new Date().toISOString().split('T')[0];
+document.getElementById('mileage-date-input').value = localDateStr();
 
 // GPS-based mileage auto-tracking. Uses the browser's location API (no
 // API key or paid service needed) to capture a start and end point, then
@@ -5531,7 +5903,7 @@ async function estimateOrderMileage(orderId, btn) {
     const goThere = confirm(`Estimated ${miles.toFixed(1)} miles round-trip to ${label}. Log this to your Mileage Tracker?`);
     if (goThere) {
       await callAdmin('add_mileage', {
-        date_driven: new Date().toISOString().split('T')[0],
+        date_driven: localDateStr(),
         purpose: isDelivery ? `Delivery: ${order.full_name}` : `Pickup drop-off: ${order.full_name} (${destination})`,
         miles: Math.round(miles * 10) / 10,
         rate_used: parseFloat(dashboardData.settings.mileage_rate || '0.76'),
@@ -5603,7 +5975,7 @@ async function estimateCateringMileage(cateringId, btn) {
     const goThere = confirm(`Estimated ${miles.toFixed(1)} miles round-trip to ${request.full_name}'s event. Log this to your Mileage Tracker?`);
     if (goThere) {
       await callAdmin('add_mileage', {
-        date_driven: new Date().toISOString().split('T')[0],
+        date_driven: localDateStr(),
         purpose: `Catering delivery: ${request.full_name}`,
         miles: Math.round(miles * 10) / 10,
         rate_used: parseFloat(dashboardData.settings.mileage_rate || '0.76'),
@@ -5836,7 +6208,7 @@ document.getElementById('expense-ingredient-select').addEventListener('change', 
   document.getElementById('expense-custom-wrap').classList.toggle('hidden', e.target.value !== 'Other');
   applyLastPriceHint(e.target.value);
 });
-document.getElementById('expense-date-input').value = new Date().toISOString().split('T')[0];
+document.getElementById('expense-date-input').value = localDateStr();
 document.getElementById('expense-custom-input').addEventListener('input', (e) => {
   applyLastPriceHint('Other');
 });
@@ -6085,7 +6457,7 @@ async function saveShoppingTrip() {
         const logIt = confirm(`Estimated ${miles.toFixed(1)} miles round-trip to ${vendor || 'the store'}. Log this to your Mileage Tracker?`);
         if (logIt) {
           await callAdmin('add_mileage', {
-            date_driven: date_spent || new Date().toISOString().split('T')[0],
+            date_driven: date_spent || localDateStr(),
             purpose: `Ingredient shopping: ${vendor || storeAddress}`,
             miles: Math.round(miles * 10) / 10,
             rate_used: parseFloat(dashboardData.settings.mileage_rate || '0.76'),
@@ -6143,7 +6515,7 @@ document.querySelectorAll('.method-btn').forEach(btn => {
 });
 
 // Default the date field to today for a faster, smoother log-a-payment flow
-document.getElementById('manual-date-input').value = new Date().toISOString().split('T')[0];
+document.getElementById('manual-date-input').value = localDateStr();
 
 async function submitManualIncome() {
   const errBox = document.getElementById('manual-income-error');
@@ -6276,7 +6648,7 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
   const a = document.createElement('a');
   a.href = url;
   const rangeSuffix = (fromStr || toStr) ? `_${fromStr || 'start'}_to_${toStr || 'now'}` : '';
-  a.download = `mels-treat-financials${rangeSuffix}-${new Date().toISOString().split('T')[0]}.csv`;
+  a.download = `mels-treat-financials${rangeSuffix}-${localDateStr()}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -6627,6 +6999,267 @@ document.querySelectorAll('.review-filter-btn').forEach(btn => {
   });
 });
 
+// --- Ingredients / Pantry tab ---------------------------------------------
+// Shares the manage-pantry backend (and its own password) with the
+// standalone ingredients.html app — same table, so checking an item off in
+// either place shows up in both without any extra syncing step.
+let pantryItems = [];
+let pantryFilter = 'need';
+
+// ---- Cute picture of the shopping list (to text or post) ----
+// Draws the "still need" list onto a pink sticker-style card, then offers it
+// to the phone's share menu as a picture (or saves it if sharing a file
+// isn't supported). Self-contained: only needs a list of { name, category }.
+const LP_CATS = ['Baking Basics', 'Dairy & Eggs', 'Sweets & Mix-ins', 'Flavors & Spices', 'Packaging', 'Supplies & Cleaning', 'Other'];
+const LP_EMOJI = { 'Baking Basics': '🌾', 'Dairy & Eggs': '🥚', 'Sweets & Mix-ins': '🍫', 'Flavors & Spices': '🌿', 'Packaging': '📦', 'Supplies & Cleaning': '🧼', 'Other': '✨' };
+const LP_COLORS = ['#ff4fa3', '#ff8a3d', '#39b8d6', '#a56cff', '#2fb36d', '#ff6b6b', '#e2a900'];
+let lpBlob = null;
+let lpUrl = null;
+
+async function lpBuildBlob(list) {
+  const FONT = "'Fredoka','Quicksand','Trebuchet MS','Arial Rounded MT Bold',sans-serif";
+  try { await document.fonts.load('700 40px Fredoka'); await document.fonts.load('500 36px Fredoka'); } catch (e) { /* fall back to system font */ }
+  const INK = '#4a0f33', HOT = '#ff1493', HOT_DEEP = '#d6006e', CANDY = '#ffb3de';
+  const STICKERS = ['#ffe27a', '#7de8ff', '#ffb3de', '#d9a8ff', '#b6ff3b', '#ffb98a', '#e6e6e6'];
+  const W = 1080, M = 50, PAD = 54, TEXT_W = W - 2 * M - 2 * PAD - 70;
+  // Only categories that actually have something on the list are drawn.
+  const byCat = {};
+  list.forEach(i => { const c = LP_CATS.includes(i.category) ? i.category : 'Other'; (byCat[c] = byCat[c] || []).push(i.name); });
+  const cats = LP_CATS.filter(c => byCat[c]);
+  const meas = document.createElement('canvas').getContext('2d');
+  meas.font = `500 38px ${FONT}`;
+  const wrap = (txt) => {
+    const words = String(txt).split(/\s+/); const lines = []; let cur = '';
+    words.forEach(w => { const t = cur ? cur + ' ' + w : w; if (meas.measureText(t).width > TEXT_W && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur); return lines;
+  };
+  let y = M + PAD + 276;
+  const blocks = cats.map(c => {
+    const rows = byCat[c].map(n => { const lines = wrap(n); return { lines, h: Math.max(66, lines.length * 46 + 20) }; });
+    const block = { c, rows, y };
+    y += 84 + 16 + rows.reduce((s, r) => s + r.h, 0) + 30;
+    return block;
+  });
+  const cardBottom = y + 150;
+  const H = cardBottom + M + 14;
+
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  const rr = (x, yy, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, yy); ctx.arcTo(x + w, yy, x + w, yy + h, r); ctx.arcTo(x + w, yy + h, x, yy + h, r); ctx.arcTo(x, yy + h, x, yy, r); ctx.arcTo(x, yy, x + w, yy, r); ctx.closePath(); };
+  const sparkle = (cx, cy, s, color) => {
+    ctx.fillStyle = color; ctx.beginPath();
+    ctx.moveTo(cx, cy - s); ctx.quadraticCurveTo(cx, cy, cx + s, cy); ctx.quadraticCurveTo(cx, cy, cx, cy + s);
+    ctx.quadraticCurveTo(cx, cy, cx - s, cy); ctx.quadraticCurveTo(cx, cy, cx, cy - s); ctx.fill();
+  };
+  // sparkly pink background, same as the Ingredients page
+  const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#ffb3de'); bg.addColorStop(1, '#ff8fcf');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 46; i++) sparkle(rnd() * W, rnd() * H, 10 + rnd() * 20, i % 3 === 0 ? '#fff' : (i % 3 === 1 ? 'rgba(255,255,255,.8)' : '#fff6a8'));
+  // sticker card: hot-pink border + hard offset shadow
+  ctx.fillStyle = HOT_DEEP; rr(M + 14, M + 16, W - 2 * M, cardBottom - M, 50); ctx.fill();
+  ctx.fillStyle = '#fff'; rr(M, M, W - 2 * M, cardBottom - M, 50); ctx.fill();
+  ctx.strokeStyle = HOT; ctx.lineWidth = 9; rr(M, M, W - 2 * M, cardBottom - M, 50); ctx.stroke();
+  // corner sparkles
+  sparkle(M + 62, M + 66, 26, '#ffd23f'); sparkle(W - M - 66, M + 74, 20, HOT); sparkle(W - M - 100, M + 36, 12, '#7de8ff');
+  ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center';
+  // title: bubble letters (hot pink with white + ink outline)
+  ctx.font = `700 100px ${FONT}`; ctx.lineJoin = 'round';
+  ctx.lineWidth = 16; ctx.strokeStyle = INK; ctx.strokeText("Mel's Treat", W / 2, M + PAD + 100);
+  ctx.lineWidth = 8; ctx.strokeStyle = '#fff'; ctx.strokeText("Mel's Treat", W / 2, M + PAD + 100);
+  ctx.fillStyle = HOT; ctx.fillText("Mel's Treat", W / 2, M + PAD + 100);
+  // little glossy count bubble
+  const n = list.length;
+  const tag = `${n} thing${n === 1 ? '' : 's'} to grab ✦`;
+  ctx.font = `700 40px ${FONT}`;
+  const tw = ctx.measureText(tag).width + 70;
+  ctx.fillStyle = INK; rr(W / 2 - tw / 2 + 5, M + PAD + 133, tw, 66, 33); ctx.fill();
+  const g = ctx.createLinearGradient(0, M + PAD + 128, 0, M + PAD + 194); g.addColorStop(0, '#ff8fd0'); g.addColorStop(1, HOT);
+  ctx.fillStyle = g; rr(W / 2 - tw / 2, M + PAD + 128, tw, 66, 33); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.45)'; rr(W / 2 - tw / 2 + 18, M + PAD + 134, tw - 36, 20, 10); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.fillText(tag, W / 2, M + PAD + 177);
+  ctx.fillStyle = '#9b4a7c'; ctx.font = `600 32px ${FONT}`;
+  ctx.fillText(new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }), W / 2, M + PAD + 236);
+  // categories as rotated sticker headers
+  ctx.textAlign = 'left';
+  blocks.forEach((b, bi) => {
+    const color = STICKERS[LP_CATS.indexOf(b.c) % STICKERS.length];
+    const label = `${LP_EMOJI[b.c] || ''} ${b.c}`;
+    ctx.font = `700 42px ${FONT}`;
+    const pw = Math.min(W - 2 * M - 2 * PAD, ctx.measureText(label).width + 60);
+    ctx.save(); ctx.translate(M + PAD, b.y + 40); ctx.rotate((bi % 2 ? 1 : -1) * 0.022);
+    ctx.fillStyle = INK; rr(5, -35 + 5, pw, 70, 20); ctx.fill();
+    ctx.fillStyle = color; rr(0, -35, pw, 70, 20); ctx.fill();
+    ctx.strokeStyle = INK; ctx.lineWidth = 5; rr(0, -35, pw, 70, 20); ctx.stroke();
+    ctx.fillStyle = INK; ctx.fillText(label, 28, 14);
+    ctx.restore();
+    let ry = b.y + 84 + 16;
+    b.rows.forEach(r => {
+      ctx.strokeStyle = HOT; ctx.lineWidth = 7; ctx.fillStyle = '#fff';
+      rr(M + PAD + 6, ry + 11, 42, 42, 13); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = INK; ctx.font = `500 38px ${FONT}`;
+      r.lines.forEach((ln, li) => ctx.fillText(ln, M + PAD + 72, ry + 46 + li * 46));
+      ctx.strokeStyle = CANDY; ctx.lineWidth = 4; ctx.setLineDash([2, 10]); ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(M + PAD, ry + r.h - 2); ctx.lineTo(W - M - PAD, ry + r.h - 2); ctx.stroke(); ctx.setLineDash([]);
+      ry += r.h;
+    });
+  });
+  // footer
+  ctx.textAlign = 'center';
+  ctx.font = `700 44px ${FONT}`;
+  ctx.lineWidth = 10; ctx.strokeStyle = '#fff'; ctx.strokeText('Thank you for helping me out! 💕', W / 2, cardBottom - 74);
+  ctx.fillStyle = HOT_DEEP; ctx.fillText('Thank you for helping me out! 💕', W / 2, cardBottom - 74);
+  ctx.fillStyle = '#9b4a7c'; ctx.font = `600 34px ${FONT}`; ctx.fillText('✦ melstreat.com ✦', W / 2, cardBottom - 28);
+  return await new Promise(res => cv.toBlob(res, 'image/png'));
+}
+
+function lpEnsureOverlay() {
+  if (document.getElementById('lp-overlay')) return;
+  const st = document.createElement('style');
+  st.textContent = `
+    #lp-overlay{position:fixed; inset:0; z-index:9999; background:rgba(74,15,51,.65); display:none; align-items:flex-end; justify-content:center;}
+    #lp-overlay.on{display:flex;}
+    #lp-sheet{width:100%; max-width:520px; max-height:94vh; overflow:auto; background:#fff; border-radius:26px 26px 0 0; padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 18px); text-align:center; font-family:inherit;}
+    #lp-img{max-width:100%; max-height:58vh; border-radius:16px; box-shadow:0 6px 18px rgba(214,0,110,.25);}
+    #lp-sheet button{display:block; width:100%; margin-top:10px; padding:14px; border-radius:18px; border:none; font-family:inherit; font-weight:700; font-size:1rem; cursor:pointer;}
+    #lp-send{background:linear-gradient(180deg,#ff7ab8,#e20376); color:#fff;}
+    #lp-save{background:#ffe0f1; color:#a3315f;}
+    #lp-close{background:transparent; color:#9b4a7c;}`;
+  document.head.appendChild(st);
+  const el = document.createElement('div');
+  el.id = 'lp-overlay';
+  el.innerHTML = `<div id="lp-sheet"><div style="font-weight:800; color:#e20376; margin-bottom:8px;">Your list, all dressed up 💕</div><img id="lp-img" alt="Shopping list picture"><button type="button" id="lp-send">📤 Send picture</button><button type="button" id="lp-save">💾 Save picture</button><button type="button" id="lp-close">Close</button></div>`;
+  document.body.appendChild(el);
+  el.addEventListener('click', (e) => { if (e.target === el) lpClose(); });
+  document.getElementById('lp-close').addEventListener('click', lpClose);
+  document.getElementById('lp-save').addEventListener('click', lpSave);
+  document.getElementById('lp-send').addEventListener('click', lpSend);
+}
+function lpClose() { document.getElementById('lp-overlay').classList.remove('on'); if (lpUrl) { URL.revokeObjectURL(lpUrl); lpUrl = null; } }
+function lpSave() {
+  if (!lpBlob) return;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(lpBlob); a.download = 'mels-treat-shopping-list.png';
+  document.body.appendChild(a); a.click(); a.remove();
+  if (typeof showToast === 'function') showToast('Saved to your photos/downloads ✧');
+}
+async function lpSend() {
+  if (!lpBlob) return;
+  const file = new File([lpBlob], 'mels-treat-shopping-list.png', { type: 'image/png' });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Mel's Treat shopping list" }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  lpSave();
+}
+async function sharePictureList(list) {
+  if (!list.length) { if (typeof showToast === 'function') showToast('Nothing on the list right now ✦'); return; }
+  if (typeof showToast === 'function') showToast('Making your picture…');
+  try {
+    lpBlob = await lpBuildBlob(list);
+    lpEnsureOverlay();
+    if (lpUrl) URL.revokeObjectURL(lpUrl);
+    lpUrl = URL.createObjectURL(lpBlob);
+    document.getElementById('lp-img').src = lpUrl;
+    document.getElementById('lp-overlay').classList.add('on');
+  } catch (e) { console.error(e); if (typeof showToast === 'function') showToast('Could not make the picture — try again'); }
+}
+
+
+
+document.getElementById('pantry-send-list-btn').addEventListener('click', () => sharePictureList(pantryItems.filter(i => i.status === 'need')));
+
+async function loadPantryItems() {
+  try {
+    const data = await callFunction('manage-pantry', 'list');
+    if (data.success) { pantryItems = data.items || []; renderPantryTab(); }
+  } catch (err) {
+    console.error('Could not load ingredients list:', err);
+  }
+}
+
+function renderPantryTab() {
+  const list = document.getElementById('pantry-list');
+  if (!list) return;
+  const badge = document.getElementById('tab-badge-pantry');
+  const needCount = pantryItems.filter(i => i.status === 'need').length;
+  if (badge) {
+    if (needCount > 0) { badge.textContent = needCount; badge.style.display = 'inline-block'; }
+    else { badge.style.display = 'none'; }
+  }
+
+  let filtered = pantryItems.filter(i => i.status === pantryFilter);
+  if (pantryFilter === 'have') {
+    filtered = filtered.slice().sort((a, b) => new Date(b.bought_at || b.updated_at) - new Date(a.bought_at || a.updated_at));
+  } else {
+    filtered = filtered.slice().sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-note">${pantryFilter === 'need' ? "Nothing on the shopping list right now." : "Nothing marked bought yet."}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(item => `
+    <div class="pantry-row" data-id="${item.id}">
+      <input type="checkbox" class="pantry-toggle" data-id="${item.id}" data-current-status="${item.status}" ${item.status === 'have' ? 'checked' : ''}>
+      <div class="pantry-row-name">
+        ${escapeHtml(item.name)}
+        ${item.status === 'have' && item.bought_at ? `<span class="pantry-row-stamp">Bought ${timeAgoStr(item.bought_at)}</span>` : ''}
+      </div>
+      <button type="button" class="pantry-row-del" data-id="${item.id}" aria-label="Remove ${escapeHtml(item.name)}">&#128465;</button>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.pantry-toggle').forEach(cb => {
+    cb.addEventListener('change', () => togglePantryItem(cb.dataset.id, cb.checked ? 'have' : 'need', cb));
+  });
+  list.querySelectorAll('.pantry-row-del').forEach(btn => {
+    btn.addEventListener('click', () => deletePantryItem(btn.dataset.id));
+  });
+}
+
+async function togglePantryItem(id, newStatus, cb) {
+  cb.disabled = true;
+  try {
+    await callFunction('manage-pantry', 'toggle', { id, status: newStatus });
+    const it = pantryItems.find(i => i.id === id);
+    if (it) { it.status = newStatus; it.bought_at = newStatus === 'have' ? new Date().toISOString() : null; }
+    showToast(newStatus === 'have' ? 'Marked as bought ✧' : 'Back on the shopping list');
+    renderPantryTab();
+  } catch (err) {
+    alert('Could not update that item: ' + err.message);
+    cb.disabled = false;
+  }
+}
+
+async function deletePantryItem(id) {
+  if (!confirm('Remove this item from the ingredients list?')) return;
+  try {
+    await callFunction('manage-pantry', 'delete', { id });
+    pantryItems = pantryItems.filter(i => i.id !== id);
+    renderPantryTab();
+  } catch (err) {
+    alert('Could not remove that item: ' + err.message);
+  }
+}
+
+document.querySelectorAll('.pantry-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pantry-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    pantryFilter = btn.dataset.pantryfilter;
+    renderPantryTab();
+  });
+});
+
+// Lightweight polling refresh while the Ingredients tab is open, so a check
+// made on a phone via ingredients.html shows up here without reopening the
+// tab — no Supabase realtime subscriptions used anywhere else in this app,
+// so a simple interval keeps things consistent with the rest of the code.
+setInterval(() => {
+  const panel = document.getElementById('tab-pantry');
+  if (panel && panel.classList.contains('active') && adminPassword) loadPantryItems();
+}, 20000);
+
 // --- Email Campaigns ---
 const EMAIL_TEMPLATES = {
   restock: {
@@ -6903,6 +7536,7 @@ const SITE_LINKS = [
   { name: 'About Me', url: 'https://melstreat.com/about.html' },
   { name: 'Reviews', url: 'https://melstreat.com/testimonials.html' },
   { name: 'Leave A Review', url: 'https://melstreat.com/reviews.html' },
+  { name: 'Wishlist (support Mel)', url: 'https://melstreat.com/wishlist.html' },
   { name: 'FAQ', url: 'https://melstreat.com/faq.html' },
   { name: 'Catering', url: 'https://melstreat.com/catering.html' },
   { name: 'Catering Payment', url: 'https://melstreat.com/catering-payment.html' },
@@ -6922,6 +7556,7 @@ const SITE_LINKS = [
   { name: 'App Payments (Cash App / Zelle / PayPal / Venmo log)', url: 'https://melstreat.com/app-payments.html' },
   { name: 'Recipe Book', url: 'https://melstreat.com/recipe-book.html' },
   { name: "Niya's Cook Book (Bratz Recipe Book)", url: 'https://melstreat.com/bratz-recipe-book.html' },
+  { name: 'Ingredients List', url: 'https://melstreat.com/ingredients.html' },
   { name: 'Out Of Stock Page', url: 'https://melstreat.com/out-of-stock.html' },
   { name: 'Site Root (index.html — double check this is the one live at melstreat.com)', url: 'https://melstreat.com/index.html' },
 ];
@@ -7426,9 +8061,21 @@ function renderScriptsTab() {
   });
 }
 
+const SOCIAL_LINKS = [
+  { name: 'Instagram', url: 'https://www.instagram.com/melstreat23' },
+  { name: 'Facebook', url: 'https://www.facebook.com/share/19NqoV7RQ6/?mibextid=wwXIfr' },
+  { name: 'TikTok', url: 'https://www.tiktok.com/@meltreat23' },
+];
+const LINK_GROUPS = [
+  { title: '🔒 Just For Me', names: ['Admin Dashboard', 'Admin — Discount Codes', 'Admin — Reviews', 'Quick Pay (in-person card charges)', 'App Payments (Cash App / Zelle / PayPal / Venmo log)', 'Recipe Book', "Niya's Cook Book (Bratz Recipe Book)", 'Ingredients List'] },
+  { title: '💌 Send To Customers', names: ['Shop / Menu', 'Leave A Review', 'Reviews', 'Wishlist (support Mel)', 'FAQ', 'Catering', 'Donations', 'Home Page', 'About Me', 'Bio Link (for social bios)', 'All Links (site nav’s "🔗 All Links" page)'] },
+];
 function renderLinksTab() {
   const list = document.getElementById('links-list');
-  list.innerHTML = SITE_LINKS.map((link, i) => `
+  const all = [];
+  const rowHtml = (link) => {
+    const i = all.length; all.push(link);
+    return `
     <div class="link-row">
       <div class="link-row-info">
         <div class="link-row-name">${link.name}</div>
@@ -7438,8 +8085,20 @@ function renderLinksTab() {
         <a href="${link.url}" target="_blank" rel="noopener" class="link-row-visit">Visit ↗</a>
         <button type="button" class="link-row-copy-btn" data-url="${link.url}" data-index="${i}" id="copy-label-${i}">Copy</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  };
+  const used = new Set();
+  const head = t => `<h3 style="margin:18px 0 6px; color:var(--pink-hot); font-size:1.05rem;">${t}</h3>`;
+  let html = '';
+  LINK_GROUPS.forEach(g => {
+    const items = g.names.map(n => SITE_LINKS.find(l => l.name === n)).filter(Boolean);
+    items.forEach(l => used.add(l.name));
+    html += head(g.title) + items.map(rowHtml).join('');
+  });
+  const rest = SITE_LINKS.filter(l => !used.has(l.name));
+  if (rest.length) html += head('📄 Other Pages') + rest.map(rowHtml).join('');
+  html += head('📱 Social') + SOCIAL_LINKS.map(rowHtml).join('');
+  list.innerHTML = html;
 
   list.querySelectorAll('.link-row-copy-btn').forEach(btn => {
     btn.addEventListener('click', async () => {

@@ -415,10 +415,10 @@
        the color key in .wheel-legend below. */
     background: conic-gradient(from 0deg,
       var(--white) 0deg 36deg, var(--pink-hot) 36deg 72deg,
-      var(--white) 72deg 108deg, var(--pink-glow) 108deg 144deg,
-      var(--white) 144deg 180deg, var(--pink-hot) 180deg 216deg,
-      var(--white) 216deg 252deg, var(--gold) 252deg 288deg,
-      var(--white) 288deg 324deg, var(--pink-hot) 324deg 360deg);
+      var(--pink-glow) 72deg 108deg, var(--white) 108deg 144deg,
+      var(--pink-hot) 144deg 180deg, var(--white) 180deg 216deg,
+      var(--gold) 216deg 252deg, var(--pink-hot) 252deg 288deg,
+      var(--pink-glow) 288deg 324deg, var(--white) 324deg 360deg);
     transition: transform 4.2s cubic-bezier(0.12, 0.72, 0.15, 1);
   }
   .sticky-note.expanded .wheel-disc{border-width:6px;}
@@ -782,6 +782,7 @@
     <a href="testimonials.html">⭐ Reviews</a>
     <a href="faq.html">❓ FAQ</a>
     <a href="catering.html">🎉 Catering</a>
+    <a href="wishlist.html">💕 Support Mel</a>
     <a href="shop-links.html">🔗 All Links</a>
   </div>
 </div>
@@ -1369,14 +1370,14 @@ document.getElementById('wheel-spin-btn')?.addEventListener('click', () => {
 const WHEEL_SEGMENTS = [
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
-  { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'percent_off', emoji: '🎉', word: '10% OFF', textColor: '#ffffff' },
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
   { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_box', emoji: '🎁', word: 'BOX!', textColor: '#ffffff' },
-  { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
   { type: 'free_cookie', emoji: '🍪', word: 'COOKIE', textColor: '#ffffff' },
+  { type: 'percent_off', emoji: '🎉', word: '10% OFF', textColor: '#ffffff' },
+  { type: 'bonus_reward', emoji: '🎟️', word: 'BONUS', textColor: '#a8025f' },
 ];
 const WHEEL_PRIZE_META = {
   free_cookie: { emoji: '🍪', title: 'A Free Cookie!' },

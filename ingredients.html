@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e20376">
+<title>Ingredients — Mel's Treat</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --hot: #ff1493;
+    --hot-deep: #d6006e;
+    --bubblegum: #ff7ac6;
+    --candy: #ffb3de;
+    --blush: #ffe0f1;
+    --ink: #4a0f33;
+    --ink-soft: #9b4a7c;
+    --lime: #b6ff3b;
+    --sky: #7de8ff;
+    --lilac: #d9a8ff;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    /* sparkly pink gradient + tiny star confetti, all CSS */
+    background-color: #ffc2e6;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255,255,255,.95) 0 2px, transparent 3px),
+      radial-gradient(circle at 78% 12%, rgba(255,255,255,.9) 0 2.5px, transparent 3.5px),
+      radial-gradient(circle at 40% 55%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+      radial-gradient(circle at 90% 70%, rgba(255,255,255,.9) 0 2px, transparent 3px),
+      radial-gradient(circle at 22% 88%, rgba(255,255,255,.85) 0 2.5px, transparent 3.5px),
+      linear-gradient(160deg, #ffd6ee 0%, #ffa6d8 45%, #ff8ccd 100%);
+    background-size: 220px 220px, 260px 260px, 180px 180px, 240px 240px, 200px 200px, 100% 100%;
+    background-attachment: fixed;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: calc(env(safe-area-inset-top, 0px) + 16px) 14px calc(env(safe-area-inset-bottom, 0px) + 60px); }
+
+  /* ---------- header: glossy bubble title ---------- */
+  .header { text-align: center; margin: 6px 0 16px; position: relative; }
+  .title {
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 2.1rem; letter-spacing: .5px;
+    color: #fff;
+    text-shadow: 0 2px 0 var(--hot-deep), 0 4px 0 var(--hot-deep), 0 6px 10px rgba(214,0,110,.45), 0 0 18px rgba(255,255,255,.8);
+    -webkit-text-stroke: 1px var(--hot-deep);
+  }
+  .sparkle { display: inline-block; animation: twinkle 2.2s ease-in-out infinite; }
+  .sparkle.s2 { animation-delay: .7s; }
+  .sparkle.s3 { animation-delay: 1.4s; }
+  @keyframes twinkle { 0%,100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(1.35) rotate(18deg); opacity: .6; } }
+  .sub { margin-top: 6px; font-weight: 700; font-size: .85rem; color: var(--hot-deep); }
+  .ticker {
+    margin: 10px auto 0; display: inline-block; padding: 4px 14px; border-radius: 999px;
+    background: linear-gradient(180deg, #fff 0%, var(--blush) 100%); border: 2px solid var(--hot);
+    font-family: 'Fredoka', sans-serif; font-size: .78rem; color: var(--hot-deep);
+    box-shadow: 0 3px 0 var(--hot-deep);
+  }
+
+  /* ---------- sticker cards ---------- */
+  .card {
+    background: #fff; border: 3px solid var(--hot); border-radius: 22px; padding: 14px;
+    margin-bottom: 16px; box-shadow: 5px 5px 0 var(--hot-deep);
+    position: relative;
+  }
+  .card-title {
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1.15rem; color: var(--hot-deep);
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
+  }
+  .count-pill {
+    background: var(--hot); color: #fff; border-radius: 999px; padding: 1px 10px; font-size: .8rem;
+    border: 2px solid var(--hot-deep);
+  }
+  .hint { font-size: .8rem; color: var(--ink-soft); margin-bottom: 10px; font-weight: 600; }
+
+  /* ---------- add box ---------- */
+  .add-row { display: flex; gap: 8px; }
+  .add-row input[type=text] { flex: 1; min-width: 0; }
+  input[type=text], input[type=number], select {
+    border: 2.5px solid var(--bubblegum); border-radius: 14px; padding: 11px 12px; min-height: 46px;
+    font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 16px; color: var(--ink); background: #fff;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--hot); box-shadow: 0 0 0 4px rgba(255,20,147,.18); }
+  .cat-select { width: 100%; margin-top: 8px; }
+
+  /* glossy bubble button */
+  .btn {
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 1rem; color: #fff; cursor: pointer;
+    border: 2.5px solid var(--hot-deep); border-radius: 999px; padding: 0 20px; min-height: 46px;
+    background: linear-gradient(180deg, #ff8fd0 0%, var(--hot) 55%, var(--hot-deep) 100%);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 4px 0 var(--hot-deep);
+    transition: transform .08s, box-shadow .08s;
+  }
+  .btn:active { transform: translateY(3px); box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 1px 0 var(--hot-deep); }
+  .btn:disabled { opacity: .6; }
+  .btn.ghost { background: #fff; color: var(--hot-deep); box-shadow: 0 4px 0 var(--bubblegum); border-color: var(--bubblegum); }
+  .btn.small { min-height: 36px; padding: 0 14px; font-size: .85rem; }
+
+  /* quick-add chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .chip {
+    font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: .82rem; color: var(--hot-deep);
+    background: var(--blush); border: 2px dashed var(--bubblegum); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+  }
+  .chip:active { background: var(--candy); }
+
+  /* ---------- category sticker headers ---------- */
+  .cat-block { margin-top: 12px; }
+  .cat-head {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 12px;
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: .92rem; color: var(--ink);
+    border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); margin-bottom: 4px;
+    transform: rotate(-1.2deg);
+  }
+  .cat-head.c0 { background: #ffe27a; }
+  .cat-head.c1 { background: var(--sky); }
+  .cat-head.c2 { background: var(--candy); }
+  .cat-head.c3 { background: var(--lilac); }
+  .cat-head.c4 { background: var(--lime); }
+  .cat-head.c5 { background: #ffb98a; }
+  .cat-head.c6 { background: #e6e6e6; }
+
+  /* ---------- item rows ---------- */
+  .item-row { display: flex; align-items: center; gap: 10px; padding: 9px 2px; border-bottom: 2px dotted var(--candy); }
+  .item-row:last-child { border-bottom: none; }
+  .item-row input[type=checkbox] {
+    appearance: none; -webkit-appearance: none; width: 28px; height: 28px; flex: 0 0 auto; margin: 0; cursor: pointer;
+    border: 3px solid var(--hot); border-radius: 9px; background: #fff; position: relative;
+  }
+  .item-row input[type=checkbox]:checked { background: linear-gradient(180deg, #ff8fd0, var(--hot)); }
+  .item-row input[type=checkbox]:checked::after { content: '✓'; position: absolute; inset: 0; color: #fff; font-weight: 700; font-size: 18px; line-height: 22px; text-align: center; }
+  .item-main { flex: 1; min-width: 0; }
+  .item-name { font-weight: 700; font-size: 1.02rem; line-height: 1.25; cursor: pointer; word-break: break-word; }
+  .item-row.have .item-name { text-decoration: line-through; color: var(--ink-soft); }
+  .stamp { display: block; font-size: .74rem; font-weight: 700; color: #1a9c5c; margin-top: 2px; }
+  .stamp.warn { color: #c9820a; }
+  /* Category picker: shows just the emoji; an invisible full-size dropdown on top catches the tap. */
+  .cat-pick {
+    position: relative; flex: 0 0 auto; width: 44px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+    background: var(--blush); border: 2px solid var(--bubblegum); border-radius: 12px; font-size: 1.15rem; cursor: pointer;
+  }
+  .cat-pick select.row-cat { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; min-height: 0; font-size: 16px; cursor: pointer; }
+  .del { background: none; border: none; font-size: 1.15rem; color: var(--ink-soft); cursor: pointer; padding: 6px; }
+  .empty { text-align: center; color: var(--ink-soft); font-weight: 700; font-size: .88rem; padding: 14px 0; }
+
+  /* ---------- nudge banner ---------- */
+  .nudge {
+    display: none; background: #fff7c2; border: 3px solid #ffb400; border-radius: 18px; padding: 10px 14px;
+    margin-bottom: 14px; font-weight: 700; font-size: .88rem; box-shadow: 4px 4px 0 #c98a00; cursor: pointer;
+  }
+
+  /* ---------- price sheet ---------- */
+  .sheet-back { position: fixed; inset: 0; background: rgba(74,15,51,.55); display: none; align-items: flex-end; justify-content: center; z-index: 80; }
+  .sheet-back.open { display: flex; }
+  .sheet {
+    width: 100%; max-width: 560px; background: #fff; border: 3px solid var(--hot); border-bottom: none;
+    border-radius: 26px 26px 0 0; padding: 18px 16px calc(env(safe-area-inset-bottom, 0px) + 20px);
+    box-shadow: 0 -6px 0 var(--hot-deep);
+  }
+  .sheet h3 { margin: 0 0 4px; font-family: 'Fredoka', sans-serif; color: var(--hot-deep); font-size: 1.3rem; }
+  .sheet .sub2 { font-size: .85rem; color: var(--ink-soft); font-weight: 600; margin-bottom: 12px; }
+  .price-row { display: flex; align-items: center; gap: 8px; }
+  .price-row .dollar { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; color: var(--hot-deep); }
+  .price-row input { flex: 1; font-size: 22px; }
+  .sheet label { display: block; font-weight: 700; font-size: .8rem; color: var(--ink-soft); margin: 12px 0 4px; }
+  .sheet input[type=text] { width: 100%; }
+  .sheet-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .sheet-actions .btn { flex: 1; min-width: 120px; }
+  .sheet-note { font-size: .75rem; color: var(--ink-soft); font-weight: 600; margin-top: 10px; text-align: center; }
+
+  .toast {
+    position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 999px; font-weight: 700; font-size: .85rem;
+    opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 120; border: 2px solid var(--bubblegum);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .loading-msg { text-align: center; color: var(--hot-deep); font-family: 'Fredoka', sans-serif; font-size: 1.1rem; padding: 40px 0; }
+  .conn-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 130; background: #c0025e; color: #fff; font-size: 12px; padding: 10px 40px 10px 16px; text-align: center; }
+  .conn-banner button { position: absolute; top: 4px; right: 8px; background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; padding: 4px 8px; }
+  .share-list-btn { display:block; width:100%; margin-top:12px; padding:13px; border:2.5px dashed #ff2fa0; background:#fff; color:#d6006e; border-radius:18px; font-family:inherit; font-weight:700; font-size:1rem; cursor:pointer; }
+  .share-list-btn:active { background:#ffe3f3; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="title"><span class="sparkle">✦</span> Ingredients <span class="sparkle s2">✦</span></div>
+    <div class="sub">Check it off, tell me the price, done <span class="sparkle s3">✧</span></div>
+    <div class="ticker" id="ticker">loading your list…</div>
+  </div>
+
+  <div class="nudge" id="nudge"></div>
+
+  <div class="card">
+    <div class="card-title">➕ Add something</div>
+    <div class="add-row">
+      <input type="text" id="newItemInput" placeholder="butter, vanilla, boxes…" autocomplete="off" enterkeyhint="done">
+      <button class="btn" id="addItemBtn" type="button">Add</button>
+    </div>
+    <select id="newCatSelect" class="cat-select" aria-label="Category"></select>
+    <div class="chips" id="quickChips"></div>
+  </div>
+
+  <div id="loadingMsg" class="loading-msg">Loading your list… 🍪</div>
+  <div id="content" style="display:none;">
+    <div class="card">
+      <div class="card-title">🛒 Need to Buy <span class="count-pill" id="needCount">0</span></div>
+      <div class="hint">Check it off when it's in your cart — I'll ask what it cost so it lands in your expenses.</div>
+      <div id="needList"></div>
+      <button type="button" class="share-list-btn" id="shareListBtn">📤 Send my list as a cute picture</button>
+    </div>
+    <div class="card">
+      <div class="card-title">✅ Got It <span class="count-pill" id="haveCount">0</span></div>
+      <div class="hint">Run out of something? Uncheck it and it goes back on the list.</div>
+      <div id="haveList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-back" id="sheetBack">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h3 id="sheetTitle">How much was it?</h3>
+    <div class="sub2" id="sheetItem"></div>
+    <div class="price-row"><span class="dollar">$</span><input type="number" id="priceInput" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+    <label for="vendorInput">Where from? (optional)</label>
+    <input type="text" id="vendorInput" list="vendorList" placeholder="Walmart, Sam's, Amazon…" autocomplete="off">
+    <datalist id="vendorList"></datalist>
+    <div class="sheet-actions">
+      <button class="btn" id="sheetSave" type="button">Save &amp; log it 💰</button>
+      <button class="btn ghost" id="sheetSkip" type="button">Price later</button>
+    </div>
+    <button class="btn ghost small" id="sheetCancel" type="button" style="width:100%; margin-top:10px;">Never mind — didn't buy it</button>
+    <div class="sheet-note" id="sheetNote">Logging it here adds it to Earnings &amp; Tax automatically.</div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://wgicnbaoqsekageoygea.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnaWNuYmFvcXNla2FnZW95Z2VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0NjU1OTAsImV4cCI6MjEwMTA0MTU5MH0.2GvmyU0sB2tlNCqRpTY4Gnr8bB57ngoR_lQHm7g6au4';
+// Deliberately a separate credential from the admin dashboard's and the
+// recipe book's passwords — scoped to pantry data only.
+const PANTRY_PASSWORD = 'pH3nqYxW9mLtKvD2RzGa';
+
+const CATEGORIES = ['Baking Basics', 'Dairy & Eggs', 'Sweets & Mix-ins', 'Flavors & Spices', 'Packaging', 'Supplies & Cleaning', 'Other'];
+const CAT_EMOJI = { 'Baking Basics': '🌾', 'Dairy & Eggs': '🥚', 'Sweets & Mix-ins': '🍫', 'Flavors & Spices': '🌿', 'Packaging': '📦', 'Supplies & Cleaning': '🧼', 'Other': '✨' };
+
+// Words that tell us which aisle something belongs in, so adding
+// "brown sugar" doesn't mean also picking a category by hand.
+const CAT_KEYWORDS = {
+  'Dairy & Eggs': ['butter', 'egg', 'milk', 'cream', 'cheese', 'yogurt', 'buttermilk'],
+  'Baking Basics': ['flour', 'sugar', 'baking soda', 'baking powder', 'salt', 'cornstarch', 'shortening', 'oil', 'oats', 'yeast', 'cocoa'],
+  'Sweets & Mix-ins': ['chocolate', 'chip', 'sprinkle', 'candy', 'oreo', 'nut', 'walnut', 'pecan', 'caramel', 'marshmallow', 'frosting', 'icing', 'reese', 'm&m', 'toffee', 'cookie butter', 'biscoff', 'raisin', 'cranberr', 'peanut butter'],
+  'Flavors & Spices': ['vanilla', 'cinnamon', 'nutmeg', 'extract', 'spice', 'ginger', 'maple', 'lemon', 'pumpkin', 'almond'],
+  'Packaging': ['box', 'bag', 'sticker', 'label', 'ribbon', 'wrap', 'tissue', 'card', 'tin', 'container', 'cup', 'liner'],
+  'Supplies & Cleaning': ['parchment', 'foil', 'soap', 'sanitiz', 'towel', 'glove', 'sponge', 'spray', 'bleach', 'wipe', 'tape', 'marker', 'pan', 'sheet']
+};
+function guessCategory(name) {
+  const n = ' ' + name.toLowerCase();
+  for (const cat of CATEGORIES) {
+    const words = CAT_KEYWORDS[cat] || [];
+    if (words.some(w => n.includes(w))) return cat;
+  }
+  return 'Other';
+}
+
+// One-tap common items — shown only if they're not already on the list.
+const QUICK_ITEMS = ['Butter', 'Eggs', 'All-purpose flour', 'Brown sugar', 'Granulated sugar', 'Vanilla extract', 'Chocolate chips', 'Baking soda', 'Salt', 'Cookie boxes', 'Parchment paper', 'Stickers'];
+
+let _supabaseClient = null;
+async function waitForSupabase(timeoutMs) {
+  const start = Date.now();
+  while (!window.supabase) {
+    if (Date.now() - start > timeoutMs) return false;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return true;
+}
+async function getSupabase() {
+  if (!_supabaseClient) {
+    const loaded = await waitForSupabase(6000);
+    if (!loaded) throw new Error('Could not connect. Check your connection and try again.');
+    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return _supabaseClient;
+}
+async function callPantry(action, extra) {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.functions.invoke('manage-pantry', {
+    body: { password: PANTRY_PASSWORD, action, ...(extra || {}) }
+  });
+  if (error) throw error;
+  if (!data.success) throw new Error(data.message || 'Something went wrong.');
+  return data;
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('show'), 2000);
+}
+function showConnError(message) {
+  const banner = document.createElement('div');
+  banner.className = 'conn-banner';
+  banner.textContent = "Couldn't connect — " + message;
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '×';
+  closeBtn.onclick = () => banner.remove();
+  banner.appendChild(closeBtn);
+  document.body.appendChild(banner);
+}
+function escapeHtml(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeAttr(s) { return escapeHtml(s).replace(/"/g, '&quot;'); }
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const mins = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+function localDateStr() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+function money(n) { return '$' + Number(n || 0).toFixed(2); }
+
+// Small remembered conveniences — wrapped because storage can be blocked.
+function lsGet(k, fallback) { try { const v = localStorage.getItem(k); return v === null ? fallback : v; } catch (e) { return fallback; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* fine */ } }
+function getVendors() { try { return JSON.parse(lsGet('mt_vendors', '[]')); } catch (e) { return []; } }
+function rememberVendor(v) {
+  if (!v) return;
+  const list = getVendors().filter(x => x.toLowerCase() !== v.toLowerCase());
+  list.unshift(v);
+  lsSet('mt_vendors', JSON.stringify(list.slice(0, 8)));
+}
+
+let items = [];
+
+async function loadItems() {
+  try {
+    const data = await callPantry('list');
+    items = data.items || [];
+  } catch (e) {
+    console.error(e);
+    showConnError(e.message || String(e));
+    items = [];
+  }
+  document.getElementById('loadingMsg').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+  render();
+}
+
+function catIndex(cat) { const i = CATEGORIES.indexOf(cat); return i === -1 ? CATEGORIES.length - 1 : i; }
+
+function groupByCategory(list) {
+  const groups = {};
+  list.forEach(i => { const c = CATEGORIES.includes(i.category) ? i.category : 'Other'; (groups[c] = groups[c] || []).push(i); });
+  return CATEGORIES.filter(c => groups[c]).map(c => ({ cat: c, items: groups[c] }));
+}
+
+// ---- Cute picture of the shopping list (to text or post) ----
+// Draws the "still need" list onto a pink sticker-style card, then offers it
+// to the phone's share menu as a picture (or saves it if sharing a file
+// isn't supported). Self-contained: only needs a list of { name, category }.
+const LP_CATS = ['Baking Basics', 'Dairy & Eggs', 'Sweets & Mix-ins', 'Flavors & Spices', 'Packaging', 'Supplies & Cleaning', 'Other'];
+const LP_EMOJI = { 'Baking Basics': '🌾', 'Dairy & Eggs': '🥚', 'Sweets & Mix-ins': '🍫', 'Flavors & Spices': '🌿', 'Packaging': '📦', 'Supplies & Cleaning': '🧼', 'Other': '✨' };
+const LP_COLORS = ['#ff4fa3', '#ff8a3d', '#39b8d6', '#a56cff', '#2fb36d', '#ff6b6b', '#e2a900'];
+let lpBlob = null;
+let lpUrl = null;
+
+async function lpBuildBlob(list) {
+  const FONT = "'Fredoka','Quicksand','Trebuchet MS','Arial Rounded MT Bold',sans-serif";
+  try { await document.fonts.load('700 40px Fredoka'); await document.fonts.load('500 36px Fredoka'); } catch (e) { /* fall back to system font */ }
+  const INK = '#4a0f33', HOT = '#ff1493', HOT_DEEP = '#d6006e', CANDY = '#ffb3de';
+  const STICKERS = ['#ffe27a', '#7de8ff', '#ffb3de', '#d9a8ff', '#b6ff3b', '#ffb98a', '#e6e6e6'];
+  const W = 1080, M = 50, PAD = 54, TEXT_W = W - 2 * M - 2 * PAD - 70;
+  // Only categories that actually have something on the list are drawn.
+  const byCat = {};
+  list.forEach(i => { const c = LP_CATS.includes(i.category) ? i.category : 'Other'; (byCat[c] = byCat[c] || []).push(i.name); });
+  const cats = LP_CATS.filter(c => byCat[c]);
+  const meas = document.createElement('canvas').getContext('2d');
+  meas.font = `500 38px ${FONT}`;
+  const wrap = (txt) => {
+    const words = String(txt).split(/\s+/); const lines = []; let cur = '';
+    words.forEach(w => { const t = cur ? cur + ' ' + w : w; if (meas.measureText(t).width > TEXT_W && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur); return lines;
+  };
+  let y = M + PAD + 276;
+  const blocks = cats.map(c => {
+    const rows = byCat[c].map(n => { const lines = wrap(n); return { lines, h: Math.max(66, lines.length * 46 + 20) }; });
+    const block = { c, rows, y };
+    y += 84 + 16 + rows.reduce((s, r) => s + r.h, 0) + 30;
+    return block;
+  });
+  const cardBottom = y + 150;
+  const H = cardBottom + M + 14;
+
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  const rr = (x, yy, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, yy); ctx.arcTo(x + w, yy, x + w, yy + h, r); ctx.arcTo(x + w, yy + h, x, yy + h, r); ctx.arcTo(x, yy + h, x, yy, r); ctx.arcTo(x, yy, x + w, yy, r); ctx.closePath(); };
+  const sparkle = (cx, cy, s, color) => {
+    ctx.fillStyle = color; ctx.beginPath();
+    ctx.moveTo(cx, cy - s); ctx.quadraticCurveTo(cx, cy, cx + s, cy); ctx.quadraticCurveTo(cx, cy, cx, cy + s);
+    ctx.quadraticCurveTo(cx, cy, cx - s, cy); ctx.quadraticCurveTo(cx, cy, cx, cy - s); ctx.fill();
+  };
+  // sparkly pink background, same as the Ingredients page
+  const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#ffb3de'); bg.addColorStop(1, '#ff8fcf');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 46; i++) sparkle(rnd() * W, rnd() * H, 10 + rnd() * 20, i % 3 === 0 ? '#fff' : (i % 3 === 1 ? 'rgba(255,255,255,.8)' : '#fff6a8'));
+  // sticker card: hot-pink border + hard offset shadow
+  ctx.fillStyle = HOT_DEEP; rr(M + 14, M + 16, W - 2 * M, cardBottom - M, 50); ctx.fill();
+  ctx.fillStyle = '#fff'; rr(M, M, W - 2 * M, cardBottom - M, 50); ctx.fill();
+  ctx.strokeStyle = HOT; ctx.lineWidth = 9; rr(M, M, W - 2 * M, cardBottom - M, 50); ctx.stroke();
+  // corner sparkles
+  sparkle(M + 62, M + 66, 26, '#ffd23f'); sparkle(W - M - 66, M + 74, 20, HOT); sparkle(W - M - 100, M + 36, 12, '#7de8ff');
+  ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center';
+  // title: bubble letters (hot pink with white + ink outline)
+  ctx.font = `700 100px ${FONT}`; ctx.lineJoin = 'round';
+  ctx.lineWidth = 16; ctx.strokeStyle = INK; ctx.strokeText("Mel's Treat", W / 2, M + PAD + 100);
+  ctx.lineWidth = 8; ctx.strokeStyle = '#fff'; ctx.strokeText("Mel's Treat", W / 2, M + PAD + 100);
+  ctx.fillStyle = HOT; ctx.fillText("Mel's Treat", W / 2, M + PAD + 100);
+  // little glossy count bubble
+  const n = list.length;
+  const tag = `${n} thing${n === 1 ? '' : 's'} to grab ✦`;
+  ctx.font = `700 40px ${FONT}`;
+  const tw = ctx.measureText(tag).width + 70;
+  ctx.fillStyle = INK; rr(W / 2 - tw / 2 + 5, M + PAD + 133, tw, 66, 33); ctx.fill();
+  const g = ctx.createLinearGradient(0, M + PAD + 128, 0, M + PAD + 194); g.addColorStop(0, '#ff8fd0'); g.addColorStop(1, HOT);
+  ctx.fillStyle = g; rr(W / 2 - tw / 2, M + PAD + 128, tw, 66, 33); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.45)'; rr(W / 2 - tw / 2 + 18, M + PAD + 134, tw - 36, 20, 10); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.fillText(tag, W / 2, M + PAD + 177);
+  ctx.fillStyle = '#9b4a7c'; ctx.font = `600 32px ${FONT}`;
+  ctx.fillText(new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }), W / 2, M + PAD + 236);
+  // categories as rotated sticker headers
+  ctx.textAlign = 'left';
+  blocks.forEach((b, bi) => {
+    const color = STICKERS[LP_CATS.indexOf(b.c) % STICKERS.length];
+    const label = `${LP_EMOJI[b.c] || ''} ${b.c}`;
+    ctx.font = `700 42px ${FONT}`;
+    const pw = Math.min(W - 2 * M - 2 * PAD, ctx.measureText(label).width + 60);
+    ctx.save(); ctx.translate(M + PAD, b.y + 40); ctx.rotate((bi % 2 ? 1 : -1) * 0.022);
+    ctx.fillStyle = INK; rr(5, -35 + 5, pw, 70, 20); ctx.fill();
+    ctx.fillStyle = color; rr(0, -35, pw, 70, 20); ctx.fill();
+    ctx.strokeStyle = INK; ctx.lineWidth = 5; rr(0, -35, pw, 70, 20); ctx.stroke();
+    ctx.fillStyle = INK; ctx.fillText(label, 28, 14);
+    ctx.restore();
+    let ry = b.y + 84 + 16;
+    b.rows.forEach(r => {
+      ctx.strokeStyle = HOT; ctx.lineWidth = 7; ctx.fillStyle = '#fff';
+      rr(M + PAD + 6, ry + 11, 42, 42, 13); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = INK; ctx.font = `500 38px ${FONT}`;
+      r.lines.forEach((ln, li) => ctx.fillText(ln, M + PAD + 72, ry + 46 + li * 46));
+      ctx.strokeStyle = CANDY; ctx.lineWidth = 4; ctx.setLineDash([2, 10]); ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(M + PAD, ry + r.h - 2); ctx.lineTo(W - M - PAD, ry + r.h - 2); ctx.stroke(); ctx.setLineDash([]);
+      ry += r.h;
+    });
+  });
+  // footer
+  ctx.textAlign = 'center';
+  ctx.font = `700 44px ${FONT}`;
+  ctx.lineWidth = 10; ctx.strokeStyle = '#fff'; ctx.strokeText('Thank you for helping me out! 💕', W / 2, cardBottom - 74);
+  ctx.fillStyle = HOT_DEEP; ctx.fillText('Thank you for helping me out! 💕', W / 2, cardBottom - 74);
+  ctx.fillStyle = '#9b4a7c'; ctx.font = `600 34px ${FONT}`; ctx.fillText('✦ melstreat.com ✦', W / 2, cardBottom - 28);
+  return await new Promise(res => cv.toBlob(res, 'image/png'));
+}
+
+function lpEnsureOverlay() {
+  if (document.getElementById('lp-overlay')) return;
+  const st = document.createElement('style');
+  st.textContent = `
+    #lp-overlay{position:fixed; inset:0; z-index:9999; background:rgba(74,15,51,.65); display:none; align-items:flex-end; justify-content:center;}
+    #lp-overlay.on{display:flex;}
+    #lp-sheet{width:100%; max-width:520px; max-height:94vh; overflow:auto; background:#fff; border-radius:26px 26px 0 0; padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 18px); text-align:center; font-family:inherit;}
+    #lp-img{max-width:100%; max-height:58vh; border-radius:16px; box-shadow:0 6px 18px rgba(214,0,110,.25);}
+    #lp-sheet button{display:block; width:100%; margin-top:10px; padding:14px; border-radius:18px; border:none; font-family:inherit; font-weight:700; font-size:1rem; cursor:pointer;}
+    #lp-send{background:linear-gradient(180deg,#ff7ab8,#e20376); color:#fff;}
+    #lp-save{background:#ffe0f1; color:#a3315f;}
+    #lp-close{background:transparent; color:#9b4a7c;}`;
+  document.head.appendChild(st);
+  const el = document.createElement('div');
+  el.id = 'lp-overlay';
+  el.innerHTML = `<div id="lp-sheet"><div style="font-weight:800; color:#e20376; margin-bottom:8px;">Your list, all dressed up 💕</div><img id="lp-img" alt="Shopping list picture"><button type="button" id="lp-send">📤 Send picture</button><button type="button" id="lp-save">💾 Save picture</button><button type="button" id="lp-close">Close</button></div>`;
+  document.body.appendChild(el);
+  el.addEventListener('click', (e) => { if (e.target === el) lpClose(); });
+  document.getElementById('lp-close').addEventListener('click', lpClose);
+  document.getElementById('lp-save').addEventListener('click', lpSave);
+  document.getElementById('lp-send').addEventListener('click', lpSend);
+}
+function lpClose() { document.getElementById('lp-overlay').classList.remove('on'); if (lpUrl) { URL.revokeObjectURL(lpUrl); lpUrl = null; } }
+function lpSave() {
+  if (!lpBlob) return;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(lpBlob); a.download = 'mels-treat-shopping-list.png';
+  document.body.appendChild(a); a.click(); a.remove();
+  if (typeof showToast === 'function') showToast('Saved to your photos/downloads ✧');
+}
+async function lpSend() {
+  if (!lpBlob) return;
+  const file = new File([lpBlob], 'mels-treat-shopping-list.png', { type: 'image/png' });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Mel's Treat shopping list" }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  lpSave();
+}
+async function sharePictureList(list) {
+  if (!list.length) { if (typeof showToast === 'function') showToast('Nothing on the list right now ✦'); return; }
+  if (typeof showToast === 'function') showToast('Making your picture…');
+  try {
+    lpBlob = await lpBuildBlob(list);
+    lpEnsureOverlay();
+    if (lpUrl) URL.revokeObjectURL(lpUrl);
+    lpUrl = URL.createObjectURL(lpBlob);
+    document.getElementById('lp-img').src = lpUrl;
+    document.getElementById('lp-overlay').classList.add('on');
+  } catch (e) { console.error(e); if (typeof showToast === 'function') showToast('Could not make the picture — try again'); }
+}
+
+document.getElementById('shareListBtn').addEventListener('click', () => sharePictureList(items.filter(i => i.status === 'need')));
+
+function render() {
+  const needItems = items.filter(i => i.status === 'need');
+  const haveItems = items.filter(i => i.status === 'have').sort((a, b) =>
+    new Date(b.bought_at || b.updated_at) - new Date(a.bought_at || a.updated_at));
+  const unlogged = haveItems.filter(i => !i.expense_logged);
+
+  document.getElementById('needCount').textContent = needItems.length;
+  document.getElementById('haveCount').textContent = haveItems.length;
+  document.getElementById('ticker').textContent = needItems.length
+    ? `${needItems.length} thing${needItems.length === 1 ? '' : 's'} to grab ✦`
+    : 'all stocked up ✦';
+
+  const nudge = document.getElementById('nudge');
+  if (unlogged.length) {
+    nudge.style.display = 'block';
+    nudge.textContent = `💰 ${unlogged.length} purchase${unlogged.length === 1 ? '' : 's'} still need${unlogged.length === 1 ? 's' : ''} a price — tap to finish`;
+  } else {
+    nudge.style.display = 'none';
+  }
+
+  const needListEl = document.getElementById('needList');
+  needListEl.innerHTML = needItems.length
+    ? groupByCategory(needItems).map(g => `
+        <div class="cat-block">
+          <span class="cat-head c${catIndex(g.cat)}">${CAT_EMOJI[g.cat]} ${escapeHtml(g.cat)}</span>
+          ${g.items.map(itemRowHtml).join('')}
+        </div>`).join('')
+    : '<div class="empty">Nothing on the list right now ✧</div>';
+
+  document.getElementById('haveList').innerHTML = haveItems.length
+    ? haveItems.map(itemRowHtml).join('')
+    : '<div class="empty">Check something off and it lands here.</div>';
+
+  renderChips();
+  wireRowEvents();
+}
+
+function stampHtml(item) {
+  if (item.status !== 'have') return '';
+  const when = item.bought_at ? `Bought ${timeAgo(item.bought_at)}` : 'Bought';
+  if (item.expense_logged) {
+    return `<span class="stamp">${when}${item.price ? ' · ' + money(item.price) + ' logged ✓' : ' · expense handled ✓'}</span>`;
+  }
+  return `<span class="stamp warn">${when} · <u data-addprice="${item.id}" style="cursor:pointer;">add price 💰</u></span>`;
+}
+
+function itemRowHtml(item) {
+  const isHave = item.status === 'have';
+  const catOptions = CATEGORIES.map(c => `<option value="${escapeAttr(c)}" ${c === item.category ? 'selected' : ''}>${CAT_EMOJI[c]} ${escapeHtml(c)}</option>`).join('');
+  return `
+    <div class="item-row ${isHave ? 'have' : ''}" data-item-id="${item.id}">
+      <input type="checkbox" data-toggle-item="${item.id}" ${isHave ? 'checked' : ''} aria-label="${isHave ? 'Put back on list' : 'Mark bought'}: ${escapeAttr(item.name)}">
+      <div class="item-main">
+        <div class="item-name" data-toggle-item-label="${item.id}">${escapeHtml(item.name)}</div>
+        ${stampHtml(item)}
+      </div>
+      ${isHave ? '' : `<label class="cat-pick" title="Move to another group">${CAT_EMOJI[CATEGORIES.includes(item.category) ? item.category : 'Other']}<select class="row-cat" data-setcat="${item.id}" aria-label="Category for ${escapeAttr(item.name)}">${catOptions}</select></label>`}
+      <button type="button" class="del" data-delete-item="${item.id}" aria-label="Remove ${escapeAttr(item.name)}">&#128465;</button>
+    </div>`;
+}
+
+function renderChips() {
+  const have = new Set(items.filter(i => i.status === 'need').map(i => i.name.toLowerCase()));
+  const chips = QUICK_ITEMS.filter(n => !have.has(n.toLowerCase())).slice(0, 8);
+  document.getElementById('quickChips').innerHTML = chips.map(n => `<button type="button" class="chip" data-chip="${escapeAttr(n)}">+ ${escapeHtml(n)}</button>`).join('');
+  document.querySelectorAll('[data-chip]').forEach(b => b.addEventListener('click', () => addItem(b.getAttribute('data-chip'), null)));
+}
+
+// ----- price sheet -----
+let pendingToggle = null; // { id, mode: 'toggle' | 'logonly' }
+function openSheet(item, mode) {
+  pendingToggle = { id: item.id, mode };
+  document.getElementById('sheetItem').textContent = item.name;
+  document.getElementById('priceInput').value = '';
+  document.getElementById('vendorInput').value = getVendors()[0] || '';
+  document.getElementById('vendorList').innerHTML = getVendors().map(v => `<option value="${escapeAttr(v)}">`).join('');
+  document.getElementById('sheetSkip').textContent = mode === 'logonly' ? 'Not an expense' : 'Price later';
+  document.getElementById('sheetBack').classList.add('open');
+  setTimeout(() => document.getElementById('priceInput').focus(), 60);
+}
+function closeSheet() { document.getElementById('sheetBack').classList.remove('open'); pendingToggle = null; }
+
+async function finishSheet(kind) { // 'save' | 'skip' | 'cancel'
+  if (!pendingToggle) return;
+  const { id, mode } = pendingToggle;
+  if (kind === 'cancel') { closeSheet(); render(); return; }
+  const price = parseFloat(document.getElementById('priceInput').value);
+  const vendor = document.getElementById('vendorInput').value.trim();
+  if (kind === 'save' && !(price > 0)) { showToast('Type the price first 💕'); return; }
+  const btns = document.querySelectorAll('#sheetBack .btn');
+  btns.forEach(b => b.disabled = true);
+  try {
+    let data;
+    if (mode === 'logonly') {
+      data = await callPantry('log_expense', kind === 'save' ? { id, price, vendor, date: localDateStr() } : { id, skip: true });
+    } else {
+      data = await callPantry('toggle', kind === 'save'
+        ? { id, status: 'have', price, vendor, date: localDateStr() }
+        : { id, status: 'have' });
+    }
+    const idx = items.findIndex(i => i.id === id);
+    if (idx !== -1) items[idx] = data.item;
+    if (kind === 'save') { rememberVendor(vendor); showToast(`Logged ${money(price)} ✧ — it's in your expenses`); }
+    else showToast(mode === 'logonly' ? 'Okay, skipped' : 'Marked bought — add the price when you can');
+    closeSheet();
+    render();
+  } catch (e) {
+    showToast('Could not save — try again');
+  }
+  btns.forEach(b => b.disabled = false);
+}
+document.getElementById('sheetSave').addEventListener('click', () => finishSheet('save'));
+document.getElementById('sheetSkip').addEventListener('click', () => finishSheet('skip'));
+document.getElementById('sheetCancel').addEventListener('click', () => finishSheet('cancel'));
+document.getElementById('priceInput').addEventListener('keydown', e => { if (e.key === 'Enter') finishSheet('save'); });
+document.getElementById('sheetBack').addEventListener('click', e => { if (e.target.id === 'sheetBack') finishSheet('cancel'); });
+document.getElementById('nudge').addEventListener('click', () => {
+  const first = items.find(i => i.status === 'have' && !i.expense_logged);
+  if (first) openSheet(first, 'logonly');
+});
+
+function wireRowEvents() {
+  document.querySelectorAll('[data-toggle-item]').forEach(cb => {
+    cb.addEventListener('change', async () => {
+      const id = cb.getAttribute('data-toggle-item');
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+      if (item.status === 'need') {
+        // Checking off = bought. Ask the price right now while the receipt is in hand.
+        openSheet(item, 'toggle');
+      } else {
+        try {
+          const data = await callPantry('toggle', { id, status: 'need' });
+          const idx = items.findIndex(i => i.id === id);
+          if (idx !== -1) items[idx] = data.item;
+          showToast('Back on the shopping list');
+          render();
+        } catch (e) {
+          showToast('Could not save — try again');
+          cb.checked = true;
+        }
+      }
+    });
+  });
+  document.querySelectorAll('[data-toggle-item-label]').forEach(label => {
+    label.addEventListener('click', () => {
+      const id = label.getAttribute('data-toggle-item-label');
+      const cb = document.querySelector(`[data-toggle-item="${id}"]`);
+      if (cb) { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
+    });
+  });
+  document.querySelectorAll('[data-addprice]').forEach(u => {
+    u.addEventListener('click', () => {
+      const item = items.find(i => i.id === u.getAttribute('data-addprice'));
+      if (item) openSheet(item, 'logonly');
+    });
+  });
+  document.querySelectorAll('[data-setcat]').forEach(sel => {
+    sel.addEventListener('change', async () => {
+      const id = sel.getAttribute('data-setcat');
+      try {
+        const data = await callPantry('set_category', { id, category: sel.value });
+        const idx = items.findIndex(i => i.id === id);
+        if (idx !== -1) items[idx] = data.item;
+        render();
+      } catch (e) { showToast('Could not move it — try again'); }
+    });
+  });
+  document.querySelectorAll('[data-delete-item]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-delete-item');
+      try {
+        await callPantry('delete', { id });
+        items = items.filter(i => i.id !== id);
+        render();
+      } catch (e) { showToast('Could not delete — try again'); }
+    });
+  });
+}
+
+// ----- adding -----
+const addItemBtn = document.getElementById('addItemBtn');
+const newItemInput = document.getElementById('newItemInput');
+const newCatSelect = document.getElementById('newCatSelect');
+newCatSelect.innerHTML = '<option value="auto">✨ Auto-sort into the right group</option>' +
+  CATEGORIES.map(c => `<option value="${escapeAttr(c)}">${CAT_EMOJI[c]} ${escapeHtml(c)}</option>`).join('');
+
+async function addItem(name, category) {
+  name = (name || '').trim();
+  if (!name) return;
+  const cat = category && CATEGORIES.includes(category) ? category : guessCategory(name);
+  addItemBtn.disabled = true;
+  try {
+    const data = await callPantry('add', { name, category: cat });
+    if (!items.some(i => i.id === data.item.id)) items.push(data.item);
+    render();
+    showToast(`Added to ${cat} ✧`);
+  } catch (e) {
+    showToast('Could not add — try again');
+  }
+  addItemBtn.disabled = false;
+}
+async function addFromInput() {
+  const name = newItemInput.value.trim();
+  if (!name) return;
+  const picked = newCatSelect.value;
+  newItemInput.value = '';
+  await addItem(name, picked === 'auto' ? null : picked);
+  newItemInput.focus();
+}
+addItemBtn.addEventListener('click', addFromInput);
+newItemInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addFromInput(); });
+
+loadItems();
+</script>
+</body>
+</html>

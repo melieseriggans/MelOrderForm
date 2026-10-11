@@ -685,6 +685,46 @@
     cursor: pointer;
     line-height: 1.4;
   }
+
+  /* ===== Standalone timer (floating) ===== */
+  .timer-fab {
+    position: fixed; right: 14px; bottom: calc(env(safe-area-inset-bottom, 0px) + 78px); z-index: 60;
+    min-width: 54px; height: 54px; padding: 0 16px; border-radius: 27px; border: 2px solid #fff;
+    background: linear-gradient(145deg, #ff6fb0, #d6006e); color: #fff; font-family: Georgia, serif; font-size: 18px; font-weight: bold;
+    box-shadow: 0 6px 18px rgba(214,0,110,0.45); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .timer-fab.running { background: linear-gradient(145deg, #a3315f, #6e0040); }
+  .timer-fab.done { background: linear-gradient(145deg, #2e9d4f, #1b6e34); animation: timerPulse 0.8s ease-in-out infinite; }
+  @keyframes timerPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  .timer-panel {
+    position: fixed; right: 10px; left: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 140px); z-index: 61; max-width: 380px; margin-left: auto;
+    background: #fff; border: 2px solid #ffc2e6; border-radius: 22px; padding: 14px; box-shadow: 0 10px 34px rgba(110,0,64,0.35);
+    display: none; max-height: 70vh; overflow-y: auto; font-family: Georgia, serif; color: #4a2038;
+  }
+  .timer-panel.open { display: block; }
+  .timer-panel-head { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 17px; color: #a3315f; margin-bottom: 8px; }
+  .timer-x { background: #ffe3f3; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 16px; color: #a3315f; cursor: pointer; }
+  .timer-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .timer-preset { background: #ffe3f3; color: #a3315f; border: none; border-radius: 16px; padding: 8px 13px; font-family: Georgia, serif; font-size: 14px; font-weight: bold; cursor: pointer; min-height: 38px; }
+  .timer-custom { display: flex; gap: 6px; margin-bottom: 10px; }
+  .timer-custom input { border: 1.5px solid #ffc2e6; border-radius: 12px; padding: 9px 10px; font-family: Georgia, serif; font-size: 15px; min-height: 42px; min-width: 0; }
+  .timer-custom input.t-label { flex: 1; }
+  .timer-custom input.t-mins { width: 74px; text-align: center; }
+  .timer-go { background: #d6006e; color: #fff; border: none; border-radius: 14px; padding: 0 16px; font-family: Georgia, serif; font-weight: bold; font-size: 15px; cursor: pointer; min-height: 42px; }
+  .timer-row { border: 1.5px solid #ffd6ef; border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; background: #fff8fc; }
+  .timer-row.done { background: #e8f7ec; border-color: #9fdcb9; }
+  .timer-row-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .timer-row-label { font-weight: bold; font-size: 14px; }
+  .timer-row-clock { font-size: 28px; font-weight: bold; color: #d6006e; font-variant-numeric: tabular-nums; }
+  .timer-row.done .timer-row-clock { color: #1b6e34; font-size: 20px; }
+  .timer-bar { height: 6px; background: #ffe3f3; border-radius: 4px; margin: 6px 0 8px; overflow: hidden; }
+  .timer-bar > div { height: 100%; background: #d6006e; border-radius: 4px; transition: width 1s linear; }
+  .timer-row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .timer-mini { background: #ffe3f3; color: #a3315f; border: none; border-radius: 14px; padding: 7px 12px; font-family: Georgia, serif; font-size: 13px; font-weight: bold; cursor: pointer; min-height: 34px; }
+  .timer-mini.stop { background: #f1f1f1; color: #777; }
+  .timer-empty { text-align: center; color: #b98aa8; font-style: italic; font-size: 13px; padding: 6px 0 2px; }
+
+
   .check-row input[type="checkbox"] {
     width: 20px; height: 20px;
     margin-top: 2px;
@@ -1325,6 +1365,27 @@
   <button class="add-page-btn" id="addBtn" style="display:none;">+ Add Recipe to This Category</button>
 </div>
 <div class="toast" id="toast"></div>
+<!-- Standalone timer: one floating timer for the whole book, not one per step -->
+<button type="button" class="timer-fab" id="timerFab" aria-label="Open timers">⏱</button>
+<div class="timer-panel" id="timerPanel" role="dialog" aria-label="Timers">
+  <div class="timer-panel-head"><span>⏱ Timers</span><button type="button" class="timer-x" id="timerClose" aria-label="Close timers">✕</button></div>
+  <div class="timer-presets" id="timerPresets">
+    <button type="button" class="timer-preset" data-min="5">5 min</button>
+    <button type="button" class="timer-preset" data-min="8">8 min</button>
+    <button type="button" class="timer-preset" data-min="10">10 min</button>
+    <button type="button" class="timer-preset" data-min="12">12 min</button>
+    <button type="button" class="timer-preset" data-min="15">15 min</button>
+    <button type="button" class="timer-preset" data-min="30">30 min</button>
+  </div>
+  <div class="timer-custom">
+    <input type="text" class="t-label" id="timerLabel" placeholder="Label (optional) — Pan 1" maxlength="30" autocomplete="off">
+    <input type="text" class="t-mins" id="timerMins" placeholder="min" inputmode="decimal" autocomplete="off" aria-label="Minutes (or m:ss)">
+    <button type="button" class="timer-go" id="timerGo">Start</button>
+  </div>
+  <div id="timerList"></div>
+</div>
+
+
 
 <script>
 const BRATZ_STORAGE_KEY = 'bratz_recipe_book_categories';
@@ -1458,6 +1519,228 @@ function showToast(msg) {
   setTimeout(() => toastEl.classList.remove('show'), 1600);
 }
 
+// --- Keep the screen awake while actively cooking ----------------------
+// Baking with messy/floury hands means the phone keeps auto-locking —
+// this uses the Screen Wake Lock API (supported in most mobile browsers)
+// to hold the screen on for as long as ANY recipe or compare pane is in
+// Cook Mode, and lets go the moment none of them are, so it never keeps
+// the screen on when she's just browsing the book.
+let wakeLock = null;
+let compareOverlayOpen = false;
+function anyCookModeActive() {
+  return cookModeOn.size > 0 || (compareOverlayOpen && compareCooking.some(c => c)) || (typeof timers !== 'undefined' && timers.some(t => !t.done));
+}
+async function updateWakeLock() {
+  if (!('wakeLock' in navigator)) return; // not supported here — fails silently, no feature lost
+  try {
+    if (anyCookModeActive() && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } else if (!anyCookModeActive() && wakeLock) {
+      await wakeLock.release();
+      wakeLock = null;
+    }
+  } catch (e) {
+    wakeLock = null; // e.g. page not visible, or battery saver blocked it — just skip quietly
+  }
+}
+// The OS/browser force-releases the lock when the screen is hidden
+// (switching apps to check a timer, say) — re-request it automatically
+// once she comes back, if cook mode is still on.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') updateWakeLock();
+});
+
+// --- Standalone timer -----------------------------------------------------
+// One floating timer for the whole book (tap ⏱ anywhere) instead of a
+// timer under every step. Several can run at once (two pans, a dough
+// chill). Times are stored as an end timestamp, so they stay correct if the
+// phone sleeps or the page is refreshed.
+function formatTimerClock(totalSeconds) {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  const pad = n => String(n).padStart(2, '0');
+  return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+}
+const TIMERS_KEY = 'melstreat_timers';
+function loadTimers() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(TIMERS_KEY) || '[]');
+    const now = Date.now();
+    return (Array.isArray(raw) ? raw : []).map(t => {
+      // A timer that finished long ago while the app was closed shouldn't blare on reopen.
+      if (!t.done && now - t.endAt > 120000) { t.done = true; t.alerts = 99; }
+      return t;
+    });
+  } catch (e) { return []; }
+}
+function saveTimers() { try { localStorage.setItem(TIMERS_KEY, JSON.stringify(timers)); } catch (e) { /* non-fatal */ } }
+let timers = loadTimers();
+let timerTickHandle = null;
+let timerPanelOpen = false;
+let timerListSig = '';
+let audioCtx = null;
+function unlockAudio() {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch (e) { /* audio unavailable — vibration/toast still fire */ }
+}
+function timerBeep() {
+  try {
+    unlockAudio();
+    if (!audioCtx) return;
+    [0, 0.3, 0.6].forEach(offset => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.frequency.value = 880;
+      gain.gain.value = 0.25;
+      osc.start(audioCtx.currentTime + offset);
+      osc.stop(audioCtx.currentTime + offset + 0.18);
+    });
+  } catch (e) { /* ignore */ }
+}
+function parseTimerInput(str) {
+  str = (str || '').trim();
+  if (!str) return null;
+  let secs;
+  if (str.includes(':')) {
+    const [m, s] = str.split(':');
+    secs = (parseInt(m, 10) || 0) * 60 + (parseInt(s, 10) || 0);
+  } else {
+    const v = parseFloat(str);
+    secs = v > 0 ? Math.round(v * 60) : 0;
+  }
+  return secs > 0 && secs <= 36000 ? secs : null;
+}
+function addTimer(secs, label) {
+  unlockAudio();
+  timers.push({ id: 't' + Date.now() + Math.random().toString(36).slice(2, 5), label: (label || '').trim(), endAt: Date.now() + secs * 1000, total: secs, done: false, alerts: 0 });
+  saveTimers();
+  ensureTimerTick();
+  updateWakeLock();
+  renderTimerUI();
+}
+function ensureTimerTick() { if (!timerTickHandle) timerTickHandle = setInterval(timerTick, 1000); }
+function timerAlarm(t) {
+  t.alerts = (t.alerts || 0) + 1;
+  t.lastAlert = Date.now();
+  timerBeep();
+  if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 300]);
+  if (t.alerts === 1) { showToast(`⏰ ${t.label || 'Timer'} is done!`); if (timerAllowed()) setTimerPanel(true); }
+}
+function timerTick() {
+  const now = Date.now();
+  let changed = false;
+  timers.forEach(t => {
+    if (!t.done && now >= t.endAt) { t.done = true; t.doneAt = now; changed = true; timerAlarm(t); }
+    else if (t.done && (t.alerts || 0) < 6 && now - (t.lastAlert || t.doneAt || now) >= 8000) { timerAlarm(t); changed = true; }
+  });
+  if (changed) saveTimers();
+  if (!timers.length) { clearInterval(timerTickHandle); timerTickHandle = null; updateWakeLock(); }
+  renderTimerUI();
+}
+function setTimerPanel(open) {
+  timerPanelOpen = open;
+  document.getElementById('timerPanel').classList.toggle('open', open);
+  timerListSig = '';
+  renderTimerUI();
+}
+// The timer only appears on recipe pages (and the compare view) — never on
+// the cover, contents, or while editing. Running timers keep counting.
+function timerAllowed() {
+  if (typeof pageList === 'undefined' || typeof current === 'undefined') return false;
+  if (compareOverlayOpen) return true;
+  const entry = pageList[current];
+  return !!(entry && entry.type === 'recipe' && !editing);
+}
+function updateTimerVisibility() {
+  const ok = timerAllowed();
+  document.getElementById('timerFab').style.display = ok ? '' : 'none';
+  if (!ok && timerPanelOpen) setTimerPanel(false);
+}
+function renderTimerUI() {
+  const now = Date.now();
+  const fab = document.getElementById('timerFab');
+  const running = timers.filter(t => !t.done);
+  const done = timers.filter(t => t.done);
+  if (done.length) { fab.className = 'timer-fab done'; fab.textContent = '⏰ DONE'; }
+  else if (running.length) {
+    const soonest = Math.min(...running.map(t => t.endAt));
+    fab.className = 'timer-fab running';
+    fab.textContent = '⏱ ' + formatTimerClock(Math.max(0, Math.ceil((soonest - now) / 1000)));
+  } else { fab.className = 'timer-fab'; fab.textContent = '⏱'; }
+  updateTimerVisibility();
+  if (!timerPanelOpen) return;
+
+  const list = document.getElementById('timerList');
+  const sig = timers.map(t => t.id + (t.done ? 'd' : 'r') + t.label + t.total).join('|');
+  if (sig !== timerListSig) {
+    timerListSig = sig;
+    list.innerHTML = timers.length ? timers.map(t => `
+      <div class="timer-row ${t.done ? 'done' : ''}" data-timer-row="${t.id}">
+        <div class="timer-row-top">
+          <span class="timer-row-label">${escapeHtml(t.label || 'Timer')}</span>
+          <span class="timer-row-clock" data-timer-clock="${t.id}"></span>
+        </div>
+        ${t.done ? '' : `<div class="timer-bar"><div data-timer-bar="${t.id}"></div></div>`}
+        <div class="timer-row-actions" style="${t.done ? 'margin-top:8px;' : ''}">
+          ${t.done
+            ? `<button type="button" class="timer-mini" data-t-again="${t.id}">↻ Again</button><button type="button" class="timer-mini stop" data-t-del="${t.id}">Dismiss</button>`
+            : `<button type="button" class="timer-mini" data-t-add="${t.id}">+1 min</button><button type="button" class="timer-mini stop" data-t-del="${t.id}">Cancel</button>`}
+        </div>
+      </div>`).join('') : '<div class="timer-empty">No timers yet — tap a time above to start one ✧</div>';
+  }
+  // Tick the numbers in place so buttons never get swapped out from under a tap.
+  timers.forEach(t => {
+    const clock = list.querySelector(`[data-timer-clock="${t.id}"]`);
+    if (!clock) return;
+    if (t.done) { clock.textContent = '✅ DONE!'; return; }
+    const remaining = Math.max(0, Math.ceil((t.endAt - now) / 1000));
+    clock.textContent = formatTimerClock(remaining);
+    const bar = list.querySelector(`[data-timer-bar="${t.id}"]`);
+    if (bar) bar.style.width = Math.max(0, Math.min(100, (remaining / t.total) * 100)) + '%';
+  });
+}
+document.getElementById('timerFab').addEventListener('click', () => setTimerPanel(!timerPanelOpen));
+document.getElementById('timerClose').addEventListener('click', () => setTimerPanel(false));
+document.getElementById('timerPresets').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-min]');
+  if (!b) return;
+  addTimer(parseFloat(b.getAttribute('data-min')) * 60, document.getElementById('timerLabel').value);
+  document.getElementById('timerLabel').value = '';
+});
+function startCustomTimer() {
+  const secs = parseTimerInput(document.getElementById('timerMins').value);
+  if (!secs) { showToast('Type minutes first (like 9 or 9:30)'); return; }
+  addTimer(secs, document.getElementById('timerLabel').value);
+  document.getElementById('timerMins').value = '';
+  document.getElementById('timerLabel').value = '';
+}
+document.getElementById('timerGo').addEventListener('click', startCustomTimer);
+document.getElementById('timerMins').addEventListener('keydown', (e) => { if (e.key === 'Enter') startCustomTimer(); });
+document.getElementById('timerList').addEventListener('click', (e) => {
+  const add = e.target.closest('[data-t-add]');
+  const del = e.target.closest('[data-t-del]');
+  const again = e.target.closest('[data-t-again]');
+  if (add) {
+    const t = timers.find(x => x.id === add.getAttribute('data-t-add'));
+    if (t) { t.endAt += 60000; t.total += 60; saveTimers(); renderTimerUI(); }
+  } else if (del) {
+    timers = timers.filter(x => x.id !== del.getAttribute('data-t-del'));
+    saveTimers(); timerListSig = ''; updateWakeLock(); renderTimerUI();
+  } else if (again) {
+    const t = timers.find(x => x.id === again.getAttribute('data-t-again'));
+    if (t) { t.done = false; t.alerts = 0; t.endAt = Date.now() + t.total * 1000; unlockAudio(); saveTimers(); ensureTimerTick(); timerListSig = ''; updateWakeLock(); renderTimerUI(); }
+  }
+});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && timers.length) timerTick(); });
+if (timers.length) ensureTimerTick();
+renderTimerUI();
+
+
 async function loadData() {
   try {
     const raw = localStorage.getItem(BRATZ_STORAGE_KEY);
@@ -1492,6 +1775,21 @@ async function saveData() {
     console.error(e);
     showToast('Could not save — try again');
   }
+}
+
+function downloadRecipesBackup(cats, filePrefix) {
+  const dataStr = JSON.stringify({ app: 'mels-treat-recipe-book', exportedAt: new Date().toISOString(), categories: cats }, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const timeStr = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
+  a.href = url;
+  a.download = `${filePrefix}-${dateStr}-${timeStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
 function makeSparkles(n) {
@@ -1566,7 +1864,17 @@ function saveSortPreference(value) {
 }
 
 function scaledIngredientList(recipe, factor) {
-  if (factor === 2 && recipe.doubled && recipe.doubled.length > 0) return recipe.doubled;
+  // A manually-entered "doubled" list (her own real-world corrections —
+  // e.g. salt or leavening that shouldn't simply double) is the best
+  // source of truth available, so it's used as the base for EVERY
+  // multiplier, not just exactly 2x. At 2x this is a no-op (scaling by
+  // 2/2 = 1x leaves it unchanged); at 3x/4x her correction now carries
+  // through proportionally instead of silently reverting to pure math
+  // on the uncorrected original amounts.
+  if (recipe.doubled && recipe.doubled.length > 0) {
+    const relativeFactor = factor / 2;
+    return recipe.doubled.map(line => scaleIngredientLine(line, relativeFactor));
+  }
   return recipe.ingredients.map(line => scaleIngredientLine(line, factor));
 }
 
@@ -1712,7 +2020,9 @@ function renderIndex() {
         const pIdx = pageListIndexFor(ci, ri);
         const isFirst = ri === 0;
         const isLast = ri === cat.recipes.length - 1;
-        return `<li class="recipe-link-item" data-search-title="${escapeAttr(r.title.toLowerCase())}">
+        const isFav = !!r.favorite;
+        return `<li class="recipe-link-item" data-search-title="${escapeAttr((r.title + ' ' + (r.sub||'') + ' ' + (r.notes||'')).toLowerCase())}">
+          <button type="button" class="fav-star-btn ${isFav ? 'active' : ''}" data-toggle-fav="${ci}:${ri}" aria-label="${isFav ? 'Remove from' : 'Add to'} favorites">${isFav ? '★' : '☆'}</button>
           <span class="recipe-link-title" data-jump="${pIdx}">${escapeHtml(r.title)}</span>
           <span class="reorder-btns">
             <button type="button" class="reorder-btn" data-move-up="${ci}:${ri}" ${isFirst ? 'disabled' : ''} aria-label="Move up">&#9650;</button>
@@ -1734,6 +2044,32 @@ function renderIndex() {
       </div>`;
   });
 
+  // Favorites section, shown above the categories so her most-used
+  // recipes are never more than one tap away, whatever category they're
+  // filed under.
+  let favoritesHtml = '';
+  const favEntries = [];
+  categories.forEach((cat, ci) => {
+    cat.recipes.forEach((r, ri) => { if (r.favorite) favEntries.push({ cat, ci, r, ri }); });
+  });
+  if (favEntries.length) {
+    favoritesHtml = `
+      <div class="category-block fav-block">
+        <div class="category-name" data-toggle-cat="fav">
+          <span class="cat-left"><span class="cat-arrow ${openCategories.has('fav') ? 'open' : ''}">&#9656;</span>★ Favorites <span class="cat-count">(${favEntries.length})</span></span>
+        </div>
+        <div class="recipe-link-list-wrap ${openCategories.has('fav') ? 'open' : ''}">
+          <ul class="recipe-link-list">${favEntries.map(({ ci, r, ri }) => {
+            const pIdx = pageListIndexFor(ci, ri);
+            return `<li class="recipe-link-item" data-search-title="${escapeAttr((r.title + ' ' + (r.sub||'') + ' ' + (r.notes||'')).toLowerCase())}">
+              <button type="button" class="fav-star-btn active" data-toggle-fav="${ci}:${ri}" aria-label="Remove from favorites">★</button>
+              <span class="recipe-link-title" data-jump="${pIdx}">${escapeHtml(r.title)}</span>
+            </li>`;
+          }).join('')}</ul>
+        </div>
+      </div>`;
+  }
+
   div.innerHTML = `
     <div class="page-content">
       <div class="collage-strip c1">
@@ -1745,7 +2081,7 @@ function renderIndex() {
       <div class="search-bar-wrap"><input type="text" class="search-bar" id="recipeSearch" placeholder="🔍 Search recipes…"></div>
       <div class="search-empty" id="searchEmpty" style="display:none;">No recipes match "<span id="searchEmptyTerm"></span>"</div>
       ${selectHtml}
-      <div id="catBlocksWrap">${catBlocks}</div>
+      <div id="catBlocksWrap">${favoritesHtml}${catBlocks}</div>
       <div class="add-cat-box">
         <label>Add a New Category</label>
         <div class="add-cat-row">
@@ -1859,7 +2195,10 @@ function renderRecipeView(recipe, catName, ci, ri) {
     </div>
     <div class="page-footer">
       <div class="page-num">${escapeHtml(recipe.title)}</div>
-      <button class="edit-link" data-edit-ci="${ci}" data-edit-ri="${ri}">Edit</button>
+      <div class="page-footer-actions">
+        <button class="edit-link" data-edit-ci="${ci}" data-edit-ri="${ri}">Edit</button>
+        <button class="edit-link" data-duplicate-ci="${ci}" data-duplicate-ri="${ri}">Duplicate</button>
+      </div>
     </div>`;
   return div;
 }
@@ -2151,6 +2490,7 @@ function buildCompareOverlay() {
       const idx = parseInt(sel.getAttribute('data-compare-select'));
       compareKeys[idx] = sel.value || null;
       compareCooking[idx] = false;
+      updateWakeLock();
       buildCompareOverlay();
     });
   });
@@ -2159,6 +2499,7 @@ function buildCompareOverlay() {
       const idx = parseInt(btn.getAttribute('data-compare-remove'));
       compareKeys.splice(idx, 1);
       compareCooking.splice(idx, 1);
+      updateWakeLock();
       buildCompareOverlay();
     });
   });
@@ -2168,12 +2509,18 @@ function buildCompareOverlay() {
       const enteringCookMode = !compareCooking[idx];
       compareCooking[idx] = !compareCooking[idx];
       const key = compareKeys[idx];
+      updateWakeLock();
       buildCompareOverlay();
       if (enteringCookMode && key) {
         const [ci, ri] = key.split('-').map(Number);
         const recipe = categories[ci]?.recipes[ri];
         if (recipe && recipe.notes && recipe.notes.trim()) {
-          const overlay = panesEl.querySelector(`[data-notes-overlay="${key}"]`);
+          // Scoped to THIS pane (by its rebuilt idx), not the whole
+          // panesEl — otherwise, when two panes show the same recipe,
+          // this would always grab the first pane's overlay instead of
+          // the one that just entered cook mode.
+          const paneEl = document.getElementById(`comparePane${idx}`);
+          const overlay = paneEl && paneEl.querySelector(`[data-notes-overlay="${key}"]`);
           if (overlay) overlay.classList.add('side-panel', 'open');
         }
       }
@@ -2227,11 +2574,18 @@ function buildCompareOverlay() {
       saveCheckState();
     });
   });
+  // All of the data-notes-* handlers below are scoped to the specific
+  // .compare-pane the triggering element lives in (via .closest), not to
+  // panesEl as a whole. Two panes can show the same recipe at once (the
+  // key is just "<categoryIdx>-<recipeIdx>"), and a panesEl-wide lookup
+  // would always resolve to whichever pane happens to be first in the
+  // DOM — so opening/typing/closing a note in pane 2 would silently act
+  // on pane 1's sticky note instead.
   panesEl.querySelectorAll('[data-notes-toggle]').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.getAttribute('data-notes-toggle');
-      const idx = compareKeys.indexOf(key);
-      const overlay = panesEl.querySelector(`[data-notes-overlay="${key}"]`);
+      const pane = btn.closest('.compare-pane');
+      const overlay = pane && pane.querySelector(`[data-notes-overlay="${key}"]`);
       if (overlay) {
         overlay.classList.add('open');
         const ta = overlay.querySelector('[data-notes-input]');
@@ -2245,8 +2599,10 @@ function buildCompareOverlay() {
       clearTimeout(saveTimer);
       saveTimer = setTimeout(async () => {
         const key = ta.getAttribute('data-notes-input');
-        await saveNoteFromContainer(key, panesEl);
-        const savedTag = panesEl.querySelector(`[data-notes-saved="${key}"]`);
+        const pane = ta.closest('.compare-pane');
+        if (!pane) return;
+        await saveNoteFromContainer(key, pane);
+        const savedTag = pane.querySelector(`[data-notes-saved="${key}"]`);
         if (savedTag) {
           savedTag.classList.add('show');
           setTimeout(() => savedTag.classList.remove('show'), 1200);
@@ -2257,8 +2613,10 @@ function buildCompareOverlay() {
   panesEl.querySelectorAll('[data-notes-close]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const key = btn.getAttribute('data-notes-close');
-      await saveNoteFromContainer(key, panesEl);
-      const overlay = panesEl.querySelector(`[data-notes-overlay="${key}"]`);
+      const pane = btn.closest('.compare-pane');
+      if (!pane) return;
+      await saveNoteFromContainer(key, pane);
+      const overlay = pane.querySelector(`[data-notes-overlay="${key}"]`);
       if (overlay) overlay.classList.remove('open');
       buildCompareOverlay();
     });
@@ -2267,7 +2625,7 @@ function buildCompareOverlay() {
     overlay.addEventListener('click', async (e) => {
       if (e.target === overlay) {
         const key = overlay.getAttribute('data-notes-overlay');
-        await saveNoteFromContainer(key, panesEl);
+        await saveNoteFromContainer(key, overlay);
         overlay.classList.remove('open');
         buildCompareOverlay();
       }
@@ -2462,17 +2820,7 @@ function wireEvents() {
   const exportBtn = bookEl.querySelector('#exportBtn');
   if (exportBtn) {
     exportBtn.addEventListener('click', () => {
-      const dataStr = JSON.stringify({ app: 'mels-treat-recipe-book', exportedAt: new Date().toISOString(), categories }, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const dateStr = new Date().toISOString().slice(0, 10);
-      a.href = url;
-      a.download = `mels-treat-recipes-backup-${dateStr}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      downloadRecipesBackup(categories, 'mels-treat-recipes-backup');
       showToast('Recipes exported ✧');
     });
   }
@@ -2492,6 +2840,10 @@ function wireEvents() {
           if (!Array.isArray(importedCategories)) throw new Error('bad format');
           const ok = confirm('This will replace all recipes currently in this book with the ones from this file. Continue?');
           if (!ok) return;
+          // Safety net: automatically save what's CURRENTLY in the book
+          // to a backup file first, so importing the wrong file by
+          // mistake is recoverable instead of a silent, permanent wipe.
+          downloadRecipesBackup(categories, 'mels-treat-recipes-before-import');
           categories = importedCategories;
           openCategories = new Set();
           checkState = {};
@@ -2501,7 +2853,7 @@ function wireEvents() {
           current = 1;
           buildPages();
           render();
-          showToast('Recipes imported ✧');
+          showToast('Recipes imported — a backup of what was there before was also saved to your downloads ✧');
         } catch (err) {
           showToast('That file could not be read');
         }
@@ -2568,6 +2920,7 @@ function wireEvents() {
       const enteringCookMode = !cookModeOn.has(key);
       if (cookModeOn.has(key)) cookModeOn.delete(key);
       else cookModeOn.add(key);
+      updateWakeLock();
       buildPages();
       render();
       // If they're stepping INTO cook mode and already have a note jotted
@@ -2626,9 +2979,24 @@ function wireEvents() {
   bookEl.querySelectorAll('[data-toggle-cat]').forEach(el => {
     el.addEventListener('click', (e) => {
       if (e.target.closest('[data-addto]')) return; // let add-recipe button handle itself
-      const ci = parseInt(el.getAttribute('data-toggle-cat'));
+      const raw = el.getAttribute('data-toggle-cat');
+      const ci = raw === 'fav' ? 'fav' : parseInt(raw);
       if (openCategories.has(ci)) openCategories.delete(ci);
       else openCategories.add(ci);
+      buildPages();
+      current = 1;
+      render();
+    });
+  });
+  // index: favorite star toggle
+  bookEl.querySelectorAll('[data-toggle-fav]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const [ci, ri] = btn.getAttribute('data-toggle-fav').split(':').map(Number);
+      const recipe = categories[ci]?.recipes[ri];
+      if (!recipe) return;
+      recipe.favorite = !recipe.favorite;
+      await saveData();
       buildPages();
       current = 1;
       render();
@@ -2747,6 +3115,25 @@ function wireEvents() {
       render();
     });
   });
+  // Duplicate — clones a recipe as a starting point for a similar new
+  // one instead of typing a whole new recipe from scratch.
+  bookEl.querySelectorAll('[data-duplicate-ci]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const ci = parseInt(btn.getAttribute('data-duplicate-ci'));
+      const ri = parseInt(btn.getAttribute('data-duplicate-ri'));
+      const original = categories[ci].recipes[ri];
+      const copy = JSON.parse(JSON.stringify(original));
+      copy.title = `${original.title} (Copy)`;
+      copy.favorite = false;
+      categories[ci].recipes.splice(ri + 1, 0, copy);
+      await saveData();
+      editing = { ci, ri: ri + 1 };
+      buildPages();
+      current = pageListIndexFor(ci, ri + 1);
+      render();
+      showToast('Duplicated — now editing the copy ✧');
+    });
+  });
   const parseBtn = bookEl.querySelector('#parseBtn');
   if (parseBtn) {
     parseBtn.addEventListener('click', () => {
@@ -2849,7 +3236,9 @@ function wireEvents() {
         showToast('Merged a duplicate measurement — check your notes ✧');
       }
 
-      const updated = { title, sub, ingredients: ing, instructions: steps, doubled, notes };
+      // Carry the favorite star forward — editing a recipe shouldn't
+      // silently un-star it.
+      const updated = { title, sub, ingredients: ing, instructions: steps, doubled, notes, favorite: !!categories[ci].recipes[ri].favorite };
 
       if (newCi === ci) {
         categories[ci].recipes[ri] = updated;
@@ -2867,10 +3256,17 @@ function wireEvents() {
   }
   const cancelBtn = bookEl.querySelector('#cancelBtn');
   if (cancelBtn) {
-    cancelBtn.addEventListener('click', () => {
+    cancelBtn.addEventListener('click', async () => {
+      // If this was a brand-new, still-blank recipe (never actually
+      // filled in), Cancel should really discard it instead of leaving
+      // an empty "New Recipe" stub sitting in the category forever.
       const wasNew = editing && categories[editing.ci].recipes[editing.ri].title === 'New Recipe'
         && categories[editing.ci].recipes[editing.ri].ingredients.length === 0
         && categories[editing.ci].recipes[editing.ri].instructions.length === 0;
+      if (wasNew) {
+        categories[editing.ci].recipes.splice(editing.ri, 1);
+        await saveData();
+      }
       editing = null;
       buildPages();
       render();
@@ -2891,6 +3287,7 @@ function wireEvents() {
 }
 
 function render() {
+  setTimeout(() => { if (typeof updateTimerVisibility === 'function') updateTimerVisibility(); }, 0);
   const pages = bookEl.querySelectorAll('.page');
   const total = pages.length;
   pages.forEach((p, i) => {
@@ -2952,9 +3349,13 @@ document.getElementById('taskbarJump').addEventListener('change', (e) => {
 document.getElementById('compareOpenBtn').addEventListener('click', () => {
   buildCompareOverlay();
   document.getElementById('compareOverlay').classList.add('open');
+  compareOverlayOpen = true; setTimeout(() => updateTimerVisibility(), 0);
+  updateWakeLock();
 });
 document.getElementById('compareCloseBtn').addEventListener('click', () => {
   document.getElementById('compareOverlay').classList.remove('open');
+  compareOverlayOpen = false; setTimeout(() => updateTimerVisibility(), 0);
+  updateWakeLock();
 });
 
 const VOLUME_UNITS = [

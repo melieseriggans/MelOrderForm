@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#ffd6e7" />
+<title>Support Mel's Treat – Wishlist</title>
+<meta name="description" content="Want to help Mel's Treat grow? Grab something from my wishlist — it ships straight to me and means the world. 💕">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --hot:#e20376; --hot-deep:#b8025f; --bubble:#ff5fa8; --candy:#ffb3d6; --blush:#fff0f7; --ink:#3a2430; --ink-soft:#8a6b78; }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; min-height:100vh; color:var(--ink);
+    font-family:'Fredoka','Quicksand','Chalkboard SE','Comic Sans MS',sans-serif;
+    background-color:#ffd6e7;
+    background-image:
+      radial-gradient(circle at 20px 20px, rgba(255,255,255,0.75) 6px, transparent 7px),
+      radial-gradient(circle at 60px 60px, rgba(255,143,196,0.35) 5px, transparent 6px);
+    background-size:80px 80px;
+    padding-bottom:60px;
+  }
+  .banner{
+    background:linear-gradient(135deg, var(--hot), #ff5fa8); color:#fff; text-align:center; padding:40px 20px 66px; position:relative; overflow:hidden;
+    -webkit-mask: radial-gradient(circle 22px at 22px 100%, transparent 98%, #000 100%) 0 100%/44px 100% repeat-x, linear-gradient(#000,#000) 0 0/100% calc(100% - 22px) no-repeat;
+            mask: radial-gradient(circle 22px at 22px 100%, transparent 98%, #000 100%) 0 100%/44px 100% repeat-x, linear-gradient(#000,#000) 0 0/100% calc(100% - 22px) no-repeat;
+  }
+  .logo{width:84px; height:84px; border-radius:50%; object-fit:cover; border:4px solid #fff; box-shadow:0 0 0 4px #ff8fc4, 0 6px 16px rgba(0,0,0,.18); animation:bob 3s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-6px) rotate(3deg);}}
+  .banner h1{margin:10px 0 4px; font-size:1.8rem; font-weight:700; text-shadow:2px 2px 0 rgba(0,0,0,.12);}
+  .banner .sub{opacity:.96; font-size:1rem; max-width:360px; margin:0 auto;}
+  .sparkle{position:absolute; font-size:1.2rem; animation:twinkle 2.4s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.35; transform:scale(.8);}50%{opacity:1; transform:scale(1.2);}}
+  .container{max-width:480px; margin:-18px auto 0; padding:0 16px; position:relative;}
+  .back-link{display:inline-block; background:var(--bubble); color:#fff; border:2.5px solid #fff; border-radius:20px; padding:9px 18px; text-decoration:none; font-weight:700; font-size:.9rem; margin-bottom:14px; box-shadow:0 4px 0 var(--hot-deep);}
+  .card{background:#fff; border:3px solid #fff; outline:3px dashed #ff8fc4; outline-offset:-10px; border-radius:30px; box-shadow:6px 7px 0 #ff8fc4, 0 12px 28px rgba(226,3,118,.15); padding:28px 22px; margin-bottom:22px; text-align:center;}
+  .card h2{margin:0 0 8px; color:var(--hot); font-size:1.5rem; text-shadow:2px 2px 0 #ffd0e6;}
+  .card p{margin:0 0 6px; line-height:1.5; color:var(--ink); font-size:1rem;}
+  .thanks{font-size:1.05rem; color:var(--hot-deep); font-weight:600;}
+  .shop-btn{
+    display:block; text-decoration:none; margin-top:14px; padding:16px 14px 14px; border-radius:24px; border:3px solid var(--ink); color:var(--ink);
+    box-shadow:0 6px 0 var(--ink); font-weight:700; font-size:1.15rem; transition:transform .1s, box-shadow .1s; position:relative;
+  }
+  .shop-btn small{display:block; font-weight:500; font-size:.82rem; margin-top:2px; opacity:.8;}
+  .shop-btn:active{transform:translateY(5px); box-shadow:0 1px 0 var(--ink);}
+  .shop-btn.amazon{background:linear-gradient(180deg,#ffe27a,#ffbf3d);}
+  .shop-btn.walmart{background:linear-gradient(180deg,#9be9ff,#46c3ee);}
+  .shop-btn.soon{background:#f1e6ec; border-color:#c9b3bf; box-shadow:0 6px 0 #c9b3bf; color:#9a8793; pointer-events:none;}
+  .steps{display:grid; gap:10px; margin-top:6px; text-align:left;}
+  .step{display:flex; gap:12px; align-items:flex-start; background:var(--blush); border:2px dashed var(--candy); border-radius:18px; padding:11px 14px;}
+  .step b{flex:0 0 32px; height:32px; border-radius:50%; background:var(--hot); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1rem;}
+  .step span{font-size:.95rem; line-height:1.35;}
+  .tell{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; justify-content:center;}
+  .tell a{background:#fff; color:var(--hot); border:2.5px solid var(--candy); border-radius:20px; padding:10px 16px; text-decoration:none; font-weight:700; font-size:.92rem; box-shadow:0 4px 0 var(--candy);}
+  .footer-note{text-align:center; font-weight:700; color:#c0025e; margin-top:6px;}
+  .floaties{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
+  .floaties span{position:absolute; font-size:1.7rem; opacity:.5; animation:floatY 6s ease-in-out infinite;}
+  @keyframes floatY{0%,100%{transform:translateY(0) rotate(-8deg);}50%{transform:translateY(-18px) rotate(10deg);}}
+  .container{z-index:1;}
+  @media (prefers-reduced-motion: reduce){ .logo,.sparkle,.floaties span{animation:none;} }
+</style>
+</head>
+<body>
+<div class="floaties" aria-hidden="true">
+  <span style="left:4%; top:30%;">🎀</span><span style="right:5%; top:42%; animation-delay:1.2s;">💗</span>
+  <span style="left:8%; top:72%; animation-delay:2s;">🍪</span><span style="right:9%; top:84%; animation-delay:.6s;">✨</span>
+</div>
+
+<div class="banner">
+  <span class="sparkle" style="left:10%; top:24px;">✦</span><span class="sparkle" style="right:12%; top:40px; animation-delay:.8s;">✧</span><span class="sparkle" style="left:22%; top:120px; animation-delay:1.4s;">✦</span>
+  <img src="assets/logo.png" alt="Mel's Treat" class="logo">
+  <h1>Support Mel's Treat 💕</h1>
+  <div class="sub">Little things that help my little bakery grow</div>
+</div>
+
+<div class="container">
+  <a href="https://melstreat.com/" class="back-link" id="back-link">← Back</a>
+
+  <div class="card">
+    <h2>Thank you for being here! 🥹</h2>
+    <p>Mel's Treat started with just me and a mixing bowl. Every order, every kind word, and every bit of help means the absolute world to me.</p>
+    <p class="thanks">If you'd like to help, you can pick something from my wishlist. It ships straight to me, and I'll be so, so grateful. ✨</p>
+  </div>
+
+  <div class="card">
+    <h2>Pick a wishlist 🎁</h2>
+    <p>Choose whichever store you like best:</p>
+    <a class="shop-btn amazon" id="amazon-btn" href="#" target="_blank" rel="noopener">🛍️ Amazon Wishlist<small>Tap to see what I need</small></a>
+    <a class="shop-btn walmart" id="walmart-btn" href="#" target="_blank" rel="noopener">🛒 Walmart Wishlist<small>Tap to see what I need</small></a>
+  </div>
+
+  <div class="card">
+    <h2>How it works ✨</h2>
+    <div class="steps">
+      <div class="step"><b>1</b><span>Open a wishlist and pick anything you'd like to get for me.</span></div>
+      <div class="step"><b>2</b><span>Check out like normal. The store sends it straight to me, and my address stays private. 🔒</span></div>
+      <div class="step"><b>3</b><span>Let me know if you'd like — I love saying thank you in person! 💌</span></div>
+    </div>
+    <div class="tell">
+      <a href="sms:+12564059471">💬 Text me</a>
+      <a href="https://www.instagram.com/melstreat23" target="_blank" rel="noopener">📸 DM on Instagram</a>
+    </div>
+  </div>
+
+  <div class="footer-note">🍪 Baked With Love 🎀</div>
+</div>
+
+<script>
+// ============ MEL: PASTE YOUR WISHLIST LINKS HERE ============
+// Between the quotes, paste the share link of each wishlist. Leave a link
+// empty ('') and its button shows "coming soon" instead of a broken link.
+const WISHLISTS = {
+      amazon: 'https://www.amazon.com/registries/gl/guest-view/2CLAWEKIV41CS?ref_=cm_sw_r_apann_ggr-subnav-share_GYWDN4XG0BPAWVB50P9V&language=en-US',
+      walmart: 'https://www.walmart.com/lists/wishlist/ace38ecb-4887-42aa-a059-58085d8cbad7'
+    };
+// =============================================================
+
+function setupButton(id, url, label) {
+  const el = document.getElementById(id);
+  if (url && /^https?:\/\//i.test(url)) { el.href = url; return; }
+  el.classList.add('soon');
+  el.removeAttribute('href');
+  el.innerHTML = `${label}<small>Link coming soon 💕</small>`;
+}
+setupButton('amazon-btn', WISHLISTS.amazon, '🛍️ Amazon Wishlist');
+setupButton('walmart-btn', WISHLISTS.walmart, '🛒 Walmart Wishlist');
+
+// Back button: go back if they came from the site, else home.
+document.getElementById('back-link').addEventListener('click', (e) => {
+  if (document.referrer && document.referrer.indexOf(location.host) !== -1 && history.length > 1) { e.preventDefault(); history.back(); }
+});
+</script>
+</body>
+</html>

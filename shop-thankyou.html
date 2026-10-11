@@ -265,6 +265,7 @@ try {
 // cart and typed info intact.
 try {
   localStorage.removeItem('mels_cart');
+  localStorage.removeItem('mels_cart_names');
   localStorage.removeItem('mels_checkout_fields');
 } catch (e) { /* storage unavailable, nothing to clear */ }
 

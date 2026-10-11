@@ -785,6 +785,43 @@
 </svg>
 
 
+<div id="orders-paused-overlay" style="display:none;">
+  <div class="op-card">
+    <svg class="op-cookie" viewBox="0 0 160 170" aria-hidden="true">
+      <g class="op-bob">
+        <circle cx="80" cy="80" r="64" fill="#d9a066" stroke="#a8672f" stroke-width="5"/>
+        <circle cx="52" cy="52" r="8" fill="#5a3320"/><circle cx="108" cy="46" r="7" fill="#5a3320"/>
+        <circle cx="120" cy="88" r="8" fill="#5a3320"/><circle cx="40" cy="96" r="7" fill="#5a3320"/>
+        <circle cx="86" cy="124" r="8" fill="#5a3320"/><circle cx="74" cy="34" r="5" fill="#5a3320"/>
+        <ellipse cx="58" cy="78" rx="7" ry="9" fill="#3b2314"/><ellipse cx="102" cy="78" rx="7" ry="9" fill="#3b2314"/>
+        <circle cx="60" cy="74" r="2.5" fill="#fff"/><circle cx="104" cy="74" r="2.5" fill="#fff"/>
+        <path d="M54 66 Q60 60 68 64" stroke="#3b2314" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M106 64 Q100 60 92 66" stroke="#3b2314" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M62 112 Q80 96 98 112" stroke="#3b2314" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="44" cy="100" rx="9" ry="5" fill="#f4a3c4" opacity=".7"/><ellipse cx="116" cy="100" rx="9" ry="5" fill="#f4a3c4" opacity=".7"/>
+      </g>
+      <path class="op-tear t1" d="M58 90 Q54 100 58 104 Q62 100 58 90Z" fill="#7cc7ff"/>
+      <path class="op-tear t2" d="M102 90 Q98 100 102 104 Q106 100 102 90Z" fill="#7cc7ff"/>
+    </svg>
+    <div class="op-title">Mel's Treat is closed for now</div>
+    <div class="op-reason" id="op-reason"></div>
+    <div class="op-back" id="op-back"></div>
+  </div>
+</div>
+<style>
+  #orders-paused-overlay{position:fixed; inset:0; z-index:100000; background:linear-gradient(160deg,#fff0f7,#ffd0e6); display:flex; align-items:center; justify-content:center; padding:20px; overflow:auto;}
+  .op-card{max-width:380px; width:100%; text-align:center; background:#fff; border:3px solid #ffd0e6; border-radius:28px; padding:26px 22px; box-shadow:0 10px 30px rgba(226,3,118,.18);}
+  .op-cookie{width:170px; height:auto;}
+  .op-bob{animation:opBob 3s ease-in-out infinite; transform-origin:80px 90px;}
+  .op-tear{animation:opTear 2s ease-in infinite; opacity:0;}
+  .op-tear.t2{animation-delay:1s;}
+  @keyframes opBob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(5px) rotate(2deg);}}
+  @keyframes opTear{0%{opacity:0; transform:translateY(0);}15%{opacity:1;}100%{opacity:0; transform:translateY(55px);}}
+  .op-title{font-weight:800; font-size:1.35rem; color:#e20376; margin:8px 0 10px;}
+  .op-reason{font-size:1rem; color:#444; line-height:1.5; margin-bottom:12px;}
+  .op-back{display:inline-block; background:#fff0f7; border:2px dashed #f4a3c4; border-radius:14px; padding:10px 16px; font-weight:800; color:#c0025e;}
+  @media (prefers-reduced-motion: reduce){.op-bob,.op-tear{animation:none;} .op-tear{opacity:1;}}
+</style>
 <nav class="top-nav">
   <div class="nav-inner">
     <a href="shop.html" class="nav-brand">
@@ -819,6 +856,7 @@
     <a href="testimonials.html">⭐ Reviews</a>
     <a href="faq.html">❓ FAQ</a>
     <a href="catering.html">🎉 Catering</a>
+    <a href="wishlist.html">💕 Support Mel</a>
     <a href="shop-links.html">🔗 All Links</a>
   </div>
 </div>
@@ -863,6 +901,11 @@
 </details>
 
 <div class="menu-wrap">
+  <div id="reorder-bar" style="display:none; align-items:center; gap:8px; background:#fff0f7; border:1.5px solid #ffd0e6; border-radius:14px; padding:8px 10px; margin:0 0 10px; font-size:0.85rem;">
+    <span style="flex:1; min-width:0;">🔁 <b>Your usual?</b> <span id="reorder-text" style="color:#666;"></span></span>
+    <button type="button" id="reorder-add" style="border:none; background:#e20376; color:#fff; border-radius:10px; padding:7px 12px; font-weight:700; cursor:pointer; font-family:inherit;">Add</button>
+    <button type="button" id="reorder-x" aria-label="Dismiss" style="border:none; background:transparent; font-size:1.1rem; color:#999; cursor:pointer;">✕</button>
+  </div>
   <p style="font-size:0.78rem; color:var(--ink-soft); text-align:center; margin:0 0 12px;">🔍 Tap any treat for ingredients &amp; allergen info — most items contain dairy, eggs &amp; gluten.</p>
   <div class="menu-grid" id="product-grid"></div>
   <p class="tap-hint">Tap a treat to add it — view or edit your cart anytime with the 🛍️ button above.</p>
@@ -1245,6 +1288,27 @@ async function loadLiveMenuData() {
     try { if (settingsMap.category_visibility) categoryVisibility = JSON.parse(settingsMap.category_visibility); } catch (e) {}
     const isCategoryVisible = (key) => categoryVisibility[key] !== false;
 
+    // "Pause orders" switch from the admin (stored inside category_visibility
+    // as _pause, since that's the one setting the shop can already read).
+    try {
+      const pz = categoryVisibility._pause;
+      if (pz && pz.on) {
+        const todayCT = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
+        if (!pz.until || todayCT < pz.until) {
+          window.__ordersPaused = true;
+          const back = pz.until ? new Date(pz.until + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) : '';
+          const ov = document.getElementById('orders-paused-overlay');
+          document.getElementById('op-reason').textContent = pz.msg || "I'm taking a little break from baking. Thank you for your patience! 💕";
+          const bk = document.getElementById('op-back');
+          if (back) bk.textContent = "I'll be back " + back + ' 💕'; else bk.style.display = 'none';
+          ov.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          const cb = document.getElementById('checkout-btn');
+          if (cb) { cb.disabled = true; cb.textContent = 'Orders paused for now 🌸'; }
+        }
+      }
+    } catch (e) {}
+
     const cookieItems = invRes.data.filter(i => i.product_type === 'cookie');
     const cinnamonItems = invRes.data.filter(i => i.product_type === 'cinnamon_roll');
     if (cookieItems.length === 0 && cinnamonItems.length === 0) return; // keep fallback
@@ -1299,16 +1363,21 @@ async function loadLiveMenuData() {
     // product keys out from under their cart — safer to keep the
     // fallback data for the rest of this session than risk silently
     // orphaning what they've already picked.
-    const cartHasItems = Object.values(qty).some(q => q > 0);
-    if (cartHasItems) return;
+    // Carry the cart over by item NAME (the live menu uses different ids
+    // than the built-in fallback menu), so nothing already picked — or
+    // saved from an earlier visit — gets lost when the live menu swaps in.
+    const carried = readSavedCartNames();
+    ALL_PRODUCTS.forEach(p => { if (qty[p.key] > 0) carried[p.name] = qty[p.key]; });
 
     CATEGORIES = newCategories;
     rebuildDerivedCategoryData();
-    // The cart was confirmed empty above, but qty still needs a real 0
-    // (not undefined) for every new live-data key — otherwise a never-
-    // touched item's quantity check (qty[key] <= 0) silently fails since
-    // undefined <= 0 is false in JS, letting it leak into order notes.
-    ALL_PRODUCTS.forEach(p => { if (qty[p.key] === undefined) qty[p.key] = 0; });
+    // Every live-data key needs a real 0 (not undefined) — otherwise a
+    // never-touched item's quantity check (qty[key] <= 0) silently fails
+    // since undefined <= 0 is false in JS, letting it leak into order notes.
+    Object.keys(qty).forEach(k => delete qty[k]);
+    ALL_PRODUCTS.forEach(p => { qty[p.key] = carried[p.name] > 0 ? carried[p.name] : 0; });
+    persistCart();
+    renderCartItems();
     activeCategoryKey = ACTIVE_CATEGORIES.find(c => c.key === previousActiveKey) ? previousActiveKey : ACTIVE_CATEGORIES[0].key;
 
     renderCategoryTiles();
@@ -1322,16 +1391,34 @@ async function loadLiveMenuData() {
 loadLiveMenuData();
 
 
-// Cart persists across pages (home <-> menu) via localStorage
+// Cart persists across pages and reloads via localStorage. It's saved two
+// ways: mels_cart (by item key — the home page reads this for its badge)
+// and mels_cart_names (by item NAME — what actually restores the cart,
+// because item keys differ between the fallback menu and the live menu).
+const CART_NAMES_KEY = 'mels_cart_names';
+function readSavedCartNames() {
+  try { return JSON.parse(localStorage.getItem(CART_NAMES_KEY) || '{}') || {}; } catch (e) { return {}; }
+}
 const qty = {};
 ALL_PRODUCTS.forEach(p => qty[p.key] = 0);
 try {
   const saved = JSON.parse(localStorage.getItem('mels_cart') || '{}');
   Object.keys(saved).forEach(k => { if (k in qty) qty[k] = saved[k]; });
 } catch (e) { /* ignore corrupt cart data */ }
+(function restoreCartByName() {
+  const names = readSavedCartNames();
+  ALL_PRODUCTS.forEach(p => { if (names[p.name] > 0) qty[p.key] = names[p.name]; });
+})();
 
 function persistCart() {
   try { localStorage.setItem('mels_cart', JSON.stringify(qty)); } catch (e) { /* storage unavailable, cart just won't persist */ }
+  try {
+    // Merge into what's saved: names not on the currently-shown menu (e.g.
+    // live items while the fallback menu is showing) are left alone.
+    const names = readSavedCartNames();
+    ALL_PRODUCTS.forEach(p => { if (qty[p.key] > 0) names[p.name] = qty[p.key]; else delete names[p.name]; });
+    localStorage.setItem(CART_NAMES_KEY, JSON.stringify(names));
+  } catch (e) {}
 }
 
 let activeCategoryKey = ACTIVE_CATEGORIES[0].key;
@@ -1506,6 +1593,39 @@ function updateQty(key, newVal) {
   renderCartItems();
   if (delta > 0) pulseCartBadge();
 }
+
+
+// ---- "Order again": remembers the last order on this phone/browser ----
+const LAST_ORDER_KEY = 'mels_last_order';
+function saveLastOrder() {
+  try {
+    const items = {};
+    ALL_PRODUCTS.forEach(p => { if (qty[p.key] > 0) items[p.name] = qty[p.key]; });
+    if (Object.keys(items).length) localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(items));
+  } catch (e) {}
+}
+function setupReorderBar() {
+  try {
+    const bar = document.getElementById('reorder-bar');
+    const raw = localStorage.getItem(LAST_ORDER_KEY);
+    if (!bar || !raw || sessionStorage.getItem('mels_reorder_hide') || totalItemCount() > 0) return;
+    const items = JSON.parse(raw);
+    const entries = Object.entries(items);
+    if (!entries.length) return;
+    document.getElementById('reorder-text').textContent = entries.map(([n, q]) => `${q}× ${n}`).join(', ');
+    bar.style.display = 'flex';
+    document.getElementById('reorder-x').onclick = () => { bar.style.display = 'none'; try { sessionStorage.setItem('mels_reorder_hide', '1'); } catch (e) {} };
+    document.getElementById('reorder-add').onclick = () => {
+      entries.forEach(([name, q]) => {
+        const prod = ALL_PRODUCTS.find(p => p.name === name);
+        if (prod) updateQty(prod.key, q);
+      });
+      bar.style.display = 'none';
+      openCart();
+    };
+  } catch (e) {}
+}
+setTimeout(setupReorderBar, 1200);
 
 function pulseCartBadge() {
   const badge = document.getElementById('cart-badge');
@@ -2465,15 +2585,17 @@ function calcBoxSavings() {
 // date picker itself and as a fallback check at checkout, in case a
 // customer picked a date before adding a cinnamon roll to their cart.
 function formatDateInput(d) {
-  return d.toISOString().split('T')[0];
+  // Local date parts — toISOString() is UTC and would roll to the next day
+  // in the evening, shifting the earliest date one day too far.
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// Mel's prep day effectively ends when her last pickup slot does (6pm
-// Central) — an order placed after that has zero real prep time left
-// today, so it shouldn't be allowed to land as "tomorrow" with no notice.
+// Mel's order day ends at 5pm Central — an order placed after that has too
+// little prep time left, so nothing can be ordered for the next day after
+// 5pm (the earliest date becomes the day after tomorrow).
 // Checked in America/Chicago regardless of the customer's own device
 // timezone, since it's Mel's business hours that matter here.
-const BUSINESS_CLOSE_HOUR = 18; // 6pm
+const BUSINESS_CLOSE_HOUR = 17; // 5pm
 function isAfterBusinessHoursChicago() {
   const hourStr = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', hour: 'numeric', hour12: false }).format(new Date());
   return parseInt(hourStr, 10) >= BUSINESS_CLOSE_HOUR;
@@ -2494,7 +2616,9 @@ function updateDateConstraints() {
     categoryCount('cookies') > 0;
 
   const afterHours = isAfterBusinessHoursChicago();
-  const leadDays = (cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1)) + (afterHours ? 1 : 0);
+  // After 5pm even an all-on-hand cart can't be next-day, so the base lead is at least 1.
+  const baseLead = cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1);
+  const leadDays = afterHours ? Math.max(baseLead, 1) + 1 : baseLead;
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + leadDays);
   const minDateStr = formatDateInput(minDate);
@@ -2502,7 +2626,7 @@ function updateDateConstraints() {
 
   const noteEl = document.getElementById('date-lead-time-note');
   if (afterHours) {
-    noteEl.textContent = "🌙 It's after hours for today, so the earliest available date has moved out a day to give enough time to prep.";
+    noteEl.textContent = "🌙 It's past 5pm, so orders are now being taken for the day after tomorrow or later — that gives me enough time to prep.";
     noteEl.style.display = 'block';
   } else if (cartCoveredByOnHand) {
     noteEl.textContent = '🎉 Everything in your cart is baked and ready — same-day pickup or delivery available!';
@@ -2591,6 +2715,7 @@ const checkoutBtn = document.getElementById('checkout-btn');
 
 checkoutBtn.addEventListener('click', async () => {
   errorBox.style.display = 'none';
+  if (window.__ordersPaused) { errorBox.textContent = 'Orders are paused right now — please check back soon 🌸'; errorBox.style.display = 'block'; return; }
   const total = totalItemCount();
   if (total === 0) { errorBox.textContent = 'Please pick at least one item 🍪'; errorBox.style.display = 'block'; return; }
 
@@ -2643,12 +2768,13 @@ checkoutBtn.addEventListener('click', async () => {
       cookieCategory.products.every(p => (qty[p.key] || 0) <= (p.onHandCount || 0)) &&
       categoryCount('cookies') > 0;
     const afterHours = isAfterBusinessHoursChicago();
-    const requiredLeadDays = (cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1)) + (afterHours ? 1 : 0);
+    const baseRequired = cartCoveredByOnHand ? 0 : (hasCinnamonRolls ? 2 : 1);
+    const requiredLeadDays = afterHours ? Math.max(baseRequired, 1) + 1 : baseRequired;
     const requiredMinDate = new Date();
     requiredMinDate.setDate(requiredMinDate.getDate() + requiredLeadDays);
     if (document.getElementById('preferred_date').value < formatDateInput(requiredMinDate)) {
       errorBox.textContent = afterHours
-        ? "It's after hours for today, so the earliest available date has moved out a day — please pick a later date."
+        ? "It's past 5pm, so the earliest available date is the day after tomorrow — please pick a later date."
         : hasCinnamonRolls
           ? 'Cinnamon rolls need at least 2 days notice — please pick a later date.'
           : 'Please pick a date at least 1 day out.';
@@ -2809,11 +2935,12 @@ checkoutBtn.addEventListener('click', async () => {
         await supabase.functions.invoke('send-order-emails', { body: orderRow });
       } catch (emailErr) { console.error('Email notification failed (order was still saved):', emailErr); }
 
+      saveLastOrder();
       if (document.getElementById('remember_me_checkbox')?.checked) { saveRememberedContact(); } else { clearRememberedContact(); }
       // A cash order is confirmed the moment it's submitted (no payment
       // page to redirect through), so clear the cart/draft right here —
       // same moment shop-thankyou.html does it for a Stripe payment.
-      try { localStorage.removeItem('mels_cart'); } catch (e) {}
+      try { localStorage.removeItem('mels_cart'); localStorage.removeItem('mels_cart_names'); } catch (e) {}
       clearSavedCheckoutFields();
       window.location.href = `shop-thankyou.html?method=cash&fulfillment=${fulfillment}`;
     } catch (err) {
@@ -2845,6 +2972,7 @@ checkoutBtn.addEventListener('click', async () => {
     // exactly the kind of friction that makes someone give up on ordering.
     // The cart/draft only get cleared on shop-thankyou.html, which only
     // loads after a real successful payment.
+    saveLastOrder();
     if (document.getElementById('remember_me_checkbox')?.checked) { saveRememberedContact(); } else { clearRememberedContact(); }
     window.location.href = data.url;
   } catch (err) {

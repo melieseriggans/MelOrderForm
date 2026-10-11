@@ -111,6 +111,9 @@
   @keyframes sparkle-sway{ 0%,100%{transform:translateX(0) rotate(-8deg); opacity:0.5;} 50%{transform:translateX(8px) rotate(8deg); opacity:1;} }
   @media (prefers-reduced-motion: reduce){ .sparkle{animation:none !important; opacity:0.5;} }
   @keyframes starSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .ty-confetti{position:fixed; top:-12px; font-size:1.3rem; pointer-events:none; z-index:50; animation:tyFall 2.2s ease-in forwards;}
+  @keyframes tyFall{to{transform:translateY(105vh) rotate(540deg); opacity:.2;}}
+  @media (prefers-reduced-motion: reduce){ .ty-confetti{display:none;} }
 </style>
 </head>
 <body>
@@ -130,8 +133,9 @@
 
   <img src="assets/logo.png" alt="Mel's Treat" class="logo">
   <div class="emoji">🎀</div>
-  <h1>Thank You!</h1>
-  <p>Your review was submitted successfully — it means the world to me that you took the time to share it! 💕</p>
+  <h1 id="ty-title">Thank You!</h1>
+  <p id="ty-text">Your review was submitted successfully — it means the world to me that you took the time to share it! 💕</p>
+  <button type="button" class="back-btn" id="share-btn" style="margin:0 0 10px; cursor:pointer; background:#e20376; color:#fff;">💌 Tell a friend about Mel's Treat</button><br>
   <a href="https://melstreat.com/" class="back-btn">← Back To Site</a>
 </div>
 
@@ -266,6 +270,31 @@ function scatterPageAccents() {
 window.addEventListener('load', () => {
   setTimeout(() => scatterPageAccents(), 300);
 });
+</script>
+<script>
+(function(){
+  var info = null;
+  try { info = JSON.parse(sessionStorage.getItem('mt_review_done') || 'null'); sessionStorage.removeItem('mt_review_done'); } catch (e) {}
+  if (info && info.name) {
+    document.getElementById('ty-title').textContent = 'Thank You, ' + info.name + '!';
+    if (info.photo) document.getElementById('ty-text').textContent = 'Your review and photo made my day — it means the world to me that you took the time! 💕';
+  }
+  var bits = ['💕','✨','🍪','⭐','🎀'];
+  for (var i = 0; i < 24; i++) {
+    var el = document.createElement('div');
+    el.className = 'ty-confetti';
+    el.textContent = bits[i % bits.length];
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.animationDelay = (Math.random() * 0.8) + 's';
+    document.body.appendChild(el);
+    (function(e){ setTimeout(function(){ e.remove(); }, 3500); })(el);
+  }
+  document.getElementById('share-btn').addEventListener('click', function(){
+    var data = { title: "Mel's Treat", text: "Homemade treats from Mel's Treat — you've got to try them! 🍪", url: 'https://melstreat.com/' };
+    if (navigator.share) { navigator.share(data).catch(function(){}); }
+    else if (navigator.clipboard) { navigator.clipboard.writeText(data.url).then(function(){ document.getElementById('share-btn').textContent = 'Link copied! 💕'; }); }
+  });
+})();
 </script>
 </body>
 </html>
